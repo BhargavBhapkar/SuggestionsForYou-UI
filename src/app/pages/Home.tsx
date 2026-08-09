@@ -17,6 +17,25 @@ import type { AppContext } from "../Layout";
 import { useProducts, useCategories, useRetailers, useTestimonials, useFaqs } from "../hooks/useApi";
 import { CATEGORY_ICONS } from "../lib/icons";
 
+const BRAND_LOGOS = [
+  { name: "Apple", slug: "apple" },
+  { name: "Samsung", slug: "samsung" },
+  { name: "Sony", slug: "sony" },
+  { name: "OnePlus", slug: "oneplus" },
+  { name: "Dell", slug: "dell" },
+  { name: "LG", slug: "lg" },
+  { name: "boAt", slug: "boat" },
+  { name: "Xiaomi", slug: "xiaomi" },
+  { name: "Lenovo", slug: "lenovo" },
+  { name: "Asus", slug: "asus" },
+  { name: "HP", slug: "hp" },
+  { name: "Bose", slug: "bose" },
+  { name: "JBL", slug: "jbl" },
+  { name: "Garmin", slug: "garmin" },
+  { name: "NVIDIA", slug: "nvidia" },
+  { name: "PlayStation", slug: "playstation" },
+];
+
 export default function Home() {
   const navigate = useNavigate();
   const { dark, setDark, wishlisted, toggleWish, onLoginRequired, user, logout, cartCount, addToCart } = useOutletContext<AppContext>();
@@ -339,11 +358,19 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Brand strip */}
-          <div className="mt-16 lg:mt-10 pt-8 border-t border-[#E5E7EB] dark:border-white/10 flex items-center justify-center gap-x-10 gap-y-4 flex-wrap opacity-70 dark:opacity-50">
-            {["Apple", "Samsung", "Sony", "OnePlus", "Dell", "Canon", "boAt", "LG"].map(b => (
-              <span key={b} className="text-sm font-bold tracking-wide text-[#6B7280] dark:text-gray-500" style={poppins}>{b}</span>
-            ))}
+          {/* Brand strip — auto-scrolling logo marquee */}
+          <div className="mt-16 lg:mt-10 pt-8 border-t border-[#E5E7EB] dark:border-white/10 overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]">
+            <div className="flex w-max animate-marquee">
+              {[...BRAND_LOGOS, ...BRAND_LOGOS].map((b, i) => (
+                <img
+                  key={`${b.slug}-${i}`}
+                  src={`https://cdn.simpleicons.org/${b.slug}/9CA3AF`}
+                  alt={b.name}
+                  title={b.name}
+                  className="h-5 w-auto mx-7 flex-shrink-0 opacity-70 dark:opacity-50 hover:opacity-100 transition-opacity duration-200"
+                />
+              ))}
+            </div>
           </div>
         </div>
       </section>

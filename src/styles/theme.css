@@ -204,3 +204,14 @@
   background-size: 200% 100%;
   animation: shimmer 2.5s linear infinite;
 }
+
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.animate-marquee {
+  animation: marquee 28s linear infinite;
+}
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
