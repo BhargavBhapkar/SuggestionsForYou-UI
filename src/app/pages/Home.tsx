@@ -396,7 +396,7 @@ export default function Home() {
       {/* ══════════════════════════════════════════════════════════
           AI ADVISOR PROMO BANNER
       ══════════════════════════════════════════════════════════ */}
-      <section className="px-4 sm:px-6 lg:px-8 pb-20 bg-white dark:bg-[#0a0e1f]">
+      <section className="px-4 sm:px-6 lg:px-8 pt-16 pb-20 bg-white dark:bg-[#0a0e1f]">
         <div className="max-w-7xl mx-auto">
           <div className="relative overflow-hidden rounded-3xl bg-[#111827] dark:bg-[#0a0e1f] border border-white/10 p-8 sm:p-12">
             <div className="absolute inset-0 opacity-60 pointer-events-none" style={{ background: "radial-gradient(ellipse at 80% 50%, rgba(249,115,22,0.18) 0%, transparent 60%)" }} />
