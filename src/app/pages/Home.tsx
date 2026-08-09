@@ -383,6 +383,17 @@ export default function Home() {
       </section>
 
       {/* ══════════════════════════════════════════════════════════
+          TODAY'S BEST DEALS — PREMIUM CAROUSEL
+      ══════════════════════════════════════════════════════════ */}
+      <DealsCarousel
+        deals={deals}
+        countdown={countdown}
+        onCompare={name => navigate(`/compare/${encodeURIComponent(name)}`)}
+        poppins={poppins}
+        inter={inter}
+      />
+
+      {/* ══════════════════════════════════════════════════════════
           AI ADVISOR PROMO BANNER
       ══════════════════════════════════════════════════════════ */}
       <section className="px-4 sm:px-6 lg:px-8 pb-20 bg-white dark:bg-[#0a0e1f]">
@@ -420,17 +431,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-
-      {/* ══════════════════════════════════════════════════════════
-          TODAY'S BEST DEALS — PREMIUM CAROUSEL
-      ══════════════════════════════════════════════════════════ */}
-      <DealsCarousel
-        deals={deals}
-        countdown={countdown}
-        onCompare={name => navigate(`/compare/${encodeURIComponent(name)}`)}
-        poppins={poppins}
-        inter={inter}
-      />
 
       {/* ══════════════════════════════════════════════════════════
           SUGGESTIONS & FEATURED — 2 rows of 4
