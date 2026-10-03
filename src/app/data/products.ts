@@ -37,7 +37,7 @@ export const TRENDING = [
 
 export const WHY_FEATURES = [
   { icon: Bot,       title: "AI Recommendations",         desc: "Our AI analyzes millions of price points to recommend the right product at the right time, tailored specifically to you."       },
-  { icon: BarChart2, title: "Real-Time Price Comparison",  desc: "Prices updated every 15 minutes across 50+ verified retailers. Always see where your money goes furthest."                      },
+  { icon: BarChart2, title: "Real-Time Price Comparison",  desc: "Prices updated every 15 minutes across 5 verified retailers. Always see where your money goes furthest."                      },
   { icon: Bell,      title: "Price Drop Alerts",           desc: "Set a target price and get instant alerts — email, SMS, or push — the moment any retailer drops below your threshold."           },
   { icon: Tag,       title: "Exclusive Coupons",           desc: "We surface hidden coupon codes and cashback offers most shoppers miss, saving you an extra 5–15% at checkout automatically."    },
   { icon: TrendingUp,title: "Price History Charts",        desc: "24-month price history tells you whether today's 'sale' is real or manufactured. Know when to wait and when to strike."          },

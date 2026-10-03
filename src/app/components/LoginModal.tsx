@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { X, Lock, Sparkles, Loader2 } from "lucide-react";
 import { inter, poppins } from "../lib/fonts";
 
@@ -11,6 +12,7 @@ export default function LoginModal({
   login: (email: string, password: string) => Promise<void>;
   signup: (name: string, email: string, password: string) => Promise<void>;
 }) {
+  const { t } = useTranslation();
   const [mode, setMode] = useState<"login" | "signup">("login");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -27,7 +29,7 @@ export default function LoginModal({
       else await signup(name, email, password);
       onClose();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong");
+      setError(err instanceof Error ? err.message : t("auth.errorGeneric"));
     } finally {
       setLoading(false);
     }
@@ -47,10 +49,10 @@ export default function LoginModal({
           <Lock className="w-6 h-6 text-[#F97316]" />
         </div>
         <h3 className="text-xl font-bold text-[#111827] dark:text-white text-center mb-2" style={poppins}>
-          {mode === "login" ? "Sign In" : "Create Free Account"}
+          {mode === "login" ? t("common.signIn") : t("auth.createFreeAccount")}
         </h3>
         <p className="text-sm text-[#6B7280] dark:text-gray-400 text-center mb-6 leading-relaxed" style={inter}>
-          Browsing and comparing prices is always free. Sign in to save your wishlist and set price alerts.
+          {t("auth.subtitle")}
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-3 mb-4">
@@ -60,7 +62,7 @@ export default function LoginModal({
               required
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="Full name"
+              placeholder={t("auth.fullNamePlaceholder")}
               className="w-full px-4 py-3 bg-[#F8FAFC] dark:bg-white/5 border border-[#E5E7EB] dark:border-white/10 rounded-xl text-sm text-[#111827] dark:text-white placeholder-[#9CA3AF] outline-none focus:border-[#F97316] transition-colors"
               style={inter}
             />
@@ -70,7 +72,7 @@ export default function LoginModal({
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="Email address"
+            placeholder={t("auth.emailPlaceholder")}
             className="w-full px-4 py-3 bg-[#F8FAFC] dark:bg-white/5 border border-[#E5E7EB] dark:border-white/10 rounded-xl text-sm text-[#111827] dark:text-white placeholder-[#9CA3AF] outline-none focus:border-[#F97316] transition-colors"
             style={inter}
           />
@@ -80,7 +82,7 @@ export default function LoginModal({
             minLength={6}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            placeholder="Password (min. 6 characters)"
+            placeholder={t("auth.passwordPlaceholder")}
             className="w-full px-4 py-3 bg-[#F8FAFC] dark:bg-white/5 border border-[#E5E7EB] dark:border-white/10 rounded-xl text-sm text-[#111827] dark:text-white placeholder-[#9CA3AF] outline-none focus:border-[#F97316] transition-colors"
             style={inter}
           />
@@ -98,7 +100,7 @@ export default function LoginModal({
             style={poppins}
           >
             {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
-            {mode === "login" ? "Sign In" : "Create Account"}
+            {mode === "login" ? t("common.signIn") : t("auth.createAccount")}
           </button>
         </form>
 
@@ -106,10 +108,10 @@ export default function LoginModal({
           onClick={() => { setMode(mode === "login" ? "signup" : "login"); setError(null); }}
           className="w-full py-2.5 text-sm text-[#374151] dark:text-gray-300 hover:text-[#F97316] transition-colors" style={inter}
         >
-          {mode === "login" ? "New here? Create a free account" : "Already have an account? Sign in"}
+          {mode === "login" ? t("auth.newHereLink") : t("auth.alreadyHaveAccountLink")}
         </button>
         <button onClick={onClose} className="w-full py-1.5 text-sm text-[#9CA3AF] hover:text-[#374151] dark:hover:text-gray-200 transition-colors" style={inter}>
-          Continue Browsing
+          {t("auth.continueBrowsing")}
         </button>
       </div>
     </div>

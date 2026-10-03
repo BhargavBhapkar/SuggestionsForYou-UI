@@ -1,15 +1,17 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
+import { useTranslation } from "react-i18next";
 import { Bell, Moon, Sun, Menu, X, UserRound, LogOut, ShoppingCart, Heart } from "lucide-react";
 import { inter, poppins } from "../lib/fonts";
 import type { AuthUser } from "../lib/api";
+import LanguageSwitcher from "./LanguageSwitcher";
 
 const DEFAULT_PRODUCT = "Samsung Galaxy S25 Ultra";
 
-const NAV_MAP: Record<string, string> = {
-  "Home": "/", "Categories": "/categories", "Compare": `/compare/${encodeURIComponent(DEFAULT_PRODUCT)}`,
-  "Price History": "/price-history", "AI Advisor": "/ai-advisor",
-  "Deals": "/deals", "About": "/about",
+const NAV_PATHS: Record<string, string> = {
+  home: "/", categories: "/categories", compare: `/compare/${encodeURIComponent(DEFAULT_PRODUCT)}`,
+  priceHistory: "/price-history", aiAdvisor: "/ai-advisor",
+  deals: "/deals", about: "/about",
 };
 
 export default function Navbar({
@@ -24,6 +26,7 @@ export default function Navbar({
   wishlistCount?: number;
 }) {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -33,7 +36,15 @@ export default function Navbar({
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const navLinks = ["Home", "Categories", "Compare", "Price History", "AI Advisor", "Deals", "About"];
+  const navLinks: { key: string; label: string }[] = [
+    { key: "home", label: t("nav.home") },
+    { key: "categories", label: t("nav.categories") },
+    { key: "compare", label: t("nav.compare") },
+    { key: "priceHistory", label: t("nav.priceHistory") },
+    { key: "aiAdvisor", label: t("nav.aiAdvisor") },
+    { key: "deals", label: t("nav.deals") },
+    { key: "about", label: t("nav.about") },
+  ];
 
   return (
     <>
@@ -45,7 +56,7 @@ export default function Navbar({
             : "bg-white dark:bg-[#0a0e1f]"
         }`}
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
           {/* Logo */}
           <a
             href="#"
@@ -62,16 +73,16 @@ export default function Navbar({
           </a>
 
           {/* Desktop links */}
-          <div className="hidden lg:flex items-center gap-7">
+          <div className="hidden lg:flex items-center gap-6 flex-shrink-0">
             {navLinks.map((l) => (
               <button
-                key={l}
+                key={l.key}
                 onClick={() => {
-                  if (NAV_MAP[l]) { navigate(NAV_MAP[l]); window.scrollTo(0, 0); }
+                  navigate(NAV_PATHS[l.key]); window.scrollTo(0, 0);
                 }}
-                className="text-sm font-medium text-[#6B7280] hover:text-[#F97316] dark:text-gray-400 dark:hover:text-[#F97316] transition-colors duration-150 relative after:absolute after:bottom-[-2px] after:left-0 after:right-0 after:h-0.5 after:bg-[#F97316] after:scale-x-0 hover:after:scale-x-100 after:transition-transform after:duration-200 after:origin-left"
+                className="text-sm font-medium text-[#6B7280] hover:text-[#F97316] dark:text-gray-400 dark:hover:text-[#F97316] transition-colors duration-150 relative whitespace-nowrap after:absolute after:bottom-[-2px] after:left-0 after:right-0 after:h-0.5 after:bg-[#F97316] after:scale-x-0 hover:after:scale-x-100 after:transition-transform after:duration-200 after:origin-left"
               >
-                {l}
+                {l.label}
               </button>
             ))}
           </div>
@@ -107,6 +118,7 @@ export default function Navbar({
                 <Moon className="w-5 h-5" />
               )}
             </button>
+            <LanguageSwitcher />
             {user ? (
               <>
                 <button
@@ -115,17 +127,17 @@ export default function Navbar({
                 >
                   <UserRound className="w-4 h-4 text-[#F97316]" /> {user.name.split(" ")[0]}
                 </button>
-                <button onClick={onLogout} title="Sign out" className="p-2 text-[#6B7280] hover:text-[#F97316] dark:text-gray-400 transition-colors">
+                <button onClick={onLogout} title={t("common.signOut")} className="p-2 text-[#6B7280] hover:text-[#F97316] dark:text-gray-400 transition-colors">
                   <LogOut className="w-5 h-5" />
                 </button>
               </>
             ) : (
               <>
-                <button onClick={onLoginRequired} className="px-4 py-2 text-sm font-medium text-[#374151] dark:text-gray-300 hover:text-[#F97316] dark:hover:text-[#F97316] border border-transparent hover:border-[#F97316]/30 rounded-xl transition-all duration-200">
-                  Sign In
+                <button onClick={onLoginRequired} className="px-4 py-2 text-sm font-medium text-[#374151] dark:text-gray-300 hover:text-[#F97316] dark:hover:text-[#F97316] border border-transparent hover:border-[#F97316]/30 rounded-xl transition-all duration-200 whitespace-nowrap">
+                  {t("common.signIn")}
                 </button>
-                <button onClick={onLoginRequired} className="px-5 py-2.5 bg-[#F97316] hover:bg-orange-600 text-white text-sm font-semibold rounded-xl transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-orange-200 dark:hover:shadow-orange-900 active:translate-y-0 active:shadow-none">
-                  Browse Free
+                <button onClick={onLoginRequired} className="px-5 py-2.5 bg-[#F97316] hover:bg-orange-600 text-white text-sm font-semibold rounded-xl transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-orange-200 dark:hover:shadow-orange-900 active:translate-y-0 active:shadow-none whitespace-nowrap">
+                  {t("common.browseFree")}
                 </button>
               </>
             )}
@@ -159,6 +171,7 @@ export default function Navbar({
                 <Moon className="w-5 h-5" />
               )}
             </button>
+            <LanguageSwitcher compact />
             <button
               onClick={() => setMobileOpen(!mobileOpen)}
               className="p-2 text-[#374151] dark:text-gray-300"
@@ -178,12 +191,12 @@ export default function Navbar({
             {navLinks.map((l) => {
               return (
                 <a
-                  key={l}
+                  key={l.key}
                   href="#"
-                  onClick={(e) => { e.preventDefault(); if (NAV_MAP[l]) { navigate(NAV_MAP[l]); setMobileOpen(false); window.scrollTo(0, 0); } }}
+                  onClick={(e) => { e.preventDefault(); navigate(NAV_PATHS[l.key]); setMobileOpen(false); window.scrollTo(0, 0); }}
                   className="block py-3 text-sm font-medium text-[#374151] dark:text-gray-300 border-b border-[#E5E7EB] dark:border-white/10 last:border-0"
                 >
-                  {l}
+                  {l.label}
                 </a>
               );
             })}
@@ -193,13 +206,13 @@ export default function Navbar({
                   onClick={() => { navigate("/account"); setMobileOpen(false); }}
                   className="w-full mt-4 py-3 bg-[#F97316] text-white text-sm font-semibold rounded-xl flex items-center justify-center gap-2"
                 >
-                  <UserRound className="w-4 h-4" /> My Account
+                  <UserRound className="w-4 h-4" /> {t("common.myAccount")}
                 </button>
                 <button
                   onClick={() => { onLogout(); setMobileOpen(false); }}
                   className="w-full mt-3 py-3 border-2 border-[#E5E7EB] dark:border-white/10 text-[#374151] dark:text-gray-300 text-sm font-semibold rounded-xl flex items-center justify-center gap-2"
                 >
-                  <LogOut className="w-4 h-4" /> Sign Out ({user.name.split(" ")[0]})
+                  <LogOut className="w-4 h-4" /> {t("common.signOutWithName", { name: user.name.split(" ")[0] })}
                 </button>
               </>
             ) : (
@@ -207,7 +220,7 @@ export default function Navbar({
                 onClick={() => { onLoginRequired(); setMobileOpen(false); }}
                 className="w-full mt-4 py-3 bg-[#F97316] text-white text-sm font-semibold rounded-xl"
               >
-                Get Started Free
+                {t("common.getStartedFree")}
               </button>
             )}
           </div>

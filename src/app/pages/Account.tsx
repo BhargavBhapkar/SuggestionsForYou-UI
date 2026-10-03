@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate, useOutletContext } from "react-router";
+import { useTranslation } from "react-i18next";
 import { UserRound, MapPin, Package, Plus, Pencil, Trash2, LogOut, Check } from "lucide-react";
 import { inter, poppins } from "../lib/fonts";
 import PageShell from "../components/PageShell";
@@ -19,32 +20,33 @@ const STATUS_STYLES: Record<string, string> = {
 
 export default function AccountPage() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { user, authLoading, logout, onLoginRequired } = useOutletContext<AppContext>();
   const { data: addresses, refetch: refetchAddresses } = useAddresses();
   const { data: orders } = useOrders();
   const [formMode, setFormMode] = useState<"none" | "add" | string>("none");
 
   if (authLoading) {
-    return <PageShell onBack={() => navigate("/")} title="Account" subtitle="" icon={<UserRound className="w-9 h-9 text-[#F97316]" />} />;
+    return <PageShell onBack={() => navigate("/")} title={t("account.title")} subtitle="" icon={<UserRound className="w-9 h-9 text-[#F97316]" />} />;
   }
 
   if (!user) {
     return (
-      <PageShell onBack={() => navigate("/")} title="Account" subtitle="" icon={<UserRound className="w-9 h-9 text-[#F97316]" />}>
+      <PageShell onBack={() => navigate("/")} title={t("account.title")} subtitle="" icon={<UserRound className="w-9 h-9 text-[#F97316]" />}>
         <div className="text-center py-24">
           <div className="w-20 h-20 bg-orange-50 dark:bg-orange-950/40 rounded-3xl flex items-center justify-center mx-auto mb-6">
             <UserRound className="w-9 h-9 text-[#F97316]" />
           </div>
-          <h1 className="text-2xl font-bold text-[#111827] dark:text-white mb-3" style={poppins}>Sign in to view your account</h1>
-          <p className="text-[#6B7280] dark:text-gray-400 mb-8" style={inter}>Manage your addresses and see your order history.</p>
-          <button onClick={onLoginRequired} className="px-6 py-3 bg-[#F97316] hover:bg-orange-600 text-white rounded-xl text-sm font-semibold" style={poppins}>Sign In</button>
+          <h1 className="text-2xl font-bold text-[#111827] dark:text-white mb-3" style={poppins}>{t("account.signInTitle")}</h1>
+          <p className="text-[#6B7280] dark:text-gray-400 mb-8" style={inter}>{t("account.signInSubtitle")}</p>
+          <button onClick={onLoginRequired} className="px-6 py-3 bg-[#F97316] hover:bg-orange-600 text-white rounded-xl text-sm font-semibold" style={poppins}>{t("common.signIn")}</button>
         </div>
       </PageShell>
     );
   }
 
   return (
-    <PageShell onBack={() => navigate("/")} title="Account" subtitle="" icon={<UserRound className="w-9 h-9 text-[#F97316]" />}>
+    <PageShell onBack={() => navigate("/")} title={t("account.title")} subtitle="" icon={<UserRound className="w-9 h-9 text-[#F97316]" />}>
       <div className="max-w-3xl mx-auto space-y-8">
         {/* Profile */}
         <Reveal>
@@ -58,7 +60,7 @@ export default function AccountPage() {
                 <p className="text-sm text-[#9CA3AF]" style={inter}>{user.email}</p>
               </div>
             </div>
-            <button onClick={logout} className="p-2.5 text-[#6B7280] hover:text-red-500 dark:text-gray-400 border border-[#E5E7EB] dark:border-white/10 rounded-xl transition-colors" title="Sign out">
+            <button onClick={logout} className="p-2.5 text-[#6B7280] hover:text-red-500 dark:text-gray-400 border border-[#E5E7EB] dark:border-white/10 rounded-xl transition-colors" title={t("common.signOut")}>
               <LogOut className="w-4 h-4" />
             </button>
           </div>
@@ -69,11 +71,11 @@ export default function AccountPage() {
           <div>
             <div className="flex items-center justify-between mb-4">
               <h2 className="font-bold text-[#111827] dark:text-white flex items-center gap-2" style={poppins}>
-                <MapPin className="w-4 h-4 text-[#F97316]" /> Addresses
+                <MapPin className="w-4 h-4 text-[#F97316]" /> {t("account.addressesHeading")}
               </h2>
               {formMode === "none" && (
                 <button onClick={() => setFormMode("add")} className="flex items-center gap-1.5 text-sm font-semibold text-[#F97316] hover:text-orange-600" style={inter}>
-                  <Plus className="w-4 h-4" /> Add New
+                  <Plus className="w-4 h-4" /> {t("account.addNew")}
                 </button>
               )}
             </div>
@@ -91,7 +93,7 @@ export default function AccountPage() {
                     <div className="min-w-0">
                       <div className="flex items-center gap-2 mb-1">
                         <p className="font-semibold text-[#111827] dark:text-white text-sm" style={poppins}>{addr.label}</p>
-                        {addr.isDefault && <span className="px-2 py-0.5 bg-orange-50 dark:bg-orange-950/40 text-[#F97316] text-[10px] font-bold rounded-md">DEFAULT</span>}
+                        {addr.isDefault && <span className="px-2 py-0.5 bg-orange-50 dark:bg-orange-950/40 text-[#F97316] text-[10px] font-bold rounded-md">{t("checkout.defaultBadge")}</span>}
                       </div>
                       <p className="text-sm text-[#6B7280] dark:text-gray-400" style={inter}>
                         {addr.line1}{addr.line2 ? `, ${addr.line2}` : ""}, {addr.city}, {addr.state} {addr.pincode}
@@ -100,14 +102,14 @@ export default function AccountPage() {
                     </div>
                     <div className="flex items-center gap-1 flex-shrink-0">
                       {!addr.isDefault && (
-                        <button onClick={async () => { await api.updateAddress(addr._id, { isDefault: true }); refetchAddresses(); }} title="Set as default" className="p-2 text-[#9CA3AF] hover:text-emerald-500 transition-colors">
+                        <button onClick={async () => { await api.updateAddress(addr._id, { isDefault: true }); refetchAddresses(); }} title={t("account.setAsDefault")} className="p-2 text-[#9CA3AF] hover:text-emerald-500 transition-colors">
                           <Check className="w-4 h-4" />
                         </button>
                       )}
-                      <button onClick={() => setFormMode(addr._id)} title="Edit" className="p-2 text-[#9CA3AF] hover:text-[#F97316] transition-colors">
+                      <button onClick={() => setFormMode(addr._id)} title={t("common.edit")} className="p-2 text-[#9CA3AF] hover:text-[#F97316] transition-colors">
                         <Pencil className="w-4 h-4" />
                       </button>
-                      <button onClick={async () => { await api.deleteAddress(addr._id); refetchAddresses(); }} title="Delete" className="p-2 text-[#9CA3AF] hover:text-red-500 transition-colors">
+                      <button onClick={async () => { await api.deleteAddress(addr._id); refetchAddresses(); }} title={t("common.delete")} className="p-2 text-[#9CA3AF] hover:text-red-500 transition-colors">
                         <Trash2 className="w-4 h-4" />
                       </button>
                     </div>
@@ -115,7 +117,7 @@ export default function AccountPage() {
                 )
               ))}
               {addresses.length === 0 && formMode === "none" && (
-                <p className="text-sm text-[#9CA3AF] text-center py-6" style={inter}>No addresses saved yet.</p>
+                <p className="text-sm text-[#9CA3AF] text-center py-6" style={inter}>{t("account.noAddresses")}</p>
               )}
             </div>
           </div>
@@ -125,7 +127,7 @@ export default function AccountPage() {
         <Reveal delay={120}>
           <div>
             <h2 className="font-bold text-[#111827] dark:text-white flex items-center gap-2 mb-4" style={poppins}>
-              <Package className="w-4 h-4 text-[#F97316]" /> Order History
+              <Package className="w-4 h-4 text-[#F97316]" /> {t("account.orderHistoryHeading")}
             </h2>
             <div className="space-y-3">
               {orders.map((order) => (
@@ -136,19 +138,19 @@ export default function AccountPage() {
                 >
                   <div className="min-w-0">
                     <p className="text-sm font-semibold text-[#111827] dark:text-white" style={poppins}>
-                      {order.items.length} item{order.items.length !== 1 ? "s" : ""} · ₹{order.total.toLocaleString("en-IN")}
+                      {t("account.orderItemsCount", { count: order.items.length })} · ₹{order.total.toLocaleString("en-IN")}
                     </p>
                     <p className="text-xs text-[#9CA3AF] mt-0.5" style={inter}>
                       {new Date(order.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}
                     </p>
                   </div>
                   <span className={`px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wide border flex-shrink-0 ${STATUS_STYLES[order.orderStatus]}`}>
-                    {order.orderStatus}
+                    {t(`orderStatus.${order.orderStatus}`, order.orderStatus)}
                   </span>
                 </button>
               ))}
               {orders.length === 0 && (
-                <p className="text-sm text-[#9CA3AF] text-center py-6" style={inter}>No orders yet.</p>
+                <p className="text-sm text-[#9CA3AF] text-center py-6" style={inter}>{t("account.noOrders")}</p>
               )}
             </div>
           </div>

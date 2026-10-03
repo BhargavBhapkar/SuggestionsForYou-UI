@@ -1,4 +1,5 @@
 import { useNavigate, useOutletContext } from "react-router";
+import { useTranslation } from "react-i18next";
 import { ShoppingCart, Minus, Plus, Trash2, ArrowRight } from "lucide-react";
 import { inter, poppins } from "../lib/fonts";
 import PageShell from "../components/PageShell";
@@ -7,25 +8,26 @@ import type { AppContext } from "../Layout";
 
 export default function CartPage() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { cart, cartSubtotal, updateCartQty, removeFromCart, user, onLoginRequired } = useOutletContext<AppContext>();
 
   return (
     <PageShell
       onBack={() => navigate("/")}
-      title="Your Cart"
-      subtitle="Add products from the Compare page to see them here."
+      title={t("cart.title")}
+      subtitle={t("cart.subtitle")}
       icon={<ShoppingCart className="w-9 h-9 text-[#F97316]" />}
     >
       {cart.length === 0 ? null : (
         <Reveal>
           <div className="max-w-3xl mx-auto">
             <h1 className="text-2xl sm:text-3xl font-bold text-[#111827] dark:text-white mb-6" style={poppins}>
-              Your Cart ({cart.reduce((s, l) => s + l.qty, 0)} items)
+              {t("cart.itemsCount", { count: cart.reduce((s, l) => s + l.qty, 0) })}
             </h1>
 
             {!user && (
               <div className="mb-5 px-4 py-3 bg-orange-50 dark:bg-orange-950/30 border border-orange-200 dark:border-orange-800 rounded-xl text-sm text-orange-700 dark:text-orange-300" style={inter}>
-                You're browsing as a guest — <button onClick={onLoginRequired} className="font-semibold underline underline-offset-2">sign in</button> to save this cart to your account.
+                {t("cart.guestNoticePrefix")} <button onClick={onLoginRequired} className="font-semibold underline underline-offset-2">{t("cart.signInLink")}</button> {t("cart.guestNoticeSuffix")}
               </div>
             )}
 
@@ -36,7 +38,7 @@ export default function CartPage() {
                     <img src={line.image} alt={line.name} className="w-16 h-16 rounded-xl object-cover flex-shrink-0 bg-[#F8FAFC] dark:bg-white/5" />
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-semibold text-[#111827] dark:text-white truncate" style={poppins}>{line.name}</p>
-                      <p className="text-xs text-[#9CA3AF] mt-0.5" style={inter}>from {line.storeName}</p>
+                      <p className="text-xs text-[#9CA3AF] mt-0.5" style={inter}>{t("cart.fromStore", { store: line.storeName })}</p>
                       <p className="text-sm font-bold text-[#F97316] mt-1" style={poppins}>₹{line.priceSnapshot.toLocaleString("en-IN")}</p>
                     </div>
                   </div>
@@ -60,7 +62,7 @@ export default function CartPage() {
 
             <div className="bg-white dark:bg-[#131B2E] border border-[#E5E7EB] dark:border-white/10 rounded-2xl p-5 flex items-center justify-between">
               <div>
-                <p className="text-xs text-[#9CA3AF] uppercase tracking-wide" style={inter}>Subtotal</p>
+                <p className="text-xs text-[#9CA3AF] uppercase tracking-wide" style={inter}>{t("cart.subtotalLabel")}</p>
                 <p className="text-xl font-bold text-[#111827] dark:text-white" style={poppins}>₹{cartSubtotal.toLocaleString("en-IN")}</p>
               </div>
               <button
@@ -68,7 +70,7 @@ export default function CartPage() {
                 className="px-6 py-3 bg-[#F97316] hover:bg-orange-600 text-white rounded-xl text-sm font-semibold flex items-center gap-2 transition-all hover:-translate-y-0.5 hover:shadow-lg hover:shadow-orange-200"
                 style={poppins}
               >
-                Proceed to Checkout <ArrowRight className="w-4 h-4" />
+                {t("cart.proceedToCheckout")} <ArrowRight className="w-4 h-4" />
               </button>
             </div>
           </div>

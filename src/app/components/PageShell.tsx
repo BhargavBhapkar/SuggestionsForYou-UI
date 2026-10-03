@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { useTranslation } from "react-i18next";
 import { ChevronRight } from "lucide-react";
 import { inter, poppins } from "../lib/fonts";
 
@@ -11,6 +12,7 @@ export default function PageShell({
   icon: ReactNode;
   children?: React.ReactNode;
 }) {
+  const { t } = useTranslation();
   return (
     <div className="relative min-h-screen bg-[#F8FAFC] dark:bg-[#0a0e1f] transition-colors duration-300 overflow-hidden" style={inter}>
       <div className="pointer-events-none absolute -top-24 -right-24 w-[420px] h-[420px] rounded-full bg-[#F97316]/0 dark:bg-[#F97316]/10 blur-3xl" />
@@ -37,7 +39,7 @@ export default function PageShell({
             <h1 className="text-3xl font-bold text-[#111827] dark:text-white mb-3" style={poppins}>{title}</h1>
             <p className="text-[#6B7280] dark:text-gray-400 mb-8 max-w-md mx-auto" style={inter}>{subtitle}</p>
             <button onClick={onBack} className="px-6 py-3 bg-[#F97316] hover:bg-orange-600 text-white rounded-xl text-sm font-semibold transition-all hover:-translate-y-0.5 hover:shadow-lg hover:shadow-orange-200" style={poppins}>
-              Back to Homepage
+              {t("common.backToHomepage")}
             </button>
           </div>
         )}

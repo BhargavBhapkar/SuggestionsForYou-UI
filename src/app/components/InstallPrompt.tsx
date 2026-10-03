@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { Download, X } from "lucide-react";
 import { inter, poppins } from "../lib/fonts";
 
@@ -10,6 +11,7 @@ interface BeforeInstallPromptEvent extends Event {
 const DISMISSED_KEY = "sfy_install_dismissed";
 
 export default function InstallPrompt() {
+  const { t } = useTranslation();
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [visible, setVisible] = useState(false);
 
@@ -46,13 +48,13 @@ export default function InstallPrompt() {
         <Download className="w-5 h-5 text-[#F97316]" />
       </div>
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-semibold text-[#111827] dark:text-white" style={poppins}>Install SuggestionsForYou</p>
-        <p className="text-xs text-[#6B7280] dark:text-gray-400" style={inter}>Add to your home screen for quick access</p>
+        <p className="text-sm font-semibold text-[#111827] dark:text-white" style={poppins}>{t("installPrompt.title")}</p>
+        <p className="text-xs text-[#6B7280] dark:text-gray-400" style={inter}>{t("installPrompt.subtitle")}</p>
       </div>
       <button onClick={install} className="px-3.5 py-2 bg-[#F97316] hover:bg-orange-600 text-white rounded-xl text-xs font-semibold flex-shrink-0 transition-colors" style={poppins}>
-        Install
+        {t("installPrompt.install")}
       </button>
-      <button onClick={dismiss} className="p-1 text-[#9CA3AF] hover:text-[#374151] dark:hover:text-gray-300 flex-shrink-0" aria-label="Dismiss">
+      <button onClick={dismiss} className="p-1 text-[#9CA3AF] hover:text-[#374151] dark:hover:text-gray-300 flex-shrink-0" aria-label={t("installPrompt.dismiss")}>
         <X className="w-4 h-4" />
       </button>
     </div>

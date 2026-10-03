@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
+import { useTranslation } from "react-i18next";
 import { Flame, Timer, ChevronRight, Percent, Check, BarChart2 } from "lucide-react";
 import type { Product } from "../lib/api";
 
@@ -16,6 +17,7 @@ export default function DealsCarousel({
   poppins: React.CSSProperties;
   inter: React.CSSProperties;
 }) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const total = deals.length;
   const [activeIdx, setActiveIdx] = useState(0);
@@ -39,7 +41,7 @@ export default function DealsCarousel({
 
   return (
     <section
-      className="py-14 bg-[#0C1320] border-t border-white/5 overflow-hidden"
+      className="py-14 bg-[#0C1320] overflow-hidden"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
@@ -52,8 +54,8 @@ export default function DealsCarousel({
                 <Flame className="w-4 h-4 text-[#F97316]" />
               </div>
               <div>
-                <p className="text-[10px] font-bold text-[#F97316] uppercase tracking-widest leading-none mb-1" style={inter}>Flash Sale</p>
-                <h2 className="text-xl sm:text-2xl font-bold text-white leading-tight" style={poppins}>Today's Best Deals</h2>
+                <p className="text-[10px] font-bold text-[#F97316] uppercase tracking-widest leading-none mb-1" style={inter}>{t("dealsPage.flashSale")}</p>
+                <h2 className="text-xl sm:text-2xl font-bold text-white leading-tight" style={poppins}>{t("home.dealsCarouselTitle")}</h2>
               </div>
             </div>
             <div className="hidden sm:flex items-center gap-2 px-3.5 py-2 bg-white/5 border border-white/10 rounded-xl">
@@ -63,14 +65,14 @@ export default function DealsCarousel({
                   { val: String(countdown.h).padStart(2, "0"), sep: ":" },
                   { val: String(countdown.m).padStart(2, "0"), sep: ":" },
                   { val: String(countdown.s).padStart(2, "0"), sep: "" },
-                ].map((t, i) => (
+                ].map((c, i) => (
                   <span key={i} className="flex items-center gap-0.5">
-                    <span className="text-sm font-bold text-white">{t.val}</span>
-                    {t.sep && <span className="text-[#F97316] font-bold text-sm">{t.sep}</span>}
+                    <span className="text-sm font-bold text-white">{c.val}</span>
+                    {c.sep && <span className="text-[#F97316] font-bold text-sm">{c.sep}</span>}
                   </span>
                 ))}
               </div>
-              <span className="text-[10px] text-gray-500 ml-0.5" style={inter}>left</span>
+              <span className="text-[10px] text-gray-500 ml-0.5" style={inter}>{t("dealsPage.left")}</span>
             </div>
           </div>
           <div className="flex items-center gap-3">
@@ -87,7 +89,7 @@ export default function DealsCarousel({
               <ChevronRight className="w-4 h-4" />
             </button>
             <button onClick={() => navigate("/deals")} className="hidden sm:inline-flex items-center gap-1.5 text-sm font-semibold text-[#F97316] hover:text-orange-400 transition-colors" style={inter}>
-              View all <ChevronRight className="w-4 h-4" />
+              {t("common.viewAll")} <ChevronRight className="w-4 h-4" />
             </button>
           </div>
         </div>
@@ -161,13 +163,13 @@ export default function DealsCarousel({
                   {!outOfStock && deal.dealLimited && (deal.dealStock ?? 0) <= 15 && (
                     <div className="absolute bottom-3 left-3">
                       <span className="px-2 py-0.5 bg-red-500/90 backdrop-blur-sm text-white text-[10px] font-semibold rounded-md">
-                        Only {deal.dealStock} left
+                        {t("dealsPage.onlyLeft", { count: deal.dealStock })}
                       </span>
                     </div>
                   )}
                   {outOfStock && (
                     <div className="absolute inset-0 bg-black/65 flex items-center justify-center">
-                      <span className="text-white text-xs font-semibold tracking-widest uppercase" style={poppins}>Sold Out</span>
+                      <span className="text-white text-xs font-semibold tracking-widest uppercase" style={poppins}>{t("dealsPage.soldOut")}</span>
                     </div>
                   )}
                   {isCenter && (
@@ -187,7 +189,7 @@ export default function DealsCarousel({
 
                   <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-semibold rounded-lg w-fit mb-4" style={inter}>
                     <Check className="w-2.5 h-2.5" />
-                    Save ₹{(deal.originalPrice - deal.lowestPrice).toLocaleString("en-IN")}
+                    {t("compare.saveAmount", { amount: (deal.originalPrice - deal.lowestPrice).toLocaleString("en-IN") })}
                   </span>
 
                   <button
@@ -206,7 +208,7 @@ export default function DealsCarousel({
                     style={poppins}
                   >
                     <BarChart2 className="w-3.5 h-3.5" />
-                    {outOfStock ? "Out of Stock" : "Compare Price"}
+                    {outOfStock ? t("search.outOfStock") : t("dealsPage.comparePrice")}
                   </button>
                 </div>
               </div>
@@ -235,16 +237,16 @@ export default function DealsCarousel({
 
         <div className="sm:hidden flex items-center gap-2 px-3.5 py-2 bg-white/5 border border-white/10 rounded-xl">
           <Timer className="w-3.5 h-3.5 text-[#F97316]" />
-          <span className="text-xs text-gray-400" style={inter}>Ends in</span>
+          <span className="text-xs text-gray-400" style={inter}>{t("home.endsIn")}</span>
           <div className="flex items-center gap-0.5 tabular-nums" style={poppins}>
             {[
               { val: String(countdown.h).padStart(2, "0"), sep: ":" },
               { val: String(countdown.m).padStart(2, "0"), sep: ":" },
               { val: String(countdown.s).padStart(2, "0"), sep: "" },
-            ].map((t, i) => (
+            ].map((c, i) => (
               <span key={i} className="flex items-center gap-0.5">
-                <span className="text-sm font-bold text-white">{t.val}</span>
-                {t.sep && <span className="text-[#F97316] font-bold">{t.sep}</span>}
+                <span className="text-sm font-bold text-white">{c.val}</span>
+                {c.sep && <span className="text-[#F97316] font-bold">{c.sep}</span>}
               </span>
             ))}
           </div>

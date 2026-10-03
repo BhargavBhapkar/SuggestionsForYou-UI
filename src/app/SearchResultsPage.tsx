@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate, useSearchParams, useOutletContext } from "react-router";
+import { useTranslation } from "react-i18next";
 import {
   Search, Mic, ArrowRight, Star, Heart, ExternalLink, Bot, Zap, Check,
   Bell, Menu, Moon, Sun, ChevronDown, ChevronRight, ChevronLeft,
@@ -9,12 +10,13 @@ import {
 import { DEFAULT_PRODUCT } from "./data/products";
 import { useProducts } from "./hooks/useApi";
 import Reveal from "./components/Reveal";
+import LanguageSwitcher from "./components/LanguageSwitcher";
 import type { AppContext } from "./Layout";
 
-const NAV_MAP: Record<string, string> = {
-  "Home": "/", "Categories": "/categories", "Compare": `/compare/${encodeURIComponent(DEFAULT_PRODUCT)}`,
-  "Price History": "/price-history", "AI Advisor": "/ai-advisor",
-  "Deals": "/deals", "About": "/about",
+const NAV_PATHS: Record<string, string> = {
+  home: "/", categories: "/categories", compare: `/compare/${encodeURIComponent(DEFAULT_PRODUCT)}`,
+  priceHistory: "/price-history", aiAdvisor: "/ai-advisor",
+  deals: "/deals", about: "/about",
 };
 
 // ─── Shared tokens ────────────────────────────────────────────────────────────
@@ -97,6 +99,7 @@ function QuickViewModal({
 }: {
   product: Result; onClose: () => void; onCompare: () => void; onAddToCart: () => void;
 }) {
+  const { t } = useTranslation();
   const [added, setAdded] = useState(false);
   useEffect(() => {
     const handler = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
@@ -119,7 +122,7 @@ function QuickViewModal({
             <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
           </div>
           <div className="p-6 flex-1">
-            <p className="text-xs text-[#9CA3AF] mb-1" style={it}>{product.brand} · {product.category}</p>
+            <p className="text-xs text-[#9CA3AF] mb-1" style={it}>{product.brand} · {t(`categoryLabels.${product.category}`, product.category)}</p>
             <h3 className="text-lg font-bold text-[#111827] dark:text-white mb-3 leading-snug" style={pp}>{product.name}</h3>
             <div className="flex items-center gap-2 mb-4">
               <Stars rating={product.rating} />
@@ -128,7 +131,7 @@ function QuickViewModal({
             <div className="flex items-baseline gap-2 mb-4">
               <span className="text-2xl font-bold text-[#111827] dark:text-white" style={pp}>₹{product.lowestPrice.toLocaleString("en-IN")}</span>
               <span className="text-sm text-[#9CA3AF] line-through">₹{product.originalPrice.toLocaleString("en-IN")}</span>
-              <span className="text-xs font-bold text-[#10B981]">{product.discount}% OFF</span>
+              <span className="text-xs font-bold text-[#10B981]">{t("search.offBadge", { percent: product.discount })}</span>
             </div>
             <div className="space-y-2 mb-5">
               <div className="flex items-center gap-2 text-xs text-[#374151] dark:text-gray-300" style={it}>
@@ -138,16 +141,16 @@ function QuickViewModal({
                 <Tag className="w-3.5 h-3.5 text-[#F97316]" />{product.bestOffer}
               </div>
               <div className="flex items-center gap-2 text-xs text-[#374151] dark:text-gray-300" style={it}>
-                <RefreshCw className="w-3.5 h-3.5 text-[#6B7280]" />Available on {product.storesCount} stores
+                <RefreshCw className="w-3.5 h-3.5 text-[#6B7280]" />{t("search.availableOnStores", { count: product.storesCount })}
               </div>
             </div>
             <div className="flex gap-3">
               <button onClick={onCompare} className="flex-1 py-3 bg-[#F97316] hover:bg-orange-600 text-white rounded-xl text-sm font-semibold flex items-center justify-center gap-2 transition-all hover:-translate-y-0.5" style={pp}>
-                Compare Prices <ExternalLink className="w-3.5 h-3.5" />
+                {t("search.comparePrices")} <ExternalLink className="w-3.5 h-3.5" />
               </button>
               <button
                 onClick={() => { onAddToCart(); setAdded(true); setTimeout(() => setAdded(false), 1500); }}
-                title="Add to cart"
+                title={t("search.addToCart")}
                 className={`px-4 py-3 border-2 rounded-xl text-sm font-semibold transition-all ${added ? "bg-emerald-500 border-emerald-500 text-white" : "border-[#F97316] text-[#F97316] hover:bg-orange-50 dark:hover:bg-orange-950/30"}`}
                 style={pp}
               >
@@ -172,6 +175,7 @@ function GridCard({
   comparing: boolean; onToggleCompare: () => void; onQuickView: () => void;
   onCompare: () => void; onAddToCart: () => void;
 }) {
+  const { t } = useTranslation();
   const [hovered, setHovered] = useState(false);
   const [added, setAdded] = useState(false);
   return (
@@ -188,11 +192,11 @@ function GridCard({
         <div className="absolute top-3 left-3 flex flex-col gap-1.5">
           {product.aiPick && (
             <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-purple-600 text-white text-xs font-semibold rounded-lg shadow-sm" style={it}>
-              <Bot className="w-2.5 h-2.5" /> AI Pick
+              <Bot className="w-2.5 h-2.5" /> {t("search.aiPick")}
             </span>
           )}
           <span className="px-2 py-0.5 bg-[#F97316] text-white text-xs font-semibold rounded-lg shadow-sm" style={it}>
-            {product.discount}% OFF
+            {t("search.offBadge", { percent: product.discount })}
           </span>
         </div>
 
@@ -211,14 +215,14 @@ function GridCard({
             className="flex items-center gap-1.5 px-4 py-2 bg-white/95 dark:bg-[#131B2E]/95 backdrop-blur-sm text-[#111827] dark:text-white text-xs font-semibold rounded-xl shadow-lg hover:bg-white transition-all"
             style={pp}
           >
-            <Eye className="w-3.5 h-3.5" /> Quick View
+            <Eye className="w-3.5 h-3.5" /> {t("search.quickView")}
           </button>
         </div>
       </div>
 
       {/* Body */}
       <div className="p-4 flex flex-col flex-1">
-        <p className="text-xs text-[#9CA3AF] mb-0.5" style={it}>{product.brand} · {product.category}</p>
+        <p className="text-xs text-[#9CA3AF] mb-0.5" style={it}>{product.brand} · {t(`categoryLabels.${product.category}`, product.category)}</p>
         <h3 className="font-semibold text-[#111827] dark:text-white text-sm leading-snug mb-2" style={pp}>{product.name}</h3>
 
         <div className="flex items-center gap-2 mb-2">
@@ -240,7 +244,7 @@ function GridCard({
             <Truck className="w-3 h-3" />{product.delivery}
           </span>
           {!product.inStock && (
-            <span className="text-xs text-red-500 font-medium" style={it}>Out of Stock</span>
+            <span className="text-xs text-red-500 font-medium" style={it}>{t("search.outOfStock")}</span>
           )}
         </div>
 
@@ -252,11 +256,11 @@ function GridCard({
             disabled={!product.inStock}
             style={pp}
           >
-            <ExternalLink className="w-3.5 h-3.5" /> Compare
+            <ExternalLink className="w-3.5 h-3.5" /> {t("search.compare")}
           </button>
           <button
             onClick={() => { onAddToCart(); setAdded(true); setTimeout(() => setAdded(false), 1500); }}
-            title="Add to cart"
+            title={t("search.addToCart")}
             disabled={!product.inStock}
             className={`w-9 h-9 rounded-xl flex items-center justify-center border transition-all disabled:opacity-50 disabled:cursor-not-allowed ${added ? "bg-emerald-500 border-emerald-500 text-white" : "border-[#E5E7EB] dark:border-white/10 text-[#6B7280] hover:border-[#F97316] hover:text-[#F97316]"}`}
           >
@@ -264,7 +268,7 @@ function GridCard({
           </button>
           <button
             onClick={onToggleCompare}
-            title="Add to compare"
+            title={t("search.addToCompare")}
             className={`w-9 h-9 rounded-xl flex items-center justify-center border transition-all text-xs font-bold ${comparing ? "bg-[#111827] dark:bg-white text-white dark:text-[#111827] border-transparent" : "border-[#E5E7EB] dark:border-white/10 text-[#6B7280] hover:border-[#F97316] hover:text-[#F97316]"}`}
           >
             {comparing ? <Check className="w-3.5 h-3.5" /> : <Plus className="w-3.5 h-3.5" />}
@@ -273,7 +277,7 @@ function GridCard({
 
         {/* Stores count */}
         <p className="text-xs text-[#9CA3AF] text-center mt-2" style={it}>
-          Prices from {product.storesCount} stores
+          {t("search.pricesFromStores", { count: product.storesCount })}
         </p>
       </div>
     </div>
@@ -288,6 +292,7 @@ function ListCard({
   comparing: boolean; onToggleCompare: () => void; onQuickView: () => void;
   onCompare: () => void; onAddToCart: () => void;
 }) {
+  const { t } = useTranslation();
   const [added, setAdded] = useState(false);
   return (
     <div className="bg-white dark:bg-[#131B2E] border border-[#E5E7EB] dark:border-white/10 rounded-2xl overflow-hidden hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 flex">
@@ -297,7 +302,7 @@ function ListCard({
         {product.aiPick && (
           <div className="absolute top-2 left-2">
             <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-purple-600 text-white text-xs font-semibold rounded-lg" style={it}>
-              <Bot className="w-2.5 h-2.5" /> AI Pick
+              <Bot className="w-2.5 h-2.5" /> {t("search.aiPick")}
             </span>
           </div>
         )}
@@ -306,7 +311,7 @@ function ListCard({
       {/* Content */}
       <div className="flex-1 p-4 flex flex-col sm:flex-row sm:items-center gap-4">
         <div className="flex-1 min-w-0">
-          <p className="text-xs text-[#9CA3AF] mb-0.5" style={it}>{product.brand} · {product.category}</p>
+          <p className="text-xs text-[#9CA3AF] mb-0.5" style={it}>{product.brand} · {t(`categoryLabels.${product.category}`, product.category)}</p>
           <h3 className="font-semibold text-[#111827] dark:text-white text-sm leading-snug mb-2" style={pp}>{product.name}</h3>
           <div className="flex items-center gap-2 mb-2">
             <Stars rating={product.rating} sm />
@@ -319,7 +324,7 @@ function ListCard({
             <span className="text-xs text-[#10B981] flex items-center gap-1" style={it}>
               <Truck className="w-3 h-3" />{product.delivery}
             </span>
-            {!product.inStock && <span className="text-xs text-red-500 font-medium" style={it}>Out of Stock</span>}
+            {!product.inStock && <span className="text-xs text-red-500 font-medium" style={it}>{t("search.outOfStock")}</span>}
           </div>
         </div>
 
@@ -331,7 +336,7 @@ function ListCard({
               <span className="px-1.5 py-0.5 bg-[#10B981]/10 text-[#10B981] text-xs font-bold rounded-md">{product.discount}%</span>
             </div>
             <p className="text-xs text-[#9CA3AF] line-through text-right" style={it}>₹{product.originalPrice.toLocaleString("en-IN")}</p>
-            <p className="text-xs text-[#9CA3AF] mt-0.5 text-right" style={it}>{product.storesCount} stores</p>
+            <p className="text-xs text-[#9CA3AF] mt-0.5 text-right" style={it}>{t("search.storesCount", { count: product.storesCount })}</p>
           </div>
           <div className="flex items-center gap-2">
             <button
@@ -348,7 +353,7 @@ function ListCard({
             </button>
             <button
               onClick={() => { onAddToCart(); setAdded(true); setTimeout(() => setAdded(false), 1500); }}
-              title="Add to cart"
+              title={t("search.addToCart")}
               disabled={!product.inStock}
               className={`p-2 rounded-xl border transition-all disabled:opacity-50 disabled:cursor-not-allowed ${added ? "bg-emerald-500 border-emerald-500 text-white" : "border-[#E5E7EB] dark:border-white/10 text-[#6B7280] hover:border-[#F97316] hover:text-[#F97316]"}`}
             >
@@ -360,7 +365,7 @@ function ListCard({
               disabled={!product.inStock}
               style={pp}
             >
-              Compare <ExternalLink className="w-3.5 h-3.5" />
+              {t("search.compare")} <ExternalLink className="w-3.5 h-3.5" />
             </button>
           </div>
         </div>
@@ -392,6 +397,7 @@ function FilterSection({
 // ─── Main Page ─────────────────────────────────────────────────────────────────
 export default function SearchResultsPage() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { wishlisted, toggleWish, addToCart, dark, setDark, user, onLoginRequired, logout, cartCount } = useOutletContext<AppContext>();
   const [searchParams] = useSearchParams();
   const initialCategory = searchParams.get("category") || "";
@@ -430,8 +436,8 @@ export default function SearchResultsPage() {
       id: p._id, name: p.name, brand: p.brand, category: p.category, image: p.image,
       rating: p.rating, reviews: p.reviews, lowestPrice: p.lowestPrice, originalPrice: p.originalPrice,
       discount: p.discount, aiPick: p.tags.includes("aiPick"),
-      bestOffer: bestStore?.offer || bestStore?.cashback || bestStore?.coupon || "Best Price",
-      delivery: bestStore ? `${bestStore.deliveryLabel} · ${bestStore.deliveryTime}` : "Standard Delivery",
+      bestOffer: bestStore?.offer || bestStore?.cashback || bestStore?.coupon || t("search.bestPrice"),
+      delivery: bestStore ? `${bestStore.deliveryLabel} · ${bestStore.deliveryTime}` : t("search.standardDelivery"),
       inStock: p.inStock, storesCount: p.stores.length,
       bestStoreName: bestStore?.name ?? "Amazon",
     };
@@ -439,7 +445,15 @@ export default function SearchResultsPage() {
 
   const sortRef = useRef<HTMLDivElement>(null);
   const PER_PAGE = 8;
-  const navLinks = ["Home", "Categories", "Compare", "Price History", "AI Advisor", "Deals", "About"];
+  const navLinks: { key: string; label: string }[] = [
+    { key: "home", label: t("nav.home") },
+    { key: "categories", label: t("nav.categories") },
+    { key: "compare", label: t("nav.compare") },
+    { key: "priceHistory", label: t("nav.priceHistory") },
+    { key: "aiAdvisor", label: t("nav.aiAdvisor") },
+    { key: "deals", label: t("nav.deals") },
+    { key: "about", label: t("nav.about") },
+  ];
   const runSearch = () => navigate(`/search?q=${encodeURIComponent(query)}`);
 
   useEffect(() => {
@@ -487,8 +501,8 @@ export default function SearchResultsPage() {
   const activeCount = [selCategories.size, selBrands.size, inStockOnly ? 1 : 0, selOffers.size, deliveryFilter ? 1 : 0, (minRating ? 1 : 0)].reduce((a, b) => a + b, 0);
 
   const sortLabels: Record<string, string> = {
-    relevance: "Relevance", "price-low": "Price: Low to High",
-    "price-high": "Price: High to Low", rating: "Top Rated", discount: "Best Discount",
+    relevance: t("search.sortLabels.relevance"), "price-low": t("search.sortLabels.price-low"),
+    "price-high": t("search.sortLabels.price-high"), rating: t("search.sortLabels.rating"), discount: t("search.sortLabels.discount"),
   };
 
   // Sidebar content — reused in both desktop & mobile drawer
@@ -496,16 +510,16 @@ export default function SearchResultsPage() {
     <div className="bg-white dark:bg-[#131B2E] rounded-2xl border border-[#E5E7EB] dark:border-white/10 p-5">
       {/* Header */}
       <div className="flex items-center justify-between mb-1">
-        <span className="text-sm font-bold text-[#111827] dark:text-white" style={pp}>Filters</span>
+        <span className="text-sm font-bold text-[#111827] dark:text-white" style={pp}>{t("search.filters")}</span>
         {activeCount > 0 && (
           <button onClick={clearAll} className="text-xs text-[#F97316] font-medium hover:underline" style={it}>
-            Clear all ({activeCount})
+            {t("search.clearAllCount", { count: activeCount })}
           </button>
         )}
       </div>
 
       {/* Category */}
-      <FilterSection title="Category" open={openFilters.has("category")} onToggle={() => toggleFilter("category")}>
+      <FilterSection title={t("search.category")} open={openFilters.has("category")} onToggle={() => toggleFilter("category")}>
         <div className="space-y-2">
           {FILTER_CATEGORIES.map(c => (
             <label key={c} className="flex items-center gap-2.5 cursor-pointer group">
@@ -515,14 +529,14 @@ export default function SearchResultsPage() {
               >
                 {selCategories.has(c) && <Check className="w-2.5 h-2.5 text-white" />}
               </div>
-              <span className="text-sm text-[#374151] dark:text-gray-300 group-hover:text-[#F97316] transition-colors" style={it}>{c}</span>
+              <span className="text-sm text-[#374151] dark:text-gray-300 group-hover:text-[#F97316] transition-colors" style={it}>{t(`categoryLabels.${c}`, c)}</span>
             </label>
           ))}
         </div>
       </FilterSection>
 
       {/* Brand */}
-      <FilterSection title="Brand" open={openFilters.has("brand")} onToggle={() => toggleFilter("brand")}>
+      <FilterSection title={t("search.brand")} open={openFilters.has("brand")} onToggle={() => toggleFilter("brand")}>
         <div className="space-y-2">
           {FILTER_BRANDS.map(b => (
             <label key={b} className="flex items-center gap-2.5 cursor-pointer group">
@@ -539,12 +553,12 @@ export default function SearchResultsPage() {
       </FilterSection>
 
       {/* Price Range */}
-      <FilterSection title="Price Range" open={openFilters.has("price")} onToggle={() => toggleFilter("price")}>
+      <FilterSection title={t("search.priceRange")} open={openFilters.has("price")} onToggle={() => toggleFilter("price")}>
         <PriceSlider min={5000} max={200000} value={priceRange} onChange={setPriceRange} />
       </FilterSection>
 
       {/* Rating */}
-      <FilterSection title="Rating" open={openFilters.has("rating")} onToggle={() => toggleFilter("rating")}>
+      <FilterSection title={t("search.rating")} open={openFilters.has("rating")} onToggle={() => toggleFilter("rating")}>
         <div className="space-y-2">
           {[4, 3, 2].map(r => (
             <button
@@ -555,16 +569,16 @@ export default function SearchResultsPage() {
               <div className="flex items-center gap-0.5">
                 {[1,2,3,4,5].map(i => <Star key={i} className={`w-3 h-3 ${i <= r ? "fill-[#F97316] text-[#F97316]" : "fill-gray-200 text-gray-200"}`} />)}
               </div>
-              <span className="text-xs text-[#374151] dark:text-gray-300" style={it}>{r}+ Stars</span>
+              <span className="text-xs text-[#374151] dark:text-gray-300" style={it}>{t("search.starsAndUp", { count: r })}</span>
             </button>
           ))}
         </div>
       </FilterSection>
 
       {/* Availability */}
-      <FilterSection title="Availability" open={openFilters.has("avail")} onToggle={() => toggleFilter("avail")}>
+      <FilterSection title={t("search.availability")} open={openFilters.has("avail")} onToggle={() => toggleFilter("avail")}>
         <label className="flex items-center justify-between cursor-pointer">
-          <span className="text-sm text-[#374151] dark:text-gray-300" style={it}>In Stock Only</span>
+          <span className="text-sm text-[#374151] dark:text-gray-300" style={it}>{t("search.inStockOnly")}</span>
           <div
             onClick={() => setInStockOnly(!inStockOnly)}
             className={`w-10 h-5.5 rounded-full relative transition-all cursor-pointer ${inStockOnly ? "bg-[#F97316]" : "bg-[#D1D5DB] dark:bg-white/20"}`}
@@ -576,7 +590,7 @@ export default function SearchResultsPage() {
       </FilterSection>
 
       {/* Offers */}
-      <FilterSection title="Offers" open={openFilters.has("offers")} onToggle={() => toggleFilter("offers")}>
+      <FilterSection title={t("search.offers")} open={openFilters.has("offers")} onToggle={() => toggleFilter("offers")}>
         <div className="space-y-2">
           {FILTER_OFFERS.map(o => (
             <label key={o} className="flex items-center gap-2.5 cursor-pointer group">
@@ -586,14 +600,14 @@ export default function SearchResultsPage() {
               >
                 {selOffers.has(o) && <Check className="w-2.5 h-2.5 text-white" />}
               </div>
-              <span className="text-sm text-[#374151] dark:text-gray-300" style={it}>{o}</span>
+              <span className="text-sm text-[#374151] dark:text-gray-300" style={it}>{t(`search.offerLabels.${o}`, o)}</span>
             </label>
           ))}
         </div>
       </FilterSection>
 
       {/* Delivery Time */}
-      <FilterSection title="Delivery Time" open={openFilters.has("delivery")} onToggle={() => toggleFilter("delivery")}>
+      <FilterSection title={t("search.deliveryTime")} open={openFilters.has("delivery")} onToggle={() => toggleFilter("delivery")}>
         <div className="space-y-2">
           {["Same Day", "Next Day", "2–3 Days", "4+ Days"].map(d => (
             <button
@@ -602,7 +616,7 @@ export default function SearchResultsPage() {
               className={`w-full flex items-center gap-2 px-3 py-2 rounded-xl border transition-all text-left ${deliveryFilter === d ? "border-[#F97316] bg-orange-50 dark:bg-orange-950/30 text-[#F97316]" : "border-[#E5E7EB] dark:border-white/10 text-[#374151] dark:text-gray-300 hover:border-orange-200"}`}
             >
               <Truck className="w-3.5 h-3.5 flex-shrink-0" />
-              <span className="text-sm" style={it}>{d}</span>
+              <span className="text-sm" style={it}>{t(`search.deliveryLabels.${d}`, d)}</span>
             </button>
           ))}
         </div>
@@ -625,14 +639,15 @@ export default function SearchResultsPage() {
           {/* Desktop links */}
           <div className="hidden lg:flex items-center gap-6 flex-shrink-0">
             {navLinks.map(l => (
-              <button key={l} onClick={() => navigate(NAV_MAP[l])} className="text-sm font-medium text-[#6B7280] hover:text-[#F97316] dark:text-gray-400 dark:hover:text-[#F97316] transition-colors whitespace-nowrap">
-                {l}
+              <button key={l.key} onClick={() => navigate(NAV_PATHS[l.key])} className="text-sm font-medium text-[#6B7280] hover:text-[#F97316] dark:text-gray-400 dark:hover:text-[#F97316] transition-colors whitespace-nowrap">
+                {l.label}
               </button>
             ))}
           </div>
 
           {/* Actions */}
           <div className="hidden lg:flex items-center gap-2 flex-shrink-0">
+            <LanguageSwitcher />
             <button onClick={() => navigate("/wishlist")} className="relative p-2 text-[#6B7280] hover:text-[#F97316] dark:text-gray-400 transition-colors">
               <Heart className="w-5 h-5" />
               {wishlisted.size > 0 && (
@@ -661,14 +676,14 @@ export default function SearchResultsPage() {
                 >
                   <UserRound className="w-4 h-4 text-[#F97316]" /> {user.name.split(" ")[0]}
                 </button>
-                <button onClick={logout} title="Sign out" className="p-2 text-[#6B7280] hover:text-[#F97316] dark:text-gray-400 transition-colors">
+                <button onClick={logout} title={t("common.signOut")} className="p-2 text-[#6B7280] hover:text-[#F97316] dark:text-gray-400 transition-colors">
                   <LogOut className="w-5 h-5" />
                 </button>
               </>
             ) : (
               <>
-                <button onClick={onLoginRequired} className="px-4 py-2 text-sm font-medium text-[#374151] dark:text-gray-300 hover:text-[#F97316] transition-colors">Sign In</button>
-                <button onClick={onLoginRequired} className="px-5 py-2.5 bg-[#F97316] hover:bg-orange-600 text-white text-sm font-semibold rounded-xl transition-all hover:-translate-y-0.5 hover:shadow-lg" style={pp}>Get Started</button>
+                <button onClick={onLoginRequired} className="px-4 py-2 text-sm font-medium text-[#374151] dark:text-gray-300 hover:text-[#F97316] transition-colors whitespace-nowrap">{t("common.signIn")}</button>
+                <button onClick={onLoginRequired} className="px-5 py-2.5 bg-[#F97316] hover:bg-orange-600 text-white text-sm font-semibold rounded-xl transition-all hover:-translate-y-0.5 hover:shadow-lg whitespace-nowrap" style={pp}>{t("common.browseFree")}</button>
               </>
             )}
           </div>
@@ -694,6 +709,7 @@ export default function SearchResultsPage() {
             <button onClick={() => setDark(!dark)} className="p-2 text-[#6B7280] dark:text-gray-400">
               {dark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
             </button>
+            <LanguageSwitcher compact />
             <button onClick={() => setMobileMenu(!mobileMenu)} className="p-2 text-[#374151] dark:text-gray-300">
               {mobileMenu ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
@@ -702,19 +718,19 @@ export default function SearchResultsPage() {
         {mobileMenu && (
           <div className="lg:hidden border-t border-[#E5E7EB] dark:border-white/10 bg-white dark:bg-[#0a0e1f] px-4 py-4">
             {navLinks.map(l => (
-              <button key={l} onClick={() => { navigate(NAV_MAP[l]); setMobileMenu(false); }} className="block w-full text-left py-3 text-sm font-medium text-[#374151] dark:text-gray-300 border-b border-[#E5E7EB] dark:border-white/10 last:border-0">{l}</button>
+              <button key={l.key} onClick={() => { navigate(NAV_PATHS[l.key]); setMobileMenu(false); }} className="block w-full text-left py-3 text-sm font-medium text-[#374151] dark:text-gray-300 border-b border-[#E5E7EB] dark:border-white/10 last:border-0">{l.label}</button>
             ))}
             {user ? (
               <>
                 <button onClick={() => { navigate("/account"); setMobileMenu(false); }} className="w-full mt-4 py-3 bg-[#F97316] text-white text-sm font-semibold rounded-xl flex items-center justify-center gap-2">
-                  <UserRound className="w-4 h-4" /> My Account
+                  <UserRound className="w-4 h-4" /> {t("common.myAccount")}
                 </button>
                 <button onClick={() => { logout(); setMobileMenu(false); }} className="w-full mt-3 py-3 border-2 border-[#E5E7EB] dark:border-white/10 text-[#374151] dark:text-gray-300 text-sm font-semibold rounded-xl flex items-center justify-center gap-2">
-                  <LogOut className="w-4 h-4" /> Sign Out ({user.name.split(" ")[0]})
+                  <LogOut className="w-4 h-4" /> {t("common.signOutWithName", { name: user.name.split(" ")[0] })}
                 </button>
               </>
             ) : (
-              <button onClick={() => { onLoginRequired(); setMobileMenu(false); }} className="w-full mt-4 py-3 bg-[#F97316] text-white text-sm font-semibold rounded-xl" style={pp}>Get Started Free</button>
+              <button onClick={() => { onLoginRequired(); setMobileMenu(false); }} className="w-full mt-4 py-3 bg-[#F97316] text-white text-sm font-semibold rounded-xl" style={pp}>{t("common.getStartedFree")}</button>
             )}
           </div>
         )}
@@ -725,11 +741,11 @@ export default function SearchResultsPage() {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           {/* Breadcrumb */}
           <nav className="flex items-center gap-2 text-xs text-[#9CA3AF] mb-4" style={it}>
-            <button onClick={onNavigateHome} className="flex items-center gap-1 hover:text-[#F97316] transition-colors"><Home className="w-3 h-3" /> Home</button>
+            <button onClick={onNavigateHome} className="flex items-center gap-1 hover:text-[#F97316] transition-colors"><Home className="w-3 h-3" /> {t("search.home")}</button>
             <ChevronRight className="w-3 h-3" />
-            <span className="text-[#374151] dark:text-gray-300 font-medium">Search Results</span>
+            <span className="text-[#374151] dark:text-gray-300 font-medium">{t("search.searchResults")}</span>
             <ChevronRight className="w-3 h-3" />
-            <span className="text-[#F97316] font-medium">{initialQuery ? `"${initialQuery}"` : initialCategory}</span>
+            <span className="text-[#F97316] font-medium">{initialQuery ? `"${initialQuery}"` : t(`categoryLabels.${initialCategory}`, initialCategory)}</span>
           </nav>
 
           {/* Search bar */}
@@ -742,7 +758,7 @@ export default function SearchResultsPage() {
                 onFocus={() => setShowSuggestions(true)}
                 onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}
                 onKeyDown={e => { if (e.key === "Enter" && query.trim().length > 0) { runSearch(); setShowSuggestions(false); } }}
-                placeholder="Search products, brands or model numbers..."
+                placeholder={t("search.searchPlaceholder")}
                 className="flex-1 py-4 text-sm text-[#111827] dark:text-white placeholder-[#9CA3AF] bg-transparent outline-none min-w-0"
                 style={it}
               />
@@ -755,7 +771,7 @@ export default function SearchResultsPage() {
                 <Mic className="w-4 h-4" />
               </button>
               <button onClick={runSearch} className="m-2 px-5 py-3 bg-[#F97316] hover:bg-orange-600 text-white rounded-xl text-sm font-semibold flex items-center gap-2 transition-all flex-shrink-0" style={pp}>
-                Search <ArrowRight className="w-4 h-4" />
+                {t("search.searchButton")} <ArrowRight className="w-4 h-4" />
               </button>
             </div>
 
@@ -783,7 +799,7 @@ export default function SearchResultsPage() {
 
           {/* Recent Searches */}
           <div className="flex flex-wrap items-center gap-2 mt-4">
-            <span className="text-xs text-[#9CA3AF] font-medium" style={it}>Recent:</span>
+            <span className="text-xs text-[#9CA3AF] font-medium" style={it}>{t("search.recent")}</span>
             {RECENT_SEARCHES.map(r => (
               <button
                 key={r} onClick={() => setQuery(r)}
@@ -820,14 +836,14 @@ export default function SearchResultsPage() {
                   className="lg:hidden flex items-center gap-2 px-4 py-2.5 border border-[#E5E7EB] dark:border-white/10 rounded-xl text-sm font-medium text-[#374151] dark:text-gray-300 hover:border-orange-300 hover:text-[#F97316] transition-all"
                   style={it}
                 >
-                  <Filter className="w-4 h-4" /> Filters
+                  <Filter className="w-4 h-4" /> {t("search.filters")}
                   {activeCount > 0 && <span className="w-5 h-5 bg-[#F97316] text-white text-xs rounded-full flex items-center justify-center">{activeCount}</span>}
                 </button>
                 <div>
                   <p className="text-sm font-semibold text-[#111827] dark:text-white" style={pp}>
-                    {filtered.length} results
+                    {t("search.resultsCount", { count: filtered.length })}
                   </p>
-                  <p className="text-xs text-[#9CA3AF]" style={it}>{initialQuery ? `for "${initialQuery}"` : `in ${initialCategory}`}</p>
+                  <p className="text-xs text-[#9CA3AF]" style={it}>{initialQuery ? t("search.forQuery", { query: initialQuery }) : t("search.inCategory", { category: t(`categoryLabels.${initialCategory}`, initialCategory) })}</p>
                 </div>
               </div>
 
@@ -841,7 +857,7 @@ export default function SearchResultsPage() {
                   >
                     <SlidersHorizontal className="w-4 h-4" />
                     <span className="hidden sm:inline">{sortLabels[sortBy]}</span>
-                    <span className="sm:hidden">Sort</span>
+                    <span className="sm:hidden">{t("search.sort")}</span>
                     <ChevronDown className={`w-4 h-4 transition-transform ${sortOpen ? "rotate-180" : ""}`} />
                   </button>
                   {sortOpen && (
@@ -879,7 +895,7 @@ export default function SearchResultsPage() {
               <div className="flex flex-wrap gap-2 mb-5">
                 {[...selCategories].map(c => (
                   <span key={c} className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-orange-50 dark:bg-orange-950/40 border border-orange-200 dark:border-orange-800 text-orange-700 dark:text-orange-300 text-xs font-medium rounded-lg" style={it}>
-                    {c}
+                    {t(`categoryLabels.${c}`, c)}
                     <button onClick={() => toggleSet(selCategories, c, setSelCategories)}><X className="w-3 h-3" /></button>
                   </span>
                 ))}
@@ -891,17 +907,17 @@ export default function SearchResultsPage() {
                 ))}
                 {minRating && (
                   <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-orange-50 dark:bg-orange-950/40 border border-orange-200 dark:border-orange-800 text-orange-700 dark:text-orange-300 text-xs font-medium rounded-lg" style={it}>
-                    {minRating}+ Stars
+                    {t("search.starsAndUp", { count: minRating })}
                     <button onClick={() => setMinRating(null)}><X className="w-3 h-3" /></button>
                   </span>
                 )}
                 {inStockOnly && (
                   <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-orange-50 dark:bg-orange-950/40 border border-orange-200 dark:border-orange-800 text-orange-700 dark:text-orange-300 text-xs font-medium rounded-lg" style={it}>
-                    In Stock Only <button onClick={() => setInStockOnly(false)}><X className="w-3 h-3" /></button>
+                    {t("search.inStockOnly")} <button onClick={() => setInStockOnly(false)}><X className="w-3 h-3" /></button>
                   </span>
                 )}
                 <button onClick={clearAll} className="text-xs text-[#9CA3AF] hover:text-red-500 transition-colors px-2" style={it}>
-                  Clear all
+                  {t("search.clearAll")}
                 </button>
               </div>
             )}
@@ -912,13 +928,13 @@ export default function SearchResultsPage() {
                 <div className="flex items-center gap-3">
                   <Zap className="w-4 h-4 text-[#F97316] flex-shrink-0" />
                   <span className="text-sm text-white font-medium" style={pp}>
-                    {compareList.size} product{compareList.size > 1 ? "s" : ""} selected for comparison
+                    {t("search.productsSelected", { count: compareList.size })}
                   </span>
                 </div>
                 <div className="flex items-center gap-2 flex-shrink-0">
-                  <button onClick={() => setCompareList(new Set())} className="text-xs text-gray-400 hover:text-white transition-colors" style={it}>Clear</button>
+                  <button onClick={() => setCompareList(new Set())} className="text-xs text-gray-400 hover:text-white transition-colors" style={it}>{t("search.clear")}</button>
                   <button className="px-4 py-2 bg-[#F97316] hover:bg-orange-600 text-white text-sm font-semibold rounded-xl transition-all" style={pp}>
-                    Compare Now
+                    {t("search.compareNow")}
                   </button>
                 </div>
               </div>
@@ -961,9 +977,9 @@ export default function SearchResultsPage() {
                 <div className="w-16 h-16 bg-[#F8FAFC] dark:bg-white/5 rounded-2xl flex items-center justify-center mx-auto mb-4">
                   <Search className="w-7 h-7 text-[#9CA3AF]" />
                 </div>
-                <h3 className="text-lg font-semibold text-[#111827] dark:text-white mb-2" style={pp}>No results found</h3>
-                <p className="text-sm text-[#6B7280] dark:text-gray-400 mb-6" style={it}>Try adjusting your filters or search for something different.</p>
-                <button onClick={clearAll} className="px-6 py-3 bg-[#F97316] hover:bg-orange-600 text-white rounded-xl text-sm font-semibold transition-all" style={pp}>Clear Filters</button>
+                <h3 className="text-lg font-semibold text-[#111827] dark:text-white mb-2" style={pp}>{t("search.noResultsTitle")}</h3>
+                <p className="text-sm text-[#6B7280] dark:text-gray-400 mb-6" style={it}>{t("search.noResultsSubtitle")}</p>
+                <button onClick={clearAll} className="px-6 py-3 bg-[#F97316] hover:bg-orange-600 text-white rounded-xl text-sm font-semibold transition-all" style={pp}>{t("search.clearFilters")}</button>
               </div>
             )}
 
@@ -976,7 +992,7 @@ export default function SearchResultsPage() {
                   className="flex items-center gap-2 px-4 py-2.5 border border-[#E5E7EB] dark:border-white/10 rounded-xl text-sm font-medium text-[#374151] dark:text-gray-300 hover:border-orange-300 hover:text-[#F97316] transition-all disabled:opacity-40 disabled:cursor-not-allowed"
                   style={it}
                 >
-                  <ChevronLeft className="w-4 h-4" /> Previous
+                  <ChevronLeft className="w-4 h-4" /> {t("search.previous")}
                 </button>
 
                 <div className="flex items-center gap-1">
@@ -996,14 +1012,14 @@ export default function SearchResultsPage() {
                   className="flex items-center gap-2 px-4 py-2.5 border border-[#E5E7EB] dark:border-white/10 rounded-xl text-sm font-medium text-[#374151] dark:text-gray-300 hover:border-orange-300 hover:text-[#F97316] transition-all disabled:opacity-40 disabled:cursor-not-allowed"
                   style={it}
                 >
-                  Next <ChevronRight className="w-4 h-4" />
+                  {t("search.next")} <ChevronRight className="w-4 h-4" />
                 </button>
               </div>
             )}
 
             {/* Related Searches */}
             <div className="mt-12 pt-8 border-t border-[#E5E7EB] dark:border-white/10">
-              <h3 className="text-sm font-semibold text-[#374151] dark:text-gray-300 mb-4" style={pp}>Related Searches</h3>
+              <h3 className="text-sm font-semibold text-[#374151] dark:text-gray-300 mb-4" style={pp}>{t("search.relatedSearches")}</h3>
               <div className="flex flex-wrap gap-2">
                 {RELATED_SEARCHES.map(r => (
                   <button
@@ -1024,7 +1040,7 @@ export default function SearchResultsPage() {
           <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setMobileSidebar(false)} />
           <div className="relative w-80 max-w-[90vw] bg-white dark:bg-[#0a0e1f] h-full overflow-y-auto p-5 shadow-2xl">
             <div className="flex items-center justify-between mb-5">
-              <span className="text-base font-bold text-[#111827] dark:text-white" style={pp}>Filters</span>
+              <span className="text-base font-bold text-[#111827] dark:text-white" style={pp}>{t("search.filters")}</span>
               <button onClick={() => setMobileSidebar(false)} className="w-8 h-8 bg-[#F3F4F6] dark:bg-white/10 rounded-xl flex items-center justify-center text-[#6B7280]">
                 <X className="w-4 h-4" />
               </button>
@@ -1035,7 +1051,7 @@ export default function SearchResultsPage() {
               className="w-full mt-5 py-3.5 bg-[#F97316] hover:bg-orange-600 text-white rounded-2xl font-semibold text-sm transition-all"
               style={pp}
             >
-              Show {filtered.length} Results
+              {t("search.showResults", { count: filtered.length })}
             </button>
           </div>
         </div>

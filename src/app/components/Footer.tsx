@@ -1,9 +1,13 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Mail, MapPin } from "lucide-react";
 import { inter, poppins } from "../lib/fonts";
 
 export default function Footer() {
+  const { t } = useTranslation();
   const [email, setEmail] = useState("");
+  const columns = t("footer.columns", { returnObjects: true }) as { title: string; links: string[] }[];
+  const bottomLinks = t("footer.bottomLinks", { returnObjects: true }) as string[];
   return (
     <>
       {/* ══════════════════════════════════════════════════════════
@@ -20,16 +24,16 @@ export default function Footer() {
                 <span className="font-bold text-white text-base" style={poppins}>SuggestionsForYou</span>
               </div>
               <p className="text-sm leading-relaxed mb-6 max-w-xs" style={inter}>
-                AI-powered price comparison across India's top 50+ retailers. Track prices, get alerts, and always buy at the perfect moment.
+                {t("footer.tagline")}
               </p>
               {/* Newsletter */}
-              <p className="text-xs font-semibold text-white mb-3 uppercase tracking-wide" style={inter}>Get Deal Alerts</p>
+              <p className="text-xs font-semibold text-white mb-3 uppercase tracking-wide" style={inter}>{t("footer.getDealAlerts")}</p>
               <div className="flex gap-2 mb-5">
                 <input
                   type="email"
                   value={email}
                   onChange={e => setEmail(e.target.value)}
-                  placeholder="your@email.com"
+                  placeholder={t("footer.emailPlaceholder")}
                   className="flex-1 px-3.5 py-2.5 bg-white/5 border border-white/10 rounded-xl text-sm text-white placeholder-gray-500 outline-none focus:border-[#F97316] transition-colors"
                   style={inter}
                 />
@@ -46,12 +50,7 @@ export default function Footer() {
             </div>
 
             {/* Link columns */}
-            {[
-              { title: "Company",   links: ["About Us", "Careers", "Blog", "Press Kit", "Partner With Us"] },
-              { title: "Features",  links: ["Price Comparison", "Price Alerts", "Price History", "AI Advisor", "Coupons & Offers"] },
-              { title: "Resources", links: ["Help Center", "API Docs", "Browser Extension", "Mobile App", "Sitemap"] },
-              { title: "Legal",     links: ["Privacy Policy", "Terms of Service", "Cookie Policy", "Disclaimer", "GDPR"] },
-            ].map(col => (
+            {columns.map(col => (
               <div key={col.title}>
                 <h4 className="font-semibold text-white mb-4 text-sm" style={poppins}>{col.title}</h4>
                 <ul className="space-y-2.5">
@@ -71,15 +70,15 @@ export default function Footer() {
               <Mail className="w-4 h-4" /> hello@suggestionsforyou.com
             </a>
             <a href="#" className="flex items-center gap-2 text-sm hover:text-[#F97316] transition-colors" style={inter}>
-              <MapPin className="w-4 h-4" /> Bengaluru, Karnataka, India
+              <MapPin className="w-4 h-4" /> {t("footer.address")}
             </a>
           </div>
 
           {/* Bottom bar */}
           <div className="flex flex-col sm:flex-row justify-between items-center gap-3 text-xs" style={inter}>
-            <p>© 2025 SuggestionsForYou. All rights reserved. Made with ♥ in India 🇮🇳</p>
+            <p>{t("footer.copyright")}</p>
             <div className="flex items-center gap-4">
-              {["Privacy", "Terms", "Cookies", "Sitemap"].map(l => (
+              {bottomLinks.map(l => (
                 <a key={l} href="#" className="hover:text-[#F97316] transition-colors">{l}</a>
               ))}
             </div>

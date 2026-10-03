@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { Outlet } from "react-router";
 import LoginModal from "./components/LoginModal";
 import InstallPrompt from "./components/InstallPrompt";
+import ChatWidget from "./components/ChatWidget";
 import { api, getToken, setToken, type AuthUser } from "./lib/api";
 
 function getSystemTheme(): boolean {
@@ -283,6 +284,7 @@ export default function Layout() {
     <>
       <Outlet context={context} />
       <InstallPrompt />
+      <ChatWidget />
       {showLoginModal && (
         <LoginModal
           onClose={() => setShowLoginModal(false)}

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams, useOutletContext } from "react-router";
+import { useTranslation } from "react-i18next";
 import {
   ChevronRight, Bell, ExternalLink, Check, BarChart2, TrendingUp,
   Star, Shield, Lock, RefreshCw, BadgeCheck, Tag, Percent, Bot, ShoppingBag,
@@ -16,6 +17,7 @@ import Reveal from "./Reveal";
 import type { AppContext } from "../Layout";
 
 export default function PriceComparisonPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const params = useParams<{ productName: string }>();
   const productName = params.productName ? decodeURIComponent(params.productName) : DEFAULT_PRODUCT;
@@ -37,7 +39,7 @@ export default function PriceComparisonPage() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#F8FAFC] dark:bg-[#0a0e1f]" style={inter}>
-        <p className="text-sm text-[#9CA3AF]">Loading product…</p>
+        <p className="text-sm text-[#9CA3AF]">{t("compare.loadingProduct")}</p>
       </div>
     );
   }
@@ -45,8 +47,8 @@ export default function PriceComparisonPage() {
   if (!product) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-[#F8FAFC] dark:bg-[#0a0e1f]" style={inter}>
-        <p className="text-[#111827] dark:text-white font-semibold">Product not found</p>
-        <button onClick={onBack} className="px-5 py-2.5 bg-[#F97316] text-white rounded-xl text-sm font-semibold">Back to Home</button>
+        <p className="text-[#111827] dark:text-white font-semibold">{t("compare.productNotFound")}</p>
+        <button onClick={onBack} className="px-5 py-2.5 bg-[#F97316] text-white rounded-xl text-sm font-semibold">{t("compare.backToHome")}</button>
       </div>
     );
   }
@@ -93,13 +95,13 @@ export default function PriceComparisonPage() {
             <span className="font-bold text-[#111827] dark:text-white text-sm hidden sm:block" style={poppins}>SuggestionsForYou</span>
           </div>
           <span className="text-[#D1D5DB] dark:text-white/20 hidden sm:block">/</span>
-          <span className="text-sm text-[#6B7280] dark:text-gray-400 truncate hidden sm:block" style={inter}>Price Comparison</span>
+          <span className="text-sm text-[#6B7280] dark:text-gray-400 truncate hidden sm:block" style={inter}>{t("compare.breadcrumb")}</span>
           <div className="ml-auto flex items-center gap-2">
             <span className="flex items-center gap-1.5 text-xs text-[#10B981] bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-100 dark:border-emerald-900 px-2.5 py-1 rounded-full font-medium" style={inter}>
               <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse inline-block" />
-              Live
+              {t("compare.live")}
             </span>
-            <span className="hidden sm:block text-xs text-[#9CA3AF]" style={inter}>Updated 3 min ago</span>
+            <span className="hidden sm:block text-xs text-[#9CA3AF]" style={inter}>{t("compare.updatedMinAgo")}</span>
           </div>
         </div>
       </div>
@@ -113,15 +115,15 @@ export default function PriceComparisonPage() {
             </div>
             <div className="min-w-0">
               <p className="text-sm font-semibold text-[#111827] dark:text-white truncate" style={poppins}>{productName}</p>
-              <p className="text-xs text-[#9CA3AF]" style={inter}>Best: <span className="text-[#F97316] font-bold">₹{bestRow.price.toLocaleString("en-IN")}</span> on {bestRow.name} · Save ₹{(bestRow.originalPrice - bestRow.price).toLocaleString("en-IN")}</p>
+              <p className="text-xs text-[#9CA3AF]" style={inter}>{t("compare.bestLabel")} <span className="text-[#F97316] font-bold">₹{bestRow.price.toLocaleString("en-IN")}</span> {t("compare.onStoreSave", { store: bestRow.name, amount: (bestRow.originalPrice - bestRow.price).toLocaleString("en-IN") })}</p>
             </div>
           </div>
           <div className="flex items-center gap-2 flex-shrink-0">
             <button className="hidden sm:flex items-center gap-1.5 px-4 py-2 border border-[#E5E7EB] dark:border-white/10 hover:border-[#F97316] rounded-xl text-xs font-semibold text-[#374151] dark:text-gray-300 hover:text-[#F97316] transition-all duration-200" style={inter}>
-              <Bell className="w-3.5 h-3.5" /> Alert
+              <Bell className="w-3.5 h-3.5" /> {t("compare.alert")}
             </button>
             <button onClick={() => handleAddToCart(bestRow)} className="px-4 py-2 bg-[#F97316] hover:bg-orange-600 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all duration-200 hover:shadow-md hover:shadow-orange-200/60 hover:-translate-y-0.5" style={poppins}>
-              {addedStore === bestRow.name ? "Added ✓" : <>Add to Cart <ExternalLink className="w-3 h-3" /></>}
+              {addedStore === bestRow.name ? t("compare.added") : <>{t("compare.addToCart")} <ExternalLink className="w-3 h-3" /></>}
             </button>
           </div>
         </div>
@@ -151,44 +153,44 @@ export default function PriceComparisonPage() {
             <div className="flex-1 min-w-0">
               <div className="flex flex-wrap items-center gap-2 mb-2">
                 <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 text-xs font-semibold rounded-lg border border-emerald-100 dark:border-emerald-900">
-                  <Check className="w-3 h-3" /> In Stock
+                  <Check className="w-3 h-3" /> {t("compare.inStock")}
                 </span>
                 <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 text-xs font-semibold rounded-lg border border-blue-100 dark:border-blue-900">
-                  <BarChart2 className="w-3 h-3" /> {rows.length} Retailers
+                  <BarChart2 className="w-3 h-3" /> {t("compare.retailersCount", { count: rows.length })}
                 </span>
                 <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-orange-50 dark:bg-orange-950/40 text-[#F97316] text-xs font-semibold rounded-lg border border-orange-100 dark:border-orange-900">
-                  <TrendingUp className="w-3 h-3" /> {product.discount}% below MRP
+                  <TrendingUp className="w-3 h-3" /> {t("compare.belowMrp", { discount: product.discount })}
                 </span>
               </div>
 
               <h1 className="text-xl sm:text-2xl font-bold text-[#111827] dark:text-white leading-snug mb-1" style={poppins}>{productName}</h1>
-              <p className="text-sm text-[#9CA3AF] mb-3" style={inter}>{product.brand} · {product.category}</p>
+              <p className="text-sm text-[#9CA3AF] mb-3" style={inter}>{product.brand} · {t(`categoryLabels.${product.category}`, product.category)}</p>
 
               <div className="flex items-center gap-2 mb-4">
                 <div className="flex items-center gap-0.5">
                   {[1,2,3,4,5].map(i => <Star key={i} className={`w-4 h-4 ${i <= Math.round(product.rating) ? "fill-[#F97316] text-[#F97316]" : "fill-gray-200 text-gray-200 dark:fill-white/10 dark:text-white/10"}`} />)}
                 </div>
                 <span className="text-sm font-semibold text-[#374151] dark:text-gray-300" style={inter}>{product.rating}</span>
-                <span className="text-sm text-[#9CA3AF]" style={inter}>({product.reviews.toLocaleString()} reviews)</span>
+                <span className="text-sm text-[#9CA3AF]" style={inter}>{t("compare.reviewsCount", { count: product.reviews.toLocaleString() })}</span>
                 <span className="text-[#E5E7EB] dark:text-white/20">·</span>
-                <span className="text-xs text-[#9CA3AF]" style={inter}>Verified on {bestRow.name}</span>
+                <span className="text-xs text-[#9CA3AF]" style={inter}>{t("compare.verifiedOn", { store: bestRow.name })}</span>
               </div>
 
               {/* Price block */}
               <div className="flex flex-wrap items-end gap-5 mb-5">
                 <div>
-                  <p className="text-xs text-[#9CA3AF] mb-0.5 uppercase tracking-wide font-medium" style={inter}>Best price today</p>
+                  <p className="text-xs text-[#9CA3AF] mb-0.5 uppercase tracking-wide font-medium" style={inter}>{t("compare.bestPriceToday")}</p>
                   <div className="flex items-baseline gap-2">
                     <span className="text-3xl sm:text-4xl font-bold text-[#F97316]" style={poppins}>₹{bestRow.price.toLocaleString("en-IN")}</span>
                     <span className="text-base text-[#9CA3AF] line-through" style={inter}>₹{bestRow.originalPrice.toLocaleString("en-IN")}</span>
                   </div>
                 </div>
                 <div className="pb-1">
-                  <p className="text-xs text-[#9CA3AF] mb-0.5 uppercase tracking-wide font-medium" style={inter}>You save</p>
+                  <p className="text-xs text-[#9CA3AF] mb-0.5 uppercase tracking-wide font-medium" style={inter}>{t("compare.youSave")}</p>
                   <div className="flex items-center gap-2">
                     <span className="text-xl font-bold text-[#10B981]" style={poppins}>₹{(bestRow.originalPrice - bestRow.price).toLocaleString("en-IN")}</span>
                     <span className="px-2 py-0.5 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 text-xs font-bold rounded-lg border border-emerald-100 dark:border-emerald-900">
-                      {Math.round((bestRow.originalPrice - bestRow.price) / bestRow.originalPrice * 100)}% off
+                      {t("compare.percentOff", { percent: Math.round((bestRow.originalPrice - bestRow.price) / bestRow.originalPrice * 100) })}
                     </span>
                   </div>
                 </div>
@@ -197,15 +199,15 @@ export default function PriceComparisonPage() {
               {/* Trust indicators */}
               <div className="flex flex-wrap gap-3">
                 {[
-                  { icon: Shield, label: "Verified Seller" },
-                  { icon: Lock, label: "Secure Checkout" },
-                  { icon: RefreshCw, label: "15-min price refresh" },
-                  { icon: BadgeCheck, label: "Genuine Product" },
-                ].map(t => {
-                  const Icon = t.icon;
+                  { icon: Shield, label: t("compare.trust.verifiedSeller") },
+                  { icon: Lock, label: t("compare.trust.secureCheckout") },
+                  { icon: RefreshCw, label: t("compare.trust.priceRefresh15") },
+                  { icon: BadgeCheck, label: t("compare.trust.genuineProduct") },
+                ].map(ti => {
+                  const Icon = ti.icon;
                   return (
-                    <span key={t.label} className="inline-flex items-center gap-1.5 text-xs text-[#6B7280] dark:text-gray-400" style={inter}>
-                      <Icon className="w-3.5 h-3.5 text-[#10B981]" />{t.label}
+                    <span key={ti.label} className="inline-flex items-center gap-1.5 text-xs text-[#6B7280] dark:text-gray-400" style={inter}>
+                      <Icon className="w-3.5 h-3.5 text-[#10B981]" />{ti.label}
                     </span>
                   );
                 })}
@@ -219,17 +221,17 @@ export default function PriceComparisonPage() {
                 className="flex-1 sm:flex-none px-5 py-3 bg-[#F97316] hover:bg-orange-600 text-white rounded-xl text-sm font-bold flex items-center justify-center gap-2 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-orange-200/60 dark:hover:shadow-orange-900/50 whitespace-nowrap"
                 style={poppins}
               >
-                {addedStore === bestRow.name ? "Added to Cart ✓" : <>Add to Cart <ExternalLink className="w-3.5 h-3.5" /></>}
+                {addedStore === bestRow.name ? t("compare.addedToCart") : <>{t("compare.addToCart")} <ExternalLink className="w-3.5 h-3.5" /></>}
               </button>
               <button className="flex-1 sm:flex-none px-5 py-3 border-2 border-[#E5E7EB] dark:border-white/10 hover:border-[#F97316] dark:hover:border-[#F97316]/60 text-[#374151] dark:text-gray-300 hover:text-[#F97316] rounded-xl text-sm font-semibold flex items-center justify-center gap-2 transition-all duration-200 whitespace-nowrap" style={poppins}>
-                <Bell className="w-3.5 h-3.5" /> Price Alert
+                <Bell className="w-3.5 h-3.5" /> {t("compare.priceAlert")}
               </button>
               <button
                 onClick={() => toggleWish(product._id)}
                 className="hidden sm:flex px-5 py-2.5 bg-[#F8FAFC] dark:bg-white/5 hover:bg-[#F3F4F6] dark:hover:bg-white/10 border border-[#E5E7EB] dark:border-white/10 text-[#374151] dark:text-gray-300 rounded-xl text-sm font-semibold items-center justify-center gap-2 transition-all duration-200 whitespace-nowrap"
                 style={inter}
               >
-                <Heart className={`w-3.5 h-3.5 ${wishlisted.has(product._id) ? "fill-red-500 text-red-500" : ""}`} /> {wishlisted.has(product._id) ? "Wishlisted" : "Wishlist"}
+                <Heart className={`w-3.5 h-3.5 ${wishlisted.has(product._id) ? "fill-red-500 text-red-500" : ""}`} /> {wishlisted.has(product._id) ? t("compare.wishlisted") : t("compare.wishlist")}
               </button>
             </div>
           </div>
@@ -239,10 +241,10 @@ export default function PriceComparisonPage() {
         {/* ── Summary Stats Strip ────────────────────────────────── */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           {[
-            { label: "Lowest Price",   value: `₹${lowestPrice.toLocaleString("en-IN")}`, sub: `on ${bestRow.name}`,     color: "text-[#F97316]",  bg: "bg-white dark:bg-[#131B2E]",           border: "border-orange-100 dark:border-orange-900/40", icon: Tag       },
-            { label: "You Save",       value: `₹${(bestRow.originalPrice - lowestPrice).toLocaleString("en-IN")}`, sub: `${Math.round((bestRow.originalPrice - lowestPrice) / bestRow.originalPrice * 100)}% off MRP`, color: "text-[#10B981]", bg: "bg-white dark:bg-[#131B2E]", border: "border-emerald-100 dark:border-emerald-900/40", icon: Percent },
-            { label: "Price Range",    value: `₹${Math.round(priceRange / 1000)}K gap`,  sub: "across retailers",       color: "text-blue-500",   bg: "bg-white dark:bg-[#131B2E]",           border: "border-blue-100 dark:border-blue-900/40",     icon: BarChart2 },
-            { label: "AI Confidence",  value: product.aiScore ? `${product.aiScore}% match` : "Buy Now ✓", sub: product.aiReason ?? "AI-scored recommendation", color: "text-purple-600", bg: "bg-white dark:bg-[#131B2E]",           border: "border-purple-100 dark:border-purple-900/40", icon: Bot       },
+            { label: t("compare.stats.lowestPrice"),   value: `₹${lowestPrice.toLocaleString("en-IN")}`, sub: t("compare.stats.onStore", { store: bestRow.name }),     color: "text-[#F97316]",  bg: "bg-white dark:bg-[#131B2E]",           border: "border-orange-100 dark:border-orange-900/40", icon: Tag       },
+            { label: t("compare.stats.youSave"),       value: `₹${(bestRow.originalPrice - lowestPrice).toLocaleString("en-IN")}`, sub: t("compare.stats.percentOffMrp", { percent: Math.round((bestRow.originalPrice - lowestPrice) / bestRow.originalPrice * 100) }), color: "text-[#10B981]", bg: "bg-white dark:bg-[#131B2E]", border: "border-emerald-100 dark:border-emerald-900/40", icon: Percent },
+            { label: t("compare.stats.priceRange"),    value: t("compare.stats.gapK", { k: Math.round(priceRange / 1000) }),  sub: t("compare.stats.acrossRetailers"),       color: "text-blue-500",   bg: "bg-white dark:bg-[#131B2E]",           border: "border-blue-100 dark:border-blue-900/40",     icon: BarChart2 },
+            { label: t("compare.stats.aiConfidence"),  value: product.aiScore ? t("compare.stats.matchPercent", { score: product.aiScore }) : t("compare.stats.buyNow"), sub: product.aiReason ?? t("compare.stats.aiScoredRecommendation"), color: "text-purple-600", bg: "bg-white dark:bg-[#131B2E]",           border: "border-purple-100 dark:border-purple-900/40", icon: Bot       },
           ].map((s, i) => {
             const Icon = s.icon;
             return (
@@ -265,12 +267,12 @@ export default function PriceComparisonPage() {
         <div className="bg-white dark:bg-[#131B2E] rounded-2xl border border-[#E5E7EB] dark:border-white/10 shadow-sm overflow-hidden">
           <div className="px-5 sm:px-6 py-4 border-b border-[#E5E7EB] dark:border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
             <div>
-              <h2 className="font-bold text-[#111827] dark:text-white text-base" style={poppins}>Retailer Comparison</h2>
-              <p className="text-xs text-[#9CA3AF] mt-0.5" style={inter}>Prices refresh every 15 min · Sorted by best value</p>
+              <h2 className="font-bold text-[#111827] dark:text-white text-base" style={poppins}>{t("compare.retailerComparison")}</h2>
+              <p className="text-xs text-[#9CA3AF] mt-0.5" style={inter}>{t("compare.refreshNote")}</p>
             </div>
             <div className="flex items-center gap-2">
               <span className="inline-flex items-center gap-1.5 text-xs text-[#10B981] bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-100 dark:border-emerald-900 px-2.5 py-1 rounded-full font-medium" style={inter}>
-                <RefreshCw className="w-3 h-3" /> Updated 3 min ago
+                <RefreshCw className="w-3 h-3" /> {t("compare.updatedMinAgo")}
               </span>
             </div>
           </div>
@@ -285,11 +287,11 @@ export default function PriceComparisonPage() {
                     <div>
                       <div className="flex items-center gap-1.5 flex-wrap">
                         <span className="text-sm font-semibold text-[#111827] dark:text-white" style={inter}>{row.name}</span>
-                        {row.best && <span className="px-1.5 py-0.5 bg-[#F97316] text-white text-[10px] font-bold rounded-md">Best Value</span>}
-                        {!row.inStock && <span className="px-1.5 py-0.5 bg-red-50 dark:bg-red-950/40 text-red-500 text-[10px] font-semibold rounded-md border border-red-100">Out of Stock</span>}
+                        {row.best && <span className="px-1.5 py-0.5 bg-[#F97316] text-white text-[10px] font-bold rounded-md">{t("compare.bestValue")}</span>}
+                        {!row.inStock && <span className="px-1.5 py-0.5 bg-red-50 dark:bg-red-950/40 text-red-500 text-[10px] font-semibold rounded-md border border-red-100">{t("compare.outOfStock")}</span>}
                         {row.verified && <BadgeCheck className="w-3.5 h-3.5 text-[#10B981]" />}
                         {row.url && (
-                          <a href={row.url} target="_blank" rel="noopener noreferrer" title="View real listing" className="text-[#9CA3AF] hover:text-[#F97316]">
+                          <a href={row.url} target="_blank" rel="noopener noreferrer" title={t("compare.viewRealListing")} className="text-[#9CA3AF] hover:text-[#F97316]">
                             <ExternalLink className="w-3 h-3" />
                           </a>
                         )}
@@ -302,7 +304,7 @@ export default function PriceComparisonPage() {
                   </div>
                   <div className="text-right flex-shrink-0">
                     <p className={`text-lg font-bold ${row.best ? "text-[#F97316]" : "text-[#111827] dark:text-white"}`} style={poppins}>₹{row.price.toLocaleString("en-IN")}</p>
-                    <p className="text-xs text-[#10B981] font-semibold">Save ₹{(row.originalPrice - row.price).toLocaleString("en-IN")}</p>
+                    <p className="text-xs text-[#10B981] font-semibold">{t("compare.saveAmount", { amount: (row.originalPrice - row.price).toLocaleString("en-IN") })}</p>
                   </div>
                 </div>
                 <div className="flex flex-wrap gap-2 mb-3">
@@ -316,7 +318,7 @@ export default function PriceComparisonPage() {
                 <button disabled={!row.inStock} onClick={() => handleAddToCart(row)}
                   className={`w-full py-2.5 rounded-xl text-sm font-bold flex items-center justify-center gap-2 transition-all duration-200 ${!row.inStock ? "bg-[#F3F4F6] dark:bg-white/5 text-[#9CA3AF] cursor-not-allowed" : row.best ? "bg-[#F97316] hover:bg-orange-600 text-white hover:shadow-md hover:shadow-orange-200/60 hover:-translate-y-0.5" : "border border-[#E5E7EB] dark:border-white/10 text-[#374151] dark:text-gray-300 hover:border-[#F97316] hover:text-[#F97316]"}`}
                   style={poppins}>
-                  {!row.inStock ? "Out of Stock" : addedStore === row.name ? "Added ✓" : <><ShoppingBag className="w-4 h-4" />Add to Cart</>}
+                  {!row.inStock ? t("compare.outOfStock") : addedStore === row.name ? t("compare.added") : <><ShoppingBag className="w-4 h-4" />{t("compare.addToCart")}</>}
                 </button>
               </div>
             ))}
@@ -327,13 +329,13 @@ export default function PriceComparisonPage() {
             <table className="w-full min-w-[760px]">
               <thead>
                 <tr className="bg-[#F8FAFC] dark:bg-white/[0.03] border-b border-[#E5E7EB] dark:border-white/10">
-                  <th className="px-5 py-3 text-left text-[10px] font-semibold text-[#9CA3AF] uppercase tracking-wider w-52" style={inter}>Retailer</th>
-                  <th className="px-4 py-3 text-left text-[10px] font-semibold text-[#9CA3AF] uppercase tracking-wider" style={inter}>Price</th>
-                  <th className="px-4 py-3 text-left text-[10px] font-semibold text-[#9CA3AF] uppercase tracking-wider" style={inter}>Savings</th>
-                  <th className="px-4 py-3 text-left text-[10px] font-semibold text-[#9CA3AF] uppercase tracking-wider" style={inter}>Delivery</th>
-                  <th className="px-4 py-3 text-left text-[10px] font-semibold text-[#9CA3AF] uppercase tracking-wider" style={inter}>Offers &amp; Cashback</th>
-                  <th className="px-4 py-3 text-left text-[10px] font-semibold text-[#9CA3AF] uppercase tracking-wider" style={inter}>Rating</th>
-                  <th className="px-4 py-3 text-right text-[10px] font-semibold text-[#9CA3AF] uppercase tracking-wider" style={inter}>Action</th>
+                  <th className="px-5 py-3 text-left text-[10px] font-semibold text-[#9CA3AF] uppercase tracking-wider w-52" style={inter}>{t("compare.table.retailer")}</th>
+                  <th className="px-4 py-3 text-left text-[10px] font-semibold text-[#9CA3AF] uppercase tracking-wider" style={inter}>{t("compare.table.price")}</th>
+                  <th className="px-4 py-3 text-left text-[10px] font-semibold text-[#9CA3AF] uppercase tracking-wider" style={inter}>{t("compare.table.savings")}</th>
+                  <th className="px-4 py-3 text-left text-[10px] font-semibold text-[#9CA3AF] uppercase tracking-wider" style={inter}>{t("compare.table.delivery")}</th>
+                  <th className="px-4 py-3 text-left text-[10px] font-semibold text-[#9CA3AF] uppercase tracking-wider" style={inter}>{t("compare.table.offersCashback")}</th>
+                  <th className="px-4 py-3 text-left text-[10px] font-semibold text-[#9CA3AF] uppercase tracking-wider" style={inter}>{t("compare.table.rating")}</th>
+                  <th className="px-4 py-3 text-right text-[10px] font-semibold text-[#9CA3AF] uppercase tracking-wider" style={inter}>{t("compare.table.action")}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#F3F4F6] dark:divide-white/5">
@@ -349,17 +351,17 @@ export default function PriceComparisonPage() {
                         <div>
                           <div className="flex items-center gap-1.5 flex-wrap">
                             <span className="text-sm font-semibold text-[#111827] dark:text-white" style={inter}>{row.name}</span>
-                            {row.verified && <span title="Verified Seller"><BadgeCheck className="w-3.5 h-3.5 text-[#10B981] flex-shrink-0" /></span>}
+                            {row.verified && <span title={t("compare.trust.verifiedSeller")}><BadgeCheck className="w-3.5 h-3.5 text-[#10B981] flex-shrink-0" /></span>}
                             {row.url && (
-                              <a href={row.url} target="_blank" rel="noopener noreferrer" title="View real listing" className="text-[#9CA3AF] hover:text-[#F97316]">
+                              <a href={row.url} target="_blank" rel="noopener noreferrer" title={t("compare.viewRealListing")} className="text-[#9CA3AF] hover:text-[#F97316]">
                                 <ExternalLink className="w-3 h-3" />
                               </a>
                             )}
                           </div>
                           <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
-                            {row.best && <span className="px-1.5 py-0.5 bg-[#F97316] text-white text-[10px] font-bold rounded-md leading-none">Best Value</span>}
-                            {row.lowestEver && <span className="px-1.5 py-0.5 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 text-[10px] font-semibold rounded-md border border-emerald-100 dark:border-emerald-900 leading-none">Lowest Ever</span>}
-                            {!row.inStock && <span className="px-1.5 py-0.5 bg-red-50 dark:bg-red-950/40 text-red-500 text-[10px] font-semibold rounded-md border border-red-100 leading-none">Out of Stock</span>}
+                            {row.best && <span className="px-1.5 py-0.5 bg-[#F97316] text-white text-[10px] font-bold rounded-md leading-none">{t("compare.bestValue")}</span>}
+                            {row.lowestEver && <span className="px-1.5 py-0.5 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 text-[10px] font-semibold rounded-md border border-emerald-100 dark:border-emerald-900 leading-none">{t("compare.lowestEver")}</span>}
+                            {!row.inStock && <span className="px-1.5 py-0.5 bg-red-50 dark:bg-red-950/40 text-red-500 text-[10px] font-semibold rounded-md border border-red-100 leading-none">{t("compare.outOfStock")}</span>}
                           </div>
                         </div>
                       </div>
@@ -385,7 +387,7 @@ export default function PriceComparisonPage() {
                     {/* Savings */}
                     <td className="px-4 py-4 whitespace-nowrap">
                       <span className="text-sm font-bold text-[#10B981]" style={poppins}>₹{(row.originalPrice - row.price).toLocaleString("en-IN")}</span>
-                      <span className="block text-xs text-[#9CA3AF] mt-0.5">{Math.round((row.originalPrice - row.price) / row.originalPrice * 100)}% off</span>
+                      <span className="block text-xs text-[#9CA3AF] mt-0.5">{t("compare.percentOff", { percent: Math.round((row.originalPrice - row.price) / row.originalPrice * 100) })}</span>
                     </td>
 
                     {/* Delivery */}
@@ -394,7 +396,7 @@ export default function PriceComparisonPage() {
                         <Truck className={`w-3.5 h-3.5 flex-shrink-0 ${row.deliveryLabel === "Free Delivery" ? "text-[#10B981]" : "text-[#9CA3AF]"}`} />
                         <div>
                           <span className={`text-xs font-medium block ${row.deliveryLabel === "Free Delivery" ? "text-[#10B981]" : "text-[#9CA3AF]"}`} style={inter}>{row.deliveryLabel}</span>
-                          <span className="text-xs text-[#9CA3AF]" style={inter}>in {row.deliveryTime}</span>
+                          <span className="text-xs text-[#9CA3AF]" style={inter}>{t("compare.inTime", { time: row.deliveryTime })}</span>
                         </div>
                       </div>
                     </td>
@@ -417,7 +419,7 @@ export default function PriceComparisonPage() {
                             {row.coupon}
                           </span>
                         )}
-                        {!row.offer && !row.cashback && !row.coupon && <span className="text-xs text-[#D1D5DB]">—</span>}
+                        {!row.offer && !row.cashback && !row.coupon && <span className="text-xs text-[#D1D5DB]">{t("compare.noOffers")}</span>}
                       </div>
                     </td>
 
@@ -429,7 +431,7 @@ export default function PriceComparisonPage() {
                         ))}
                         <span className="text-xs font-semibold text-[#374151] dark:text-gray-300 ml-0.5" style={inter}>{row.rating}</span>
                       </div>
-                      <span className="text-[10px] text-[#9CA3AF]" style={inter}>{row.reviews.toLocaleString()} reviews</span>
+                      <span className="text-[10px] text-[#9CA3AF]" style={inter}>{t("compare.reviewsShort", { count: row.reviews.toLocaleString() })}</span>
                     </td>
 
                     {/* Action */}
@@ -446,7 +448,7 @@ export default function PriceComparisonPage() {
                         }`}
                         style={poppins}
                       >
-                        {!row.inStock ? "Out of Stock" : addedStore === row.name ? "Added ✓" : <><ShoppingBag className="w-3 h-3" />Add to Cart</>}
+                        {!row.inStock ? t("compare.outOfStock") : addedStore === row.name ? t("compare.added") : <><ShoppingBag className="w-3 h-3" />{t("compare.addToCart")}</>}
                       </button>
                     </td>
                   </tr>
@@ -460,15 +462,15 @@ export default function PriceComparisonPage() {
             <div className="flex items-center gap-2">
               <Zap className="w-3.5 h-3.5 text-[#F97316] flex-shrink-0" />
               <span className="text-xs text-[#6B7280] dark:text-gray-400" style={inter}>
-                <span className="font-semibold text-[#F97316]">AI:</span> {product.aiReason ?? `${bestRow.name} currently has the lowest price — a good time to buy.`}
+                <span className="font-semibold text-[#F97316]">{t("compare.aiPrefix")}</span> {product.aiReason ?? t("compare.aiDefaultReason", { store: bestRow.name })}
               </span>
             </div>
             <div className="flex items-center gap-3 sm:ml-auto flex-shrink-0">
-              {[{ icon: Shield, label: "Verified" }, { icon: Lock, label: "Secure" }].map(t => {
-                const Icon = t.icon;
+              {[{ icon: Shield, label: t("compare.verified") }, { icon: Lock, label: t("compare.secure") }].map(vi => {
+                const Icon = vi.icon;
                 return (
-                  <span key={t.label} className="inline-flex items-center gap-1 text-xs text-[#9CA3AF]" style={inter}>
-                    <Icon className="w-3 h-3 text-[#10B981]" />{t.label}
+                  <span key={vi.label} className="inline-flex items-center gap-1 text-xs text-[#9CA3AF]" style={inter}>
+                    <Icon className="w-3 h-3 text-[#10B981]" />{vi.label}
                   </span>
                 );
               })}
@@ -483,17 +485,17 @@ export default function PriceComparisonPage() {
           <div className="px-5 sm:px-6 py-4 border-b border-[#E5E7EB] dark:border-white/10">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div>
-                <h2 className="font-bold text-[#111827] dark:text-white text-base" style={poppins}>Price History</h2>
-                <p className="text-xs text-[#9CA3AF] mt-0.5" style={inter}>Track price movement across Amazon, Flipkart &amp; Croma</p>
+                <h2 className="font-bold text-[#111827] dark:text-white text-base" style={poppins}>{t("compare.priceHistory")}</h2>
+                <p className="text-xs text-[#9CA3AF] mt-0.5" style={inter}>{t("compare.priceHistorySubtitle")}</p>
               </div>
               <div className="flex items-center gap-1 p-1 bg-[#F3F4F6] dark:bg-white/5 rounded-xl self-start">
-                {([{ key: "30d", label: "30D" }, { key: "90d", label: "90D" }, { key: "1y", label: "1Y" }] as const).map(t => (
+                {([{ key: "30d", label: "30D" }, { key: "90d", label: "90D" }, { key: "1y", label: "1Y" }] as const).map(tab => (
                   <button
-                    key={t.key}
-                    onClick={() => setActiveTab(t.key)}
-                    className={`px-4 py-1.5 rounded-lg text-sm font-semibold transition-all duration-200 ${activeTab === t.key ? "bg-white dark:bg-[#0a0e1f] text-[#111827] dark:text-white shadow-sm" : "text-[#9CA3AF] hover:text-[#374151] dark:hover:text-gray-300"}`}
+                    key={tab.key}
+                    onClick={() => setActiveTab(tab.key)}
+                    className={`px-4 py-1.5 rounded-lg text-sm font-semibold transition-all duration-200 ${activeTab === tab.key ? "bg-white dark:bg-[#0a0e1f] text-[#111827] dark:text-white shadow-sm" : "text-[#9CA3AF] hover:text-[#374151] dark:hover:text-gray-300"}`}
                     style={inter}
-                  >{t.label}</button>
+                  >{tab.label}</button>
                 ))}
               </div>
             </div>
@@ -532,9 +534,9 @@ export default function PriceComparisonPage() {
             </div>
             <div className="grid grid-cols-3 gap-3">
               {[
-                { label: "All-time Low",  value: `₹${allTimeLow.toLocaleString("en-IN")}`,  color: "text-[#10B981]",  bg: "bg-emerald-50 dark:bg-emerald-950/20", border: "border-emerald-100 dark:border-emerald-900/40" },
-                { label: "All-time High", value: `₹${allTimeHigh.toLocaleString("en-IN")}`, color: "text-red-500",    bg: "bg-red-50 dark:bg-red-950/20",          border: "border-red-100 dark:border-red-900/40"         },
-                { label: "Current",       value: `₹${latest.amazon.toLocaleString("en-IN")}`, color: "text-[#F97316]",  bg: "bg-orange-50 dark:bg-orange-950/20",    border: "border-orange-100 dark:border-orange-900/40"   },
+                { label: t("compare.allTimeLow"),  value: `₹${allTimeLow.toLocaleString("en-IN")}`,  color: "text-[#10B981]",  bg: "bg-emerald-50 dark:bg-emerald-950/20", border: "border-emerald-100 dark:border-emerald-900/40" },
+                { label: t("compare.allTimeHigh"), value: `₹${allTimeHigh.toLocaleString("en-IN")}`, color: "text-red-500",    bg: "bg-red-50 dark:bg-red-950/20",          border: "border-red-100 dark:border-red-900/40"         },
+                { label: t("compare.current"),       value: `₹${latest.amazon.toLocaleString("en-IN")}`, color: "text-[#F97316]",  bg: "bg-orange-50 dark:bg-orange-950/20",    border: "border-orange-100 dark:border-orange-900/40"   },
               ].map(s => (
                 <div key={s.label} className={`${s.bg} ${s.border} border rounded-xl p-3 text-center`}>
                   <p className={`text-sm font-bold ${s.color}`} style={poppins}>{s.value}</p>
@@ -558,8 +560,8 @@ export default function PriceComparisonPage() {
                 <SlidersHorizontal className="w-4 h-4 text-[#F97316]" />
               </div>
               <div className="text-left">
-                <h2 className="font-bold text-[#111827] dark:text-white text-base" style={poppins}>Key Specifications</h2>
-                <p className="text-xs text-[#9CA3AF]" style={inter}>{specsOpen ? "Click to collapse" : "Click to expand full spec sheet"}</p>
+                <h2 className="font-bold text-[#111827] dark:text-white text-base" style={poppins}>{t("compare.keySpecifications")}</h2>
+                <p className="text-xs text-[#9CA3AF]" style={inter}>{specsOpen ? t("compare.clickToCollapse") : t("compare.clickToExpand")}</p>
               </div>
             </div>
             <div className={`w-8 h-8 rounded-xl flex items-center justify-center transition-all duration-300 ${specsOpen ? "bg-[#F97316] text-white rotate-180" : "bg-[#F3F4F6] dark:bg-white/10 text-[#6B7280]"}`}>
@@ -596,18 +598,16 @@ export default function PriceComparisonPage() {
               <Bot className="w-6 h-6 text-[#F97316]" />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-[10px] font-bold text-[#F97316] uppercase tracking-widest mb-1" style={inter}>AI Price Intelligence</p>
+              <p className="text-[10px] font-bold text-[#F97316] uppercase tracking-widest mb-1" style={inter}>{t("compare.aiPriceIntelligence")}</p>
               <p className="text-white text-sm leading-relaxed" style={inter}>
-                {product.aiReason ?? (
-                  <>This product is at a <span className="text-[#F97316] font-semibold">recent price low</span> on {bestRow.name}. Our model gives <span className="text-white font-semibold">{product.aiScore ?? 90}% confidence</span> that price won't drop meaningfully further soon. Recommendation: buy now or set an alert to be notified if it does drop.</>
-                )}
+                {product.aiReason ?? t("compare.aiDefaultBanner", { store: bestRow.name, score: product.aiScore ?? 90 })}
               </p>
               <div className="flex flex-wrap gap-3 mt-3">
-                {[{ icon: ThumbsUp, label: `${product.aiScore ?? 90}% accuracy` }, { icon: Clock, label: "Updated hourly" }, { icon: Users, label: "2.4M shoppers" }].map(t => {
-                  const Icon = t.icon;
+                {[{ icon: ThumbsUp, label: t("compare.accuracyPercent", { score: product.aiScore ?? 90 }) }, { icon: Clock, label: t("compare.updatedHourly") }, { icon: Users, label: t("compare.shoppersCount") }].map(ai => {
+                  const Icon = ai.icon;
                   return (
-                    <span key={t.label} className="inline-flex items-center gap-1.5 text-xs text-gray-400" style={inter}>
-                      <Icon className="w-3.5 h-3.5 text-[#F97316]" />{t.label}
+                    <span key={ai.label} className="inline-flex items-center gap-1.5 text-xs text-gray-400" style={inter}>
+                      <Icon className="w-3.5 h-3.5 text-[#F97316]" />{ai.label}
                     </span>
                   );
                 })}
@@ -615,10 +615,10 @@ export default function PriceComparisonPage() {
             </div>
             <div className="flex gap-2 flex-shrink-0 w-full sm:w-auto">
               <button onClick={() => handleAddToCart(bestRow)} className="flex-1 sm:flex-none px-5 py-2.5 bg-[#F97316] hover:bg-orange-600 text-white rounded-xl text-sm font-bold flex items-center justify-center gap-2 transition-all hover:-translate-y-0.5 hover:shadow-lg hover:shadow-orange-900/40" style={poppins}>
-                <Zap className="w-4 h-4" /> {addedStore === bestRow.name ? "Added ✓" : "Add to Cart"}
+                <Zap className="w-4 h-4" /> {addedStore === bestRow.name ? t("compare.added") : t("compare.addToCart")}
               </button>
               <button className="flex-1 sm:flex-none px-5 py-2.5 bg-white/10 hover:bg-white/20 border border-white/20 hover:border-white/40 text-white rounded-xl text-sm font-semibold flex items-center justify-center gap-2 transition-all" style={poppins}>
-                <Bell className="w-4 h-4" /> Alert Me
+                <Bell className="w-4 h-4" /> {t("compare.alertMe")}
               </button>
             </div>
           </div>

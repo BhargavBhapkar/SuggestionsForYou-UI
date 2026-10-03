@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
+import { useTranslation } from "react-i18next";
 import {
   ChevronRight, Search, TrendingUp, TrendingDown, ArrowRight,
   RefreshCw, Bell, BarChart2,
@@ -13,13 +14,10 @@ import { useProducts, useProduct } from "../hooks/useApi";
 import PHTooltip from "../components/PHTooltip";
 import Reveal from "../components/Reveal";
 
-const HOW_IT_WORKS = [
-  { icon: RefreshCw,  title: "We track every 15 minutes",  desc: "Prices are pulled from 50+ retailers around the clock, so every chart reflects what's live right now." },
-  { icon: BarChart2,  title: "You see the real pattern",    desc: "24 months of history reveals whether a 'sale' is genuine or just a manufactured markdown." },
-  { icon: Bell,       title: "Get alerted at the right time",desc: "Set a target price on any product's comparison page and we'll notify you the moment it's hit." },
-];
+const HOW_IT_WORKS_ICONS = [RefreshCw, BarChart2, Bell];
 
 export default function PriceHistoryPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [query, setQuery] = useState("");
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -65,7 +63,7 @@ export default function PriceHistoryPage() {
             <span className="font-bold text-[#111827] dark:text-white text-sm hidden sm:block" style={poppins}>SuggestionsForYou</span>
           </div>
           <span className="text-[#D1D5DB] dark:text-white/20 hidden sm:block">/</span>
-          <span className="text-sm text-[#6B7280] dark:text-gray-400 hidden sm:block" style={inter}>Price History</span>
+          <span className="text-sm text-[#6B7280] dark:text-gray-400 hidden sm:block" style={inter}>{t("priceHistoryPage.title")}</span>
         </div>
       </div>
 
@@ -73,10 +71,10 @@ export default function PriceHistoryPage() {
         {/* ── Hero ── */}
         <Reveal>
         <div className="text-center max-w-2xl mx-auto">
-          <p className="text-xs font-semibold text-[#F97316] uppercase tracking-widest mb-2" style={inter}>Never Overpay Again</p>
-          <h1 className="text-3xl sm:text-4xl font-bold text-[#111827] dark:text-white mb-3" style={poppins}>Price History</h1>
+          <p className="text-xs font-semibold text-[#F97316] uppercase tracking-widest mb-2" style={inter}>{t("priceHistoryPage.eyebrow")}</p>
+          <h1 className="text-3xl sm:text-4xl font-bold text-[#111827] dark:text-white mb-3" style={poppins}>{t("priceHistoryPage.title")}</h1>
           <p className="text-[#6B7280] dark:text-gray-400 text-sm mb-8" style={inter}>
-            Track how prices have changed over time for any product across all retailers. 24 months of data, updated every 15 minutes.
+            {t("priceHistoryPage.subtitle")}
           </p>
 
           <div className="relative max-w-xl mx-auto">
@@ -89,12 +87,12 @@ export default function PriceHistoryPage() {
                 onFocus={() => setShowSuggestions(true)}
                 onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}
                 onKeyDown={e => { if (e.key === "Enter") goToProduct(query); }}
-                placeholder="Search a product to track its price history…"
+                placeholder={t("priceHistoryPage.searchPlaceholder")}
                 className="flex-1 py-4 text-sm text-[#111827] dark:text-white placeholder-[#9CA3AF] bg-transparent outline-none min-w-0"
                 style={inter}
               />
               <button onClick={() => goToProduct(query)} className="m-2 px-5 py-3 bg-[#F97316] hover:bg-orange-600 text-white rounded-xl text-sm font-semibold flex items-center gap-2 transition-all duration-200 shadow-sm hover:shadow-orange-200 flex-shrink-0">
-                Track <ArrowRight className="w-4 h-4" />
+                {t("priceHistoryPage.track")} <ArrowRight className="w-4 h-4" />
               </button>
             </div>
 
@@ -107,7 +105,7 @@ export default function PriceHistoryPage() {
                     className="w-full flex items-center justify-between px-5 py-3 hover:bg-orange-50 dark:hover:bg-orange-950/30 transition-colors text-left"
                   >
                     <span className="text-sm text-[#111827] dark:text-white" style={inter}>{s.label}</span>
-                    <span className="text-xs text-[#9CA3AF]" style={inter}>{s.category}</span>
+                    <span className="text-xs text-[#9CA3AF]" style={inter}>{t(`categoryLabels.${s.category}`, s.category)}</span>
                   </button>
                 ))}
               </div>
@@ -121,18 +119,18 @@ export default function PriceHistoryPage() {
         <div className="bg-white dark:bg-[#131B2E] rounded-2xl border border-[#E5E7EB] dark:border-white/10 shadow-sm hover:shadow-lg dark:hover:shadow-orange-950/20 transition-shadow duration-300 overflow-hidden">
           <div className="px-5 sm:px-6 py-4 border-b border-[#E5E7EB] dark:border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
-              <p className="text-xs font-semibold text-[#F97316] uppercase tracking-widest mb-1" style={inter}>Featured</p>
-              <h2 className="font-bold text-[#111827] dark:text-white text-base" style={poppins}>{featured?.name ?? DEFAULT_PRODUCT} — Price Trend</h2>
-              <p className="text-xs text-[#9CA3AF] mt-0.5" style={inter}>Track price movement across Amazon, Flipkart &amp; Croma</p>
+              <p className="text-xs font-semibold text-[#F97316] uppercase tracking-widest mb-1" style={inter}>{t("priceHistoryPage.featured")}</p>
+              <h2 className="font-bold text-[#111827] dark:text-white text-base" style={poppins}>{t("priceHistoryPage.priceTrend", { name: featured?.name ?? DEFAULT_PRODUCT })}</h2>
+              <p className="text-xs text-[#9CA3AF] mt-0.5" style={inter}>{t("compare.priceHistorySubtitle")}</p>
             </div>
             <div className="flex items-center gap-1 p-1 bg-[#F3F4F6] dark:bg-white/5 rounded-xl self-start">
-              {([{ key: "30d", label: "30D" }, { key: "90d", label: "90D" }, { key: "1y", label: "1Y" }] as const).map(t => (
+              {([{ key: "30d", label: "30D" }, { key: "90d", label: "90D" }, { key: "1y", label: "1Y" }] as const).map(tab => (
                 <button
-                  key={t.key}
-                  onClick={() => setActiveTab(t.key)}
-                  className={`px-4 py-1.5 rounded-lg text-sm font-semibold transition-all duration-200 ${activeTab === t.key ? "bg-white dark:bg-[#0a0e1f] text-[#111827] dark:text-white shadow-sm" : "text-[#9CA3AF] hover:text-[#374151] dark:hover:text-gray-300"}`}
+                  key={tab.key}
+                  onClick={() => setActiveTab(tab.key)}
+                  className={`px-4 py-1.5 rounded-lg text-sm font-semibold transition-all duration-200 ${activeTab === tab.key ? "bg-white dark:bg-[#0a0e1f] text-[#111827] dark:text-white shadow-sm" : "text-[#9CA3AF] hover:text-[#374151] dark:hover:text-gray-300"}`}
                   style={inter}
-                >{t.label}</button>
+                >{tab.label}</button>
               ))}
             </div>
           </div>
@@ -171,9 +169,9 @@ export default function PriceHistoryPage() {
             </div>
             <div className="grid grid-cols-3 gap-3 mb-5">
               {[
-                { label: "All-time Low", value: `₹${allTimeLow.toLocaleString("en-IN")}`, color: "text-[#10B981]", bg: "bg-emerald-50 dark:bg-emerald-950/20", border: "border-emerald-100 dark:border-emerald-900/40" },
-                { label: "All-time High", value: `₹${allTimeHigh.toLocaleString("en-IN")}`, color: "text-red-500", bg: "bg-red-50 dark:bg-red-950/20", border: "border-red-100 dark:border-red-900/40" },
-                { label: "Current", value: `₹${latest.amazon.toLocaleString("en-IN")}`, color: "text-[#F97316]", bg: "bg-orange-50 dark:bg-orange-950/20", border: "border-orange-100 dark:border-orange-900/40" },
+                { label: t("compare.allTimeLow"), value: `₹${allTimeLow.toLocaleString("en-IN")}`, color: "text-[#10B981]", bg: "bg-emerald-50 dark:bg-emerald-950/20", border: "border-emerald-100 dark:border-emerald-900/40" },
+                { label: t("compare.allTimeHigh"), value: `₹${allTimeHigh.toLocaleString("en-IN")}`, color: "text-red-500", bg: "bg-red-50 dark:bg-red-950/20", border: "border-red-100 dark:border-red-900/40" },
+                { label: t("compare.current"), value: `₹${latest.amazon.toLocaleString("en-IN")}`, color: "text-[#F97316]", bg: "bg-orange-50 dark:bg-orange-950/20", border: "border-orange-100 dark:border-orange-900/40" },
               ].map(s => (
                 <div key={s.label} className={`${s.bg} ${s.border} border rounded-xl p-3 text-center`}>
                   <p className={`text-sm font-bold ${s.color}`} style={poppins}>{s.value}</p>
@@ -186,12 +184,12 @@ export default function PriceHistoryPage() {
               className="w-full sm:w-auto px-5 py-2.5 bg-[#F97316] hover:bg-orange-600 text-white rounded-xl text-sm font-semibold flex items-center justify-center gap-2 transition-all hover:-translate-y-0.5 hover:shadow-lg hover:shadow-orange-200"
               style={poppins}
             >
-              View Full Comparison <ArrowRight className="w-4 h-4" />
+              {t("priceHistoryPage.viewFullComparison")} <ArrowRight className="w-4 h-4" />
             </button>
           </div>
           </>
           ) : (
-            <div className="px-5 sm:px-6 py-16 text-center text-sm text-[#9CA3AF]" style={inter}>Loading chart…</div>
+            <div className="px-5 sm:px-6 py-16 text-center text-sm text-[#9CA3AF]" style={inter}>{t("priceHistoryPage.loadingChart")}</div>
           )}
         </div>
         </Reveal>
@@ -201,8 +199,8 @@ export default function PriceHistoryPage() {
           <Reveal>
             <div className="flex items-center justify-between mb-5">
               <div>
-                <p className="text-xs font-semibold text-[#F97316] uppercase tracking-widest mb-1" style={inter}>Live Prices</p>
-                <h2 className="text-xl font-bold text-[#111827] dark:text-white" style={poppins}>Trending Price Drops</h2>
+                <p className="text-xs font-semibold text-[#F97316] uppercase tracking-widest mb-1" style={inter}>{t("home.livePricesEyebrow")}</p>
+                <h2 className="text-xl font-bold text-[#111827] dark:text-white" style={poppins}>{t("priceHistoryPage.trendingPriceDrops")}</h2>
               </div>
             </div>
           </Reveal>
@@ -220,14 +218,14 @@ export default function PriceHistoryPage() {
                     </span>
                   </div>
                   <div className="p-3">
-                    <p className="text-[10px] text-[#9CA3AF] mb-0.5" style={inter}>{p.brand} · {p.category}</p>
+                    <p className="text-[10px] text-[#9CA3AF] mb-0.5" style={inter}>{p.brand} · {t(`categoryLabels.${p.category}`, p.category)}</p>
                     <p className="text-xs font-semibold text-[#111827] dark:text-white leading-snug mb-1.5 line-clamp-2" style={poppins}>{p.name}</p>
                     <div className="flex items-baseline gap-1.5">
                       <span className="text-sm font-bold text-[#111827] dark:text-white" style={poppins}>₹{p.lowestPrice.toLocaleString("en-IN")}</span>
                       <span className="text-[10px] text-[#9CA3AF] line-through">₹{p.originalPrice.toLocaleString("en-IN")}</span>
                     </div>
                     <span className="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-[#F97316] group-hover:gap-1.5 transition-all" style={inter}>
-                      <TrendingUp className="w-3 h-3" /> View History
+                      <TrendingUp className="w-3 h-3" /> {t("priceHistoryPage.viewHistory")}
                     </span>
                   </div>
                 </button>
@@ -238,8 +236,8 @@ export default function PriceHistoryPage() {
 
         {/* ── How It Works ── */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
-          {HOW_IT_WORKS.map((f, i) => {
-            const Icon = f.icon;
+          {HOW_IT_WORKS_ICONS.map((Icon, i) => {
+            const f = t(`priceHistoryPage.howItWorks.${i}`, { returnObjects: true }) as { title: string; desc: string };
             return (
               <Reveal key={f.title} delay={i * 80}>
                 <div className="group bg-white dark:bg-[#131B2E] border border-[#E5E7EB] dark:border-white/10 rounded-2xl p-5 hover:shadow-lg hover:-translate-y-1 transition-all duration-300">

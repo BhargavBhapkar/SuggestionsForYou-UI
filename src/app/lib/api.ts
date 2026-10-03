@@ -82,10 +82,12 @@ export interface Retailer {
 
 export interface Testimonial {
   _id: string; name: string; role: string; text: string; avatar: string; saved: string;
+  translations?: { hi?: { role: string; text: string }; gu?: { role: string; text: string } };
 }
 
 export interface Faq {
   _id: string; q: string; a: string;
+  translations?: { hi?: { q: string; a: string }; gu?: { q: string; a: string } };
 }
 
 export interface AuthUser {
@@ -149,7 +151,14 @@ export interface Order {
   updatedAt: string;
 }
 
+export interface ChatMessage {
+  role: "user" | "assistant";
+  content: string;
+}
+
 export const api = {
+  sendChatMessage: (messages: ChatMessage[]) =>
+    request<{ reply: string }>("/chat", { method: "POST", body: JSON.stringify({ messages }) }),
   getProducts: (params?: ProductQuery) => request<Product[]>(`/products${toQuery(params as Record<string, string | number | undefined>)}`),
   getProduct: (name: string) => request<Product>(`/products/${encodeURIComponent(name)}`),
   getCategories: () => request<Category[]>("/categories"),

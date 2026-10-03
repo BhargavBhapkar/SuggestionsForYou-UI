@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router";
+import { useTranslation } from "react-i18next";
 import {
   ChevronRight, Flame, Timer, Percent, BarChart2, Check,
 } from "lucide-react";
@@ -7,16 +8,13 @@ import { inter, poppins } from "../lib/fonts";
 import { useProducts } from "../hooks/useApi";
 import Reveal from "../components/Reveal";
 
-const SORTS = [
-  { key: "discount", label: "Biggest Discount" },
-  { key: "price-low", label: "Price: Low to High" },
-  { key: "price-high", label: "Price: High to Low" },
-] as const;
+const SORT_KEYS = ["discount", "price-low", "price-high"] as const;
 
 export default function DealsPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [countdown, setCountdown] = useState({ h: 4, m: 23, s: 47 });
-  const [sortBy, setSortBy] = useState<(typeof SORTS)[number]["key"]>("discount");
+  const [sortBy, setSortBy] = useState<(typeof SORT_KEYS)[number]>("discount");
   const [storeFilter, setStoreFilter] = useState("All");
 
   useEffect(() => {
@@ -61,7 +59,7 @@ export default function DealsPage() {
             <span className="font-bold text-[#111827] dark:text-white text-sm hidden sm:block" style={poppins}>SuggestionsForYou</span>
           </div>
           <span className="text-[#D1D5DB] dark:text-white/20 hidden sm:block">/</span>
-          <span className="text-sm text-[#6B7280] dark:text-gray-400 hidden sm:block" style={inter}>Today's Deals</span>
+          <span className="text-sm text-[#6B7280] dark:text-gray-400 hidden sm:block" style={inter}>{t("dealsPage.title")}</span>
         </div>
       </div>
 
@@ -72,10 +70,10 @@ export default function DealsPage() {
             <div className="w-16 h-16 bg-orange-50 dark:bg-orange-950/40 rounded-2xl flex items-center justify-center mx-auto mb-5 animate-glow-pulse">
               <Flame className="w-8 h-8 text-[#F97316]" />
             </div>
-            <p className="text-xs font-semibold text-[#F97316] uppercase tracking-widest mb-2" style={inter}>Flash Sale</p>
-            <h1 className="text-3xl sm:text-4xl font-bold text-[#111827] dark:text-white mb-3" style={poppins}>Today's Deals</h1>
+            <p className="text-xs font-semibold text-[#F97316] uppercase tracking-widest mb-2" style={inter}>{t("dealsPage.flashSale")}</p>
+            <h1 className="text-3xl sm:text-4xl font-bold text-[#111827] dark:text-white mb-3" style={poppins}>{t("dealsPage.title")}</h1>
             <p className="text-[#6B7280] dark:text-gray-400 text-sm mb-6" style={inter}>
-              Flash sales, cashback offers, and exclusive coupons — updated every 15 minutes.
+              {t("dealsPage.subtitle")}
             </p>
             <div className="inline-flex items-center gap-2 px-4 py-2.5 bg-white dark:bg-[#131B2E] border border-[#E5E7EB] dark:border-white/10 rounded-xl shadow-sm">
               <Timer className="w-4 h-4 text-[#F97316] flex-shrink-0" />
@@ -84,14 +82,14 @@ export default function DealsPage() {
                   { val: String(countdown.h).padStart(2, "0"), sep: ":" },
                   { val: String(countdown.m).padStart(2, "0"), sep: ":" },
                   { val: String(countdown.s).padStart(2, "0"), sep: "" },
-                ].map((t, i) => (
+                ].map((c, i) => (
                   <span key={i} className="flex items-center gap-0.5">
-                    <span className="text-sm font-bold text-[#111827] dark:text-white">{t.val}</span>
-                    {t.sep && <span className="text-[#F97316] font-bold text-sm">{t.sep}</span>}
+                    <span className="text-sm font-bold text-[#111827] dark:text-white">{c.val}</span>
+                    {c.sep && <span className="text-[#F97316] font-bold text-sm">{c.sep}</span>}
                   </span>
                 ))}
               </div>
-              <span className="text-xs text-[#9CA3AF] ml-0.5" style={inter}>left</span>
+              <span className="text-xs text-[#9CA3AF] ml-0.5" style={inter}>{t("dealsPage.left")}</span>
             </div>
           </div>
         </Reveal>
@@ -111,19 +109,19 @@ export default function DealsPage() {
                   }`}
                   style={inter}
                 >
-                  {s}
+                  {s === "All" ? t("dealsPage.all") : s}
                 </button>
               ))}
             </div>
             <div className="flex items-center gap-1 p-1 bg-white dark:bg-[#131B2E] border border-[#E5E7EB] dark:border-white/10 rounded-xl self-start sm:self-auto">
-              {SORTS.map(s => (
+              {SORT_KEYS.map(key => (
                 <button
-                  key={s.key}
-                  onClick={() => setSortBy(s.key)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 ${sortBy === s.key ? "bg-[#F97316] text-white shadow-sm" : "text-[#6B7280] dark:text-gray-400 hover:text-[#374151] dark:hover:text-gray-200"}`}
+                  key={key}
+                  onClick={() => setSortBy(key)}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 ${sortBy === key ? "bg-[#F97316] text-white shadow-sm" : "text-[#6B7280] dark:text-gray-400 hover:text-[#374151] dark:hover:text-gray-200"}`}
                   style={inter}
                 >
-                  {s.label}
+                  {key === "discount" ? t("dealsPage.sortDiscount") : t(`search.sortLabels.${key}`)}
                 </button>
               ))}
             </div>
@@ -147,12 +145,12 @@ export default function DealsPage() {
                     </span>
                     {!outOfStock && deal.dealLimited && (deal.dealStock ?? 0) <= 15 && (
                       <span className="absolute bottom-2.5 left-2.5 px-2 py-0.5 bg-red-500/90 backdrop-blur-sm text-white text-[10px] font-semibold rounded-md animate-pulse">
-                        Only {deal.dealStock} left
+                        {t("dealsPage.onlyLeft", { count: deal.dealStock })}
                       </span>
                     )}
                     {outOfStock && (
                       <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
-                        <span className="text-white text-xs font-semibold tracking-widest uppercase" style={poppins}>Sold Out</span>
+                        <span className="text-white text-xs font-semibold tracking-widest uppercase" style={poppins}>{t("dealsPage.soldOut")}</span>
                       </div>
                     )}
                   </div>
@@ -165,7 +163,7 @@ export default function DealsPage() {
                     </div>
                     <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-100 dark:border-emerald-900 text-emerald-600 dark:text-emerald-400 text-[10px] font-semibold rounded-lg w-fit mb-4" style={inter}>
                       <Check className="w-2.5 h-2.5" />
-                      Save ₹{(deal.originalPrice - deal.lowestPrice).toLocaleString("en-IN")}
+                      {t("compare.saveAmount", { amount: (deal.originalPrice - deal.lowestPrice).toLocaleString("en-IN") })}
                     </span>
                     <button
                       disabled={outOfStock}
@@ -178,7 +176,7 @@ export default function DealsPage() {
                       style={poppins}
                     >
                       <BarChart2 className="w-3.5 h-3.5" />
-                      {outOfStock ? "Out of Stock" : "Compare Price"}
+                      {outOfStock ? t("search.outOfStock") : t("dealsPage.comparePrice")}
                     </button>
                   </div>
                 </div>
@@ -188,7 +186,7 @@ export default function DealsPage() {
         </div>
 
         {deals.length === 0 && (
-          <p className="text-center text-sm text-[#9CA3AF] py-12" style={inter}>No deals match this filter right now.</p>
+          <p className="text-center text-sm text-[#9CA3AF] py-12" style={inter}>{t("dealsPage.noDealsMatch")}</p>
         )}
       </div>
     </div>

@@ -1,4 +1,5 @@
 import { useNavigate, useOutletContext } from "react-router";
+import { useTranslation } from "react-i18next";
 import { Heart, ShoppingCart, Star } from "lucide-react";
 import { inter, poppins } from "../lib/fonts";
 import PageShell from "../components/PageShell";
@@ -8,23 +9,24 @@ import type { AppContext } from "../Layout";
 
 export default function WishlistPage() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { user, authLoading, wishlisted, toggleWish, addToCart, onLoginRequired } = useOutletContext<AppContext>();
   const { data: products, loading } = useWishlist();
 
   if (authLoading) {
-    return <PageShell onBack={() => navigate("/")} title="Wishlist" subtitle="" icon={<Heart className="w-9 h-9 text-[#F97316]" />} />;
+    return <PageShell onBack={() => navigate("/")} title={t("common.wishlist")} subtitle="" icon={<Heart className="w-9 h-9 text-[#F97316]" />} />;
   }
 
   if (!user) {
     return (
-      <PageShell onBack={() => navigate("/")} title="Wishlist" subtitle="" icon={<Heart className="w-9 h-9 text-[#F97316]" />}>
+      <PageShell onBack={() => navigate("/")} title={t("common.wishlist")} subtitle="" icon={<Heart className="w-9 h-9 text-[#F97316]" />}>
         <div className="text-center py-24">
           <div className="w-20 h-20 bg-orange-50 dark:bg-orange-950/40 rounded-3xl flex items-center justify-center mx-auto mb-6">
             <Heart className="w-9 h-9 text-[#F97316]" />
           </div>
-          <h1 className="text-2xl font-bold text-[#111827] dark:text-white mb-3" style={poppins}>Sign in to view your wishlist</h1>
-          <p className="text-[#6B7280] dark:text-gray-400 mb-8" style={inter}>Items you favorite are saved here once you're signed in.</p>
-          <button onClick={onLoginRequired} className="px-6 py-3 bg-[#F97316] hover:bg-orange-600 text-white rounded-xl text-sm font-semibold" style={poppins}>Sign In</button>
+          <h1 className="text-2xl font-bold text-[#111827] dark:text-white mb-3" style={poppins}>{t("wishlistPage.signInTitle")}</h1>
+          <p className="text-[#6B7280] dark:text-gray-400 mb-8" style={inter}>{t("wishlistPage.signInSubtitle")}</p>
+          <button onClick={onLoginRequired} className="px-6 py-3 bg-[#F97316] hover:bg-orange-600 text-white rounded-xl text-sm font-semibold" style={poppins}>{t("common.signIn")}</button>
         </div>
       </PageShell>
     );
@@ -36,18 +38,18 @@ export default function WishlistPage() {
     return (
       <PageShell
         onBack={() => navigate("/")}
-        title="Wishlist"
-        subtitle="Tap the heart icon on any product to save it here for later."
+        title={t("common.wishlist")}
+        subtitle={t("wishlistPage.emptySubtitle")}
         icon={<Heart className="w-9 h-9 text-[#F97316]" />}
       />
     );
   }
 
   return (
-    <PageShell onBack={() => navigate("/")} title="Wishlist" subtitle="" icon={<Heart className="w-9 h-9 text-[#F97316]" />}>
+    <PageShell onBack={() => navigate("/")} title={t("common.wishlist")} subtitle="" icon={<Heart className="w-9 h-9 text-[#F97316]" />}>
       <div className="max-w-3xl mx-auto">
         <h1 className="text-2xl sm:text-3xl font-bold text-[#111827] dark:text-white mb-6" style={poppins}>
-          Your Wishlist ({items.length})
+          {t("wishlistPage.itemsCount", { count: items.length })}
         </h1>
         <div className="space-y-3">
           {items.map((product) => {
@@ -62,7 +64,7 @@ export default function WishlistPage() {
                     <img src={product.image} alt={product.name} className="w-16 h-16 rounded-xl object-cover flex-shrink-0 bg-[#F8FAFC] dark:bg-white/5" />
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-semibold text-[#111827] dark:text-white truncate" style={poppins}>{product.name}</p>
-                      <p className="text-xs text-[#9CA3AF] mt-0.5" style={inter}>{product.brand} · {product.category}</p>
+                      <p className="text-xs text-[#9CA3AF] mt-0.5" style={inter}>{product.brand} · {t(`categoryLabels.${product.category}`, product.category)}</p>
                       <div className="flex items-center gap-2 mt-1">
                         <span className="flex items-center gap-0.5 text-xs text-[#6B7280] dark:text-gray-400" style={inter}>
                           <Star className="w-3 h-3 fill-amber-400 text-amber-400" /> {product.rating}
@@ -78,9 +80,9 @@ export default function WishlistPage() {
                       className="flex items-center gap-1.5 px-3 py-2 bg-[#F97316] hover:bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-xl text-xs font-semibold transition-colors"
                       style={poppins}
                     >
-                      <ShoppingCart className="w-3.5 h-3.5" /> {product.inStock ? "Add to Cart" : "Out of Stock"}
+                      <ShoppingCart className="w-3.5 h-3.5" /> {product.inStock ? t("common.addToCart") : t("common.outOfStock")}
                     </button>
-                    <button onClick={() => toggleWish(product._id)} title="Remove from wishlist" className="p-2 text-red-500 hover:text-red-600 transition-colors flex-shrink-0">
+                    <button onClick={() => toggleWish(product._id)} title={t("wishlistPage.removeTitle")} className="p-2 text-red-500 hover:text-red-600 transition-colors flex-shrink-0">
                       <Heart className="w-4 h-4 fill-red-500" />
                     </button>
                   </div>

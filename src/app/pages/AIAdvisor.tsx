@@ -1,5 +1,6 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router";
+import { useTranslation } from "react-i18next";
 import {
   ChevronRight, Bot, BarChart2, Clock, Users, Zap, ShieldCheck,
 } from "lucide-react";
@@ -8,13 +9,10 @@ import { useProducts } from "../hooks/useApi";
 import AIProductCard from "../components/AIProductCard";
 import Reveal from "../components/Reveal";
 
-const HOW_AI_WORKS = [
-  { icon: BarChart2, title: "Millions of price points", desc: "Our model continuously scans 50+ retailers, learning seasonal patterns and restock cycles across every category." },
-  { icon: Zap, title: "Personalised to what you browse", desc: "Recommendations sharpen the more you search and compare — no two shoppers see the same picks." },
-  { icon: ShieldCheck, title: "94% prediction accuracy", desc: "Backtested against 2+ years of historical pricing, so a 'buy now' call actually means something." },
-];
+const HOW_AI_WORKS_ICONS = [BarChart2, Zap, ShieldCheck];
 
 export default function AIAdvisorPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [activeCategory, setActiveCategory] = useState("All");
 
@@ -37,7 +35,7 @@ export default function AIAdvisorPage() {
             <span className="font-bold text-[#111827] dark:text-white text-sm hidden sm:block" style={poppins}>SuggestionsForYou</span>
           </div>
           <span className="text-[#D1D5DB] dark:text-white/20 hidden sm:block">/</span>
-          <span className="text-sm text-[#6B7280] dark:text-gray-400 hidden sm:block" style={inter}>AI Advisor</span>
+          <span className="text-sm text-[#6B7280] dark:text-gray-400 hidden sm:block" style={inter}>{t("nav.aiAdvisor")}</span>
         </div>
       </div>
 
@@ -48,16 +46,16 @@ export default function AIAdvisorPage() {
             <div className="w-16 h-16 bg-purple-50 dark:bg-purple-950/40 rounded-2xl flex items-center justify-center mx-auto mb-5 animate-glow-pulse">
               <Bot className="w-8 h-8 text-purple-600 dark:text-purple-400" />
             </div>
-            <p className="text-xs font-semibold text-[#F97316] uppercase tracking-widest mb-2" style={inter}>Let AI Pick For You</p>
-            <h1 className="text-3xl sm:text-4xl font-bold text-[#111827] dark:text-white mb-3" style={poppins}>AI Advisor</h1>
+            <p className="text-xs font-semibold text-[#F97316] uppercase tracking-widest mb-2" style={inter}>{t("aiAdvisorPage.eyebrow")}</p>
+            <h1 className="text-3xl sm:text-4xl font-bold text-[#111827] dark:text-white mb-3" style={poppins}>{t("nav.aiAdvisor")}</h1>
             <p className="text-[#6B7280] dark:text-gray-400 text-sm mb-6" style={inter}>
-              Get personalised product recommendations powered by our intelligent AI engine — ranked by real-time value, not just price.
+              {t("aiAdvisorPage.subtitle")}
             </p>
             <div className="flex flex-wrap items-center justify-center gap-3">
               {[
-                { icon: ShieldCheck, label: "94% accuracy" },
-                { icon: Clock, label: "Updated hourly" },
-                { icon: Users, label: "2.4M shoppers" },
+                { icon: ShieldCheck, label: t("aiAdvisorPage.accuracyChip") },
+                { icon: Clock, label: t("compare.updatedHourly") },
+                { icon: Users, label: t("compare.shoppersCount") },
               ].map(chip => {
                 const Icon = chip.icon;
                 return (
@@ -84,7 +82,7 @@ export default function AIAdvisorPage() {
                 }`}
                 style={inter}
               >
-                {c}
+                {c === "All" ? t("aiAdvisorPage.all") : t(`categoryLabels.${c}`, c)}
               </button>
             ))}
           </div>
@@ -102,11 +100,11 @@ export default function AIAdvisorPage() {
         {/* ── How Our AI Works ── */}
         <div>
           <Reveal>
-            <h2 className="text-xl font-bold text-[#111827] dark:text-white text-center mb-5" style={poppins}>How Our AI Works</h2>
+            <h2 className="text-xl font-bold text-[#111827] dark:text-white text-center mb-5" style={poppins}>{t("aiAdvisorPage.howAiWorksTitle")}</h2>
           </Reveal>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
-            {HOW_AI_WORKS.map((f, i) => {
-              const Icon = f.icon;
+            {HOW_AI_WORKS_ICONS.map((Icon, i) => {
+              const f = t(`aiAdvisorPage.howAiWorks.${i}`, { returnObjects: true }) as { title: string; desc: string };
               return (
                 <Reveal key={f.title} delay={i * 80}>
                   <div className="group bg-white dark:bg-[#131B2E] border border-[#E5E7EB] dark:border-white/10 rounded-2xl p-5 hover:shadow-lg hover:shadow-orange-100 dark:hover:shadow-orange-950/30 hover:-translate-y-1 transition-all duration-300">
