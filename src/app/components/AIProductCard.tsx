@@ -2,6 +2,7 @@ import { useTranslation } from "react-i18next";
 import { Bot, ArrowRight } from "lucide-react";
 import { inter, poppins } from "../lib/fonts";
 import type { Product } from "../lib/api";
+import { imgFit, imgBox } from "../data/products";
 
 export default function AIProductCard({
   product,
@@ -17,8 +18,8 @@ export default function AIProductCard({
   return (
     <div className="group bg-white dark:bg-[#131B2E] border border-[#E5E7EB] dark:border-white/10 rounded-2xl p-5 hover:shadow-xl hover:shadow-purple-100 dark:hover:shadow-purple-950/30 hover:border-purple-200 dark:hover:border-purple-800/50 hover:-translate-y-1.5 transition-all duration-300">
       <div className="flex items-start gap-4 mb-4">
-        <div className="w-16 h-16 rounded-xl overflow-hidden bg-[#F8FAFC] dark:bg-white/5 flex-shrink-0">
-          <img src={product.image} alt={product.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+        <div className={`w-16 h-16 rounded-xl overflow-hidden ${imgBox(product.image)} flex-shrink-0`}>
+          <img src={product.image} alt={product.name} className={`w-full h-full ${imgFit(product.image, "p-1")} group-hover:scale-110 transition-transform duration-500`} />
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">

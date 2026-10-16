@@ -2,15 +2,17 @@ import { useState, useEffect, useRef } from "react";
 import { useNavigate, useSearchParams, useOutletContext } from "react-router";
 import { useTranslation } from "react-i18next";
 import {
-  Search, Mic, ArrowRight, Star, Heart, ExternalLink, Bot, Zap, Check,
-  Bell, Menu, Moon, Sun, ChevronDown, ChevronRight, ChevronLeft,
+  Search, Mic, ArrowRight, Star, Heart, ExternalLink, Bot, Check,
+  Menu, Moon, Sun, ChevronDown, ChevronRight, ChevronLeft,
   X, Eye, Plus, Minus, SlidersHorizontal, RefreshCw, Tag, Truck,
   LayoutGrid, List, Filter, Home, ShoppingCart, UserRound, LogOut,
 } from "lucide-react";
-import { DEFAULT_PRODUCT } from "./data/products";
+import { DEFAULT_PRODUCT, imgFit, imgBox } from "./data/products";
 import { useProducts } from "./hooks/useApi";
 import Reveal from "./components/Reveal";
 import LanguageSwitcher from "./components/LanguageSwitcher";
+import CompareModal from "./components/CompareModal";
+import useVoiceSearch from "./lib/useVoiceSearch";
 import type { AppContext } from "./Layout";
 
 const NAV_PATHS: Record<string, string> = {
@@ -31,11 +33,42 @@ interface Result {
   inStock: boolean; storesCount: number; bestStoreName: string;
 }
 
-const FILTER_CATEGORIES = ["Mobiles", "Laptops", "Headphones", "Smart Watches", "Tablets", "Gaming", "Televisions", "Cameras", "Home Appliances"];
-const FILTER_BRANDS     = ["Samsung", "Apple", "OnePlus", "Sony", "LG", "Lenovo", "Dell", "Canon", "GoPro", "Garmin", "boAt"];
+const FILTER_CATEGORIES = ["Mobiles", "Laptops", "Headphones", "Smart Watches", "Tablets", "Gaming", "Televisions", "Cameras", "Home Appliances", "Monitors"];
+const MAX_FILTER_BRANDS = 12;
+const PRICE_MIN         = 0;
+const PRICE_MAX         = 500000;
+
+// First, last, and a window around the current page; gaps become "…".
+function pageList(current: number, total: number): (number | "…")[] {
+  const keep = new Set([1, total, current - 1, current, current + 1]);
+  if (current <= 3) { keep.add(2); keep.add(3); }
+  if (current >= total - 2) { keep.add(total - 1); keep.add(total - 2); }
+  const nums = [...keep].filter(n => n >= 1 && n <= total).sort((a, b) => a - b);
+  const out: (number | "…")[] = [];
+  nums.forEach((n, i) => {
+    if (i > 0 && n - nums[i - 1] === 2) out.push(n - 1);
+    else if (i > 0 && n - nums[i - 1] > 2) out.push("…");
+    out.push(n);
+  });
+  return out;
+}
 const FILTER_OFFERS     = ["Bank Offers", "No Cost EMI", "Exchange Offer", "Cashback"];
-const RECENT_SEARCHES   = ["Samsung Galaxy S25", "Samsung TV 65 inch", "Samsung Watch 7", "Samsung Tab S10"];
-const SUGGESTIONS       = ["Samsung Galaxy S25 Ultra", "Samsung Galaxy A55", "Samsung QLED TV", "Samsung Buds 3 Pro", "Samsung Galaxy Book4"];
+const RECENT_KEY = "sfy_recent_searches";
+function readRecent(): string[] {
+  try {
+    const v = JSON.parse(localStorage.getItem(RECENT_KEY) ?? "[]");
+    return Array.isArray(v) ? v.filter((x): x is string => typeof x === "string").slice(0, 5) : [];
+  } catch {
+    return [];
+  }
+}
+function pushRecent(q: string): string[] {
+  const value = q.trim();
+  if (!value) return readRecent();
+  const next = [value, ...readRecent().filter((x) => x.toLowerCase() !== value.toLowerCase())].slice(0, 5);
+  try { localStorage.setItem(RECENT_KEY, JSON.stringify(next)); } catch { /* storage unavailable */ }
+  return next;
+}
 const RELATED_SEARCHES  = ["Samsung 5G phones under 50000", "Best Samsung TV deals", "Samsung vs iPhone comparison", "Samsung Galaxy foldable phone", "Samsung smartwatch price in India", "Samsung laptop latest"];
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
@@ -50,6 +83,8 @@ function Stars({ rating, sm = false }: { rating: number; sm?: boolean }) {
     </div>
   );
 }
+
+const fmtK = (v: number) => (v >= 1000 ? `${(v / 1000).toFixed(v % 1000 ? 1 : 0)}K` : String(v));
 
 // Price range dual-thumb slider
 function PriceSlider({ min, max, value, onChange }: {
@@ -69,7 +104,7 @@ function PriceSlider({ min, max, value, onChange }: {
           style={{ left: `${pct(value[0])}%`, right: `${100 - pct(value[1])}%` }}
         />
         {/* Min thumb */}
-        <input type="range" min={min} max={max} step={1000} value={value[0]}
+        <input type="range" min={min} max={max} step={500} value={value[0]}
           onChange={e => {
             const v = Number(e.target.value);
             if (v < value[1]) onChange([v, value[1]]);
@@ -77,7 +112,7 @@ function PriceSlider({ min, max, value, onChange }: {
           className="absolute w-full h-1.5 appearance-none bg-transparent cursor-pointer range-thumb"
         />
         {/* Max thumb */}
-        <input type="range" min={min} max={max} step={1000} value={value[1]}
+        <input type="range" min={min} max={max} step={500} value={value[1]}
           onChange={e => {
             const v = Number(e.target.value);
             if (v > value[0]) onChange([value[0], v]);
@@ -86,8 +121,8 @@ function PriceSlider({ min, max, value, onChange }: {
         />
       </div>
       <div className="flex justify-between mt-2 text-xs font-medium text-[#374151] dark:text-gray-300" style={it}>
-        <span>₹{(value[0]/1000).toFixed(0)}K</span>
-        <span>₹{(value[1]/1000).toFixed(0)}K</span>
+        <span>₹{fmtK(value[0])}</span>
+        <span>₹{fmtK(value[1])}</span>
       </div>
     </div>
   );
@@ -118,20 +153,30 @@ function QuickViewModal({
           <X className="w-4 h-4" />
         </button>
         <div className="flex flex-col sm:flex-row">
-          <div className="sm:w-52 h-52 bg-[#F8FAFC] dark:bg-white/5 flex-shrink-0 overflow-hidden">
-            <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
+          <div className={`sm:w-52 h-52 ${imgBox(product.image)} flex-shrink-0 overflow-hidden`}>
+            <img src={product.image} alt={product.name} className={`w-full h-full ${imgFit(product.image)}`} />
           </div>
           <div className="p-6 flex-1">
             <p className="text-xs text-[#9CA3AF] mb-1" style={it}>{product.brand} · {t(`categoryLabels.${product.category}`, product.category)}</p>
             <h3 className="text-lg font-bold text-[#111827] dark:text-white mb-3 leading-snug" style={pp}>{product.name}</h3>
             <div className="flex items-center gap-2 mb-4">
-              <Stars rating={product.rating} />
-              <span className="text-xs text-[#6B7280]" style={it}>{product.rating} ({product.reviews.toLocaleString()})</span>
+              {product.reviews > 0 ? (
+                <>
+                  <Stars rating={product.rating} />
+                  <span className="text-xs text-[#6B7280]" style={it}>{product.rating} ({product.reviews.toLocaleString()})</span>
+                </>
+              ) : (
+                <span className="text-xs text-[#9CA3AF]" style={it}>{t("compare.noReviews")}</span>
+              )}
             </div>
             <div className="flex items-baseline gap-2 mb-4">
               <span className="text-2xl font-bold text-[#111827] dark:text-white" style={pp}>₹{product.lowestPrice.toLocaleString("en-IN")}</span>
-              <span className="text-sm text-[#9CA3AF] line-through">₹{product.originalPrice.toLocaleString("en-IN")}</span>
-              <span className="text-xs font-bold text-[#10B981]">{t("search.offBadge", { percent: product.discount })}</span>
+              {product.discount > 0 && (
+                <>
+                  <span className="text-sm text-[#9CA3AF] line-through">₹{product.originalPrice.toLocaleString("en-IN")}</span>
+                  <span className="text-xs font-bold text-[#10B981]">{t("search.offBadge", { percent: product.discount })}</span>
+                </>
+              )}
             </div>
             <div className="space-y-2 mb-5">
               <div className="flex items-center gap-2 text-xs text-[#374151] dark:text-gray-300" style={it}>
@@ -155,9 +200,6 @@ function QuickViewModal({
                 style={pp}
               >
                 {added ? <Check className="w-4 h-4" /> : <ShoppingCart className="w-4 h-4" />}
-              </button>
-              <button className="px-4 py-3 border-2 border-[#E5E7EB] dark:border-white/10 text-[#6B7280] rounded-xl text-sm font-semibold hover:border-orange-300 hover:text-[#F97316] transition-all" style={pp}>
-                <Bell className="w-4 h-4" />
               </button>
             </div>
           </div>
@@ -185,8 +227,8 @@ function GridCard({
       onMouseLeave={() => setHovered(false)}
     >
       {/* Image */}
-      <div className="relative bg-[#F8FAFC] dark:bg-white/5 h-48 overflow-hidden">
-        <img src={product.image} alt={product.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+      <div className={`relative ${imgBox(product.image)} h-48 overflow-hidden`}>
+        <img src={product.image} alt={product.name} className={`w-full h-full ${imgFit(product.image)} group-hover:scale-105 transition-transform duration-500`} />
 
         {/* Top badges */}
         <div className="absolute top-3 left-3 flex flex-col gap-1.5">
@@ -195,9 +237,11 @@ function GridCard({
               <Bot className="w-2.5 h-2.5" /> {t("search.aiPick")}
             </span>
           )}
-          <span className="px-2 py-0.5 bg-[#F97316] text-white text-xs font-semibold rounded-lg shadow-sm" style={it}>
-            {t("search.offBadge", { percent: product.discount })}
-          </span>
+          {product.discount > 0 && (
+            <span className="px-2 py-0.5 bg-[#F97316] text-white text-xs font-semibold rounded-lg shadow-sm" style={it}>
+              {t("search.offBadge", { percent: product.discount })}
+            </span>
+          )}
         </div>
 
         {/* Wishlist */}
@@ -226,8 +270,14 @@ function GridCard({
         <h3 className="font-semibold text-[#111827] dark:text-white text-sm leading-snug mb-2" style={pp}>{product.name}</h3>
 
         <div className="flex items-center gap-2 mb-2">
-          <Stars rating={product.rating} sm />
-          <span className="text-xs text-[#9CA3AF]" style={it}>{product.rating} ({product.reviews.toLocaleString()})</span>
+          {product.reviews > 0 ? (
+            <>
+              <Stars rating={product.rating} sm />
+              <span className="text-xs text-[#9CA3AF]" style={it}>{product.rating} ({product.reviews.toLocaleString()})</span>
+            </>
+          ) : (
+            <span className="text-xs text-[#9CA3AF]" style={it}>{t("compare.noReviews")}</span>
+          )}
         </div>
 
         <div className="flex items-baseline gap-1.5 mb-2">
@@ -297,8 +347,8 @@ function ListCard({
   return (
     <div className="bg-white dark:bg-[#131B2E] border border-[#E5E7EB] dark:border-white/10 rounded-2xl overflow-hidden hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 flex">
       {/* Image */}
-      <div className="relative w-36 sm:w-48 flex-shrink-0 bg-[#F8FAFC] dark:bg-white/5 overflow-hidden">
-        <img src={product.image} alt={product.name} className="w-full h-full object-cover hover:scale-105 transition-transform duration-300" />
+      <div className={`relative w-36 sm:w-48 flex-shrink-0 ${imgBox(product.image)} overflow-hidden`}>
+        <img src={product.image} alt={product.name} className={`w-full h-full ${imgFit(product.image)} hover:scale-105 transition-transform duration-300`} />
         {product.aiPick && (
           <div className="absolute top-2 left-2">
             <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-purple-600 text-white text-xs font-semibold rounded-lg" style={it}>
@@ -314,8 +364,14 @@ function ListCard({
           <p className="text-xs text-[#9CA3AF] mb-0.5" style={it}>{product.brand} · {t(`categoryLabels.${product.category}`, product.category)}</p>
           <h3 className="font-semibold text-[#111827] dark:text-white text-sm leading-snug mb-2" style={pp}>{product.name}</h3>
           <div className="flex items-center gap-2 mb-2">
-            <Stars rating={product.rating} sm />
-            <span className="text-xs text-[#9CA3AF]" style={it}>{product.rating} ({product.reviews.toLocaleString()})</span>
+            {product.reviews > 0 ? (
+              <>
+                <Stars rating={product.rating} sm />
+                <span className="text-xs text-[#9CA3AF]" style={it}>{product.rating} ({product.reviews.toLocaleString()})</span>
+              </>
+            ) : (
+              <span className="text-xs text-[#9CA3AF]" style={it}>{t("compare.noReviews")}</span>
+            )}
           </div>
           <div className="flex flex-wrap gap-x-3 gap-y-1">
             <span className="text-xs text-[#F97316] font-medium flex items-center gap-1" style={it}>
@@ -333,9 +389,13 @@ function ListCard({
           <div className="text-right">
             <div className="flex items-baseline gap-1.5">
               <span className="text-xl font-bold text-[#111827] dark:text-white" style={pp}>₹{product.lowestPrice.toLocaleString("en-IN")}</span>
-              <span className="px-1.5 py-0.5 bg-[#10B981]/10 text-[#10B981] text-xs font-bold rounded-md">{product.discount}%</span>
+              {product.discount > 0 && (
+                <span className="px-1.5 py-0.5 bg-[#10B981]/10 text-[#10B981] text-xs font-bold rounded-md">{product.discount}%</span>
+              )}
             </div>
-            <p className="text-xs text-[#9CA3AF] line-through text-right" style={it}>₹{product.originalPrice.toLocaleString("en-IN")}</p>
+            {product.discount > 0 && (
+              <p className="text-xs text-[#9CA3AF] line-through text-right" style={it}>₹{product.originalPrice.toLocaleString("en-IN")}</p>
+            )}
             <p className="text-xs text-[#9CA3AF] mt-0.5 text-right" style={it}>{t("search.storesCount", { count: product.storesCount })}</p>
           </div>
           <div className="flex items-center gap-2">
@@ -401,12 +461,18 @@ export default function SearchResultsPage() {
   const { wishlisted, toggleWish, addToCart, dark, setDark, user, onLoginRequired, logout, cartCount } = useOutletContext<AppContext>();
   const [searchParams] = useSearchParams();
   const initialCategory = searchParams.get("category") || "";
-  const initialQuery = searchParams.get("q") || (initialCategory ? "" : "Samsung");
+  const initialQuery = searchParams.get("q") || "";
   const onNavigateHome = () => navigate("/");
 
   // Search
   const [query,           setQuery]           = useState(initialQuery);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [recent, setRecent] = useState<string[]>(readRecent);
+  useEffect(() => { if (initialQuery) setRecent(pushRecent(initialQuery)); }, [initialQuery]);
+  const { listening, toggle: toggleVoice } = useVoiceSearch((text) => {
+    setQuery(text);
+    navigate(`/search?q=${encodeURIComponent(text)}`);
+  });
 
   // UI state
   const [mobileMenu,      setMobileMenu]      = useState(false);
@@ -422,14 +488,43 @@ export default function SearchResultsPage() {
   const [openFilters,   setOpenFilters]   = useState(new Set(["category", "brand", "price", "rating"]));
   const [selCategories, setSelCategories] = useState<Set<string>>(new Set(initialCategory ? [initialCategory] : []));
   const [selBrands,     setSelBrands]     = useState<Set<string>>(new Set());
-  const [priceRange,    setPriceRange]    = useState<[number, number]>([5000, 200000]);
+  const [priceRange,    setPriceRange]    = useState<[number, number]>([PRICE_MIN, PRICE_MAX]);
   const [minRating,     setMinRating]     = useState<number | null>(null);
   const [inStockOnly,   setInStockOnly]   = useState(false);
   const [selOffers,     setSelOffers]     = useState<Set<string>>(new Set());
   const [deliveryFilter,setDeliveryFilter]= useState("");
   const [compareList,   setCompareList]   = useState<Set<string>>(new Set());
+  const [compareOpen,   setCompareOpen]   = useState(false);
+  const [compareNotice, setCompareNotice] = useState<string | null>(null);
 
   const { data: allProducts } = useProducts({ q: initialQuery });
+
+  const MAX_COMPARE = 4;
+  const compareProducts = [...compareList]
+    .map(id => allProducts.find(p => p._id === id))
+    .filter((p): p is NonNullable<typeof p> => !!p);
+
+  useEffect(() => {
+    if (!compareNotice) return;
+    const timer = setTimeout(() => setCompareNotice(null), 3500);
+    return () => clearTimeout(timer);
+  }, [compareNotice]);
+
+  const toggleCompare = (p: { id: string; category: string }) => {
+    if (compareList.has(p.id)) {
+      setCompareList(prev => { const n = new Set(prev); n.delete(p.id); return n; });
+      return;
+    }
+    if (compareProducts.length && compareProducts[0].category !== p.category) {
+      setCompareNotice(t("search.cmp.sameCategory", { category: t(`categoryLabels.${p.category}`, p.category) }));
+      return;
+    }
+    if (compareProducts.length >= MAX_COMPARE) {
+      setCompareNotice(t("search.cmp.maxItems", { max: MAX_COMPARE }));
+      return;
+    }
+    setCompareList(prev => new Set(prev).add(p.id));
+  };
   const results: Result[] = allProducts.map(p => {
     const bestStore = [...p.stores].sort((a, b) => a.price - b.price)[0];
     return {
@@ -442,6 +537,14 @@ export default function SearchResultsPage() {
       bestStoreName: bestStore?.name ?? "Amazon",
     };
   });
+
+  const brandPool = selCategories.size ? results.filter(p => selCategories.has(p.category)) : results;
+  const brandCounts = new Map<string, number>();
+  brandPool.forEach(p => brandCounts.set(p.brand, (brandCounts.get(p.brand) ?? 0) + 1));
+  const filterBrands = [...new Set([
+    ...selBrands,
+    ...[...brandCounts].sort((a, b) => b[1] - a[1]).slice(0, MAX_FILTER_BRANDS).map(([b]) => b),
+  ])];
 
   const sortRef = useRef<HTMLDivElement>(null);
   const PER_PAGE = 8;
@@ -477,7 +580,7 @@ export default function SearchResultsPage() {
 
   const clearAll = () => {
     setSelCategories(new Set()); setSelBrands(new Set());
-    setPriceRange([5000, 200000]); setMinRating(null);
+    setPriceRange([PRICE_MIN, PRICE_MAX]); setMinRating(null);
     setInStockOnly(false); setSelOffers(new Set()); setDeliveryFilter("");
   };
 
@@ -538,7 +641,7 @@ export default function SearchResultsPage() {
       {/* Brand */}
       <FilterSection title={t("search.brand")} open={openFilters.has("brand")} onToggle={() => toggleFilter("brand")}>
         <div className="space-y-2">
-          {FILTER_BRANDS.map(b => (
+          {filterBrands.map(b => (
             <label key={b} className="flex items-center gap-2.5 cursor-pointer group">
               <div
                 onClick={() => toggleSet(selBrands, b, setSelBrands)}
@@ -554,7 +657,7 @@ export default function SearchResultsPage() {
 
       {/* Price Range */}
       <FilterSection title={t("search.priceRange")} open={openFilters.has("price")} onToggle={() => toggleFilter("price")}>
-        <PriceSlider min={5000} max={200000} value={priceRange} onChange={setPriceRange} />
+        <PriceSlider min={PRICE_MIN} max={PRICE_MAX} value={priceRange} onChange={setPriceRange} />
       </FilterSection>
 
       {/* Rating */}
@@ -632,7 +735,7 @@ export default function SearchResultsPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
           {/* Logo */}
           <button onClick={onNavigateHome} className="flex items-center gap-2 flex-shrink-0 hover:opacity-80 transition-opacity">
-            <img src="/logo.svg" alt="SuggestionsForYou" className="w-8 h-8 rounded-xl object-cover shadow-sm" />
+            <img src="/logo-80.png" alt="SuggestionsForYou" className="w-8 h-8 rounded-xl object-cover shadow-sm" />
             <span className="font-bold text-[#111827] dark:text-white text-base hidden sm:block" style={pp}>SuggestionsForYou</span>
           </button>
 
@@ -664,7 +767,6 @@ export default function SearchResultsPage() {
                 </span>
               )}
             </button>
-            <button className="p-2 text-[#6B7280] hover:text-[#F97316] dark:text-gray-400 transition-colors"><Bell className="w-5 h-5" /></button>
             <button onClick={() => setDark(!dark)} className="p-2 text-[#6B7280] hover:text-[#F97316] dark:text-gray-400 transition-colors">
               {dark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
             </button>
@@ -745,7 +847,7 @@ export default function SearchResultsPage() {
             <ChevronRight className="w-3 h-3" />
             <span className="text-[#374151] dark:text-gray-300 font-medium">{t("search.searchResults")}</span>
             <ChevronRight className="w-3 h-3" />
-            <span className="text-[#F97316] font-medium">{initialQuery ? `"${initialQuery}"` : t(`categoryLabels.${initialCategory}`, initialCategory)}</span>
+            <span className="text-[#F97316] font-medium">{initialQuery ? `"${initialQuery}"` : initialCategory ? t(`categoryLabels.${initialCategory}`, initialCategory) : t("search.allProducts")}</span>
           </nav>
 
           {/* Search bar */}
@@ -763,21 +865,31 @@ export default function SearchResultsPage() {
                 style={it}
               />
               {query && (
-                <button onClick={() => setQuery("")} className="p-2 text-[#9CA3AF] hover:text-[#374151] transition-colors flex-shrink-0">
+                <button onClick={() => setQuery("")} aria-label={t("toast.dismiss")} className="p-2 text-[#9CA3AF] hover:text-[#374151] transition-colors flex-shrink-0">
                   <X className="w-4 h-4" />
                 </button>
               )}
-              <button className="p-2 mr-1 text-[#9CA3AF] hover:text-[#F97316] transition-colors flex-shrink-0 rounded-lg hover:bg-orange-50 dark:hover:bg-orange-950/30">
+              <button
+                type="button"
+                onClick={toggleVoice}
+                aria-label={t("home.voiceSearch")}
+                aria-pressed={listening}
+                title={t("home.voiceSearch")}
+                className={`p-2 mr-1 transition-colors flex-shrink-0 rounded-lg ${listening ? "text-[#F97316] bg-orange-50 dark:bg-orange-950/30 animate-pulse" : "text-[#9CA3AF] hover:text-[#F97316] hover:bg-orange-50 dark:hover:bg-orange-950/30"}`}
+              >
                 <Mic className="w-4 h-4" />
               </button>
-              <button onClick={runSearch} className="m-2 px-5 py-3 bg-[#F97316] hover:bg-orange-600 text-white rounded-xl text-sm font-semibold flex items-center gap-2 transition-all flex-shrink-0" style={pp}>
-                {t("search.searchButton")} <ArrowRight className="w-4 h-4" />
+              <button onClick={runSearch} aria-label={t("search.searchButton")} className="m-1.5 sm:m-2 px-3 sm:px-5 py-3 bg-[#F97316] hover:bg-orange-600 text-white rounded-xl text-sm font-semibold flex items-center gap-2 transition-all flex-shrink-0" style={pp}>
+                <span className="hidden min-[400px]:inline">{t("search.searchButton")}</span> <ArrowRight className="w-4 h-4" />
               </button>
             </div>
 
             {/* Suggestions dropdown */}
             {showSuggestions && query.trim().length > 0 && (() => {
-              const s = SUGGESTIONS.filter(x => x.toLowerCase().includes(query.toLowerCase()));
+              const needle = query.trim().toLowerCase();
+              const s = [...new Set([...recent, ...allProducts.map(p => p.name)])]
+                .filter(x => x.toLowerCase().includes(needle) && x.toLowerCase() !== needle)
+                .slice(0, 6);
               return s.length > 0 ? (
                 <div className="absolute top-full left-0 right-0 bg-white dark:bg-[#131B2E] border-2 border-t-0 border-[#F97316] rounded-b-2xl shadow-xl z-30 overflow-hidden">
                   {s.map((item, i) => (
@@ -798,11 +910,12 @@ export default function SearchResultsPage() {
           </div>
 
           {/* Recent Searches */}
+          {recent.length > 0 && (
           <div className="flex flex-wrap items-center gap-2 mt-4">
             <span className="text-xs text-[#9CA3AF] font-medium" style={it}>{t("search.recent")}</span>
-            {RECENT_SEARCHES.map(r => (
+            {recent.map(r => (
               <button
-                key={r} onClick={() => setQuery(r)}
+                key={r} onClick={() => navigate(`/search?q=${encodeURIComponent(r)}`)}
                 className="inline-flex items-center gap-1.5 text-xs text-[#6B7280] dark:text-gray-400 hover:text-[#F97316] px-3 py-1.5 border border-[#E5E7EB] dark:border-white/10 hover:border-orange-200 rounded-lg bg-white dark:bg-[#131B2E] transition-all"
                 style={it}
               >
@@ -810,6 +923,7 @@ export default function SearchResultsPage() {
               </button>
             ))}
           </div>
+          )}
         </div>
       </div>
 
@@ -843,7 +957,7 @@ export default function SearchResultsPage() {
                   <p className="text-sm font-semibold text-[#111827] dark:text-white" style={pp}>
                     {t("search.resultsCount", { count: filtered.length })}
                   </p>
-                  <p className="text-xs text-[#9CA3AF]" style={it}>{initialQuery ? t("search.forQuery", { query: initialQuery }) : t("search.inCategory", { category: t(`categoryLabels.${initialCategory}`, initialCategory) })}</p>
+                  <p className="text-xs text-[#9CA3AF]" style={it}>{initialQuery ? t("search.forQuery", { query: initialQuery }) : initialCategory ? t("search.inCategory", { category: t(`categoryLabels.${initialCategory}`, initialCategory) }) : t("search.allProducts")}</p>
                 </div>
               </div>
 
@@ -922,24 +1036,6 @@ export default function SearchResultsPage() {
               </div>
             )}
 
-            {/* Compare bar */}
-            {compareList.size > 0 && (
-              <div className="mb-5 p-4 bg-[#111827] dark:bg-[#131B2E] rounded-2xl flex items-center justify-between gap-4 border border-white/10">
-                <div className="flex items-center gap-3">
-                  <Zap className="w-4 h-4 text-[#F97316] flex-shrink-0" />
-                  <span className="text-sm text-white font-medium" style={pp}>
-                    {t("search.productsSelected", { count: compareList.size })}
-                  </span>
-                </div>
-                <div className="flex items-center gap-2 flex-shrink-0">
-                  <button onClick={() => setCompareList(new Set())} className="text-xs text-gray-400 hover:text-white transition-colors" style={it}>{t("search.clear")}</button>
-                  <button className="px-4 py-2 bg-[#F97316] hover:bg-orange-600 text-white text-sm font-semibold rounded-xl transition-all" style={pp}>
-                    {t("search.compareNow")}
-                  </button>
-                </div>
-              </div>
-            )}
-
             {/* Product Grid / List */}
             {pageItems.length > 0 ? (
               <div className={viewMode === "grid"
@@ -953,7 +1049,7 @@ export default function SearchResultsPage() {
                         wishlisted={wishlisted.has(p.id)}
                         onToggleWish={() => toggleWish(p.id)}
                         comparing={compareList.has(p.id)}
-                        onToggleCompare={() => setCompareList(prev => { const n = new Set(prev); n.has(p.id) ? n.delete(p.id) : n.add(p.id); return n; })}
+                        onToggleCompare={() => toggleCompare(p)}
                         onQuickView={() => setQuickViewItem(p)}
                         onCompare={() => navigate(`/compare/${encodeURIComponent(p.name)}`)}
                         onAddToCart={() => addToCart({ productId: p.id, storeName: p.bestStoreName, priceSnapshot: p.lowestPrice, name: p.name, image: p.image })}
@@ -963,7 +1059,7 @@ export default function SearchResultsPage() {
                         wishlisted={wishlisted.has(p.id)}
                         onToggleWish={() => toggleWish(p.id)}
                         comparing={compareList.has(p.id)}
-                        onToggleCompare={() => setCompareList(prev => { const n = new Set(prev); n.has(p.id) ? n.delete(p.id) : n.add(p.id); return n; })}
+                        onToggleCompare={() => toggleCompare(p)}
                         onQuickView={() => setQuickViewItem(p)}
                         onCompare={() => navigate(`/compare/${encodeURIComponent(p.name)}`)}
                         onAddToCart={() => addToCart({ productId: p.id, storeName: p.bestStoreName, priceSnapshot: p.lowestPrice, name: p.name, image: p.image })}
@@ -985,7 +1081,7 @@ export default function SearchResultsPage() {
 
             {/* Pagination */}
             {totalPages > 1 && (
-              <div className="flex items-center justify-between mt-10 pt-6 border-t border-[#E5E7EB] dark:border-white/10">
+              <div className="flex flex-wrap items-center justify-center sm:justify-between gap-3 mt-10 pt-6 border-t border-[#E5E7EB] dark:border-white/10">
                 <button
                   onClick={() => { setPage(p => Math.max(1, p - 1)); window.scrollTo({ top: 0, behavior: "smooth" }); }}
                   disabled={page === 1}
@@ -995,11 +1091,14 @@ export default function SearchResultsPage() {
                   <ChevronLeft className="w-4 h-4" /> {t("search.previous")}
                 </button>
 
-                <div className="flex items-center gap-1">
-                  {Array.from({ length: totalPages }, (_, i) => i + 1).map(n => (
+                <div className="flex items-center gap-1 order-first sm:order-none w-full sm:w-auto justify-center">
+                  {pageList(page, totalPages).map((n, i) => n === "…" ? (
+                    <span key={`gap-${i}`} className="w-6 text-center text-sm text-[#9CA3AF]" style={pp}>…</span>
+                  ) : (
                     <button
                       key={n}
                       onClick={() => { setPage(n); window.scrollTo({ top: 0, behavior: "smooth" }); }}
+                      aria-current={n === page ? "page" : undefined}
                       className={`w-9 h-9 rounded-xl text-sm font-medium transition-all ${n === page ? "bg-[#F97316] text-white shadow-sm" : "text-[#374151] dark:text-gray-300 hover:bg-orange-50 dark:hover:bg-orange-950/30 hover:text-[#F97316]"}`}
                       style={pp}
                     >{n}</button>
@@ -1055,6 +1154,65 @@ export default function SearchResultsPage() {
             </button>
           </div>
         </div>
+      )}
+
+      {/* ── Compare tray ── */}
+      {compareProducts.length > 0 && !compareOpen && (
+        <div className="fixed bottom-4 inset-x-4 z-40 mx-auto max-w-3xl">
+          {compareNotice && (
+            <div role="status" className="mb-2 px-4 py-2.5 rounded-xl bg-amber-50 dark:bg-amber-950/60 border border-amber-200 dark:border-amber-800 text-sm text-amber-800 dark:text-amber-200 shadow-lg" style={it}>
+              {compareNotice}
+            </div>
+          )}
+          <div className="p-3 bg-[#111827] dark:bg-[#131B2E] rounded-2xl flex items-center justify-between gap-3 border border-white/10 shadow-2xl">
+            <div className="flex items-center gap-3 min-w-0">
+              <div className="flex -space-x-2 flex-shrink-0">
+                {compareProducts.map(p => (
+                  <button
+                    key={p._id}
+                    onClick={() => toggleCompare({ id: p._id, category: p.category })}
+                    title={`${t("search.cmp.remove")}: ${p.name}`}
+                    aria-label={`${t("search.cmp.remove")}: ${p.name}`}
+                    className={`group relative w-10 h-10 rounded-lg overflow-hidden border-2 border-[#111827] dark:border-[#131B2E] ${imgBox(p.image)}`}
+                  >
+                    <img src={p.image} alt="" className={`w-full h-full ${imgFit(p.image, "p-0.5")}`} />
+                    <span className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 flex items-center justify-center transition-opacity"><X className="w-4 h-4 text-white" /></span>
+                  </button>
+                ))}
+              </div>
+              <div className="min-w-0">
+                <p className="text-sm text-white font-medium truncate" style={pp}>{t("search.cmp.slots", { count: compareProducts.length, max: MAX_COMPARE })}</p>
+                {compareProducts.length < 2 && <p className="text-xs text-gray-400 truncate" style={it}>{t("search.cmp.needMore")}</p>}
+              </div>
+            </div>
+            <div className="flex items-center gap-3 flex-shrink-0">
+              <button onClick={() => setCompareList(new Set())} className="text-xs text-gray-400 hover:text-white transition-colors" style={it}>{t("search.clear")}</button>
+              <button
+                onClick={() => setCompareOpen(true)}
+                disabled={compareProducts.length < 2}
+                className="px-4 py-2 bg-[#F97316] hover:bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-semibold rounded-xl transition-all"
+                style={pp}
+              >
+                {t("search.compareNow")}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Compare modal ── */}
+      {compareOpen && (
+        <CompareModal
+          products={compareProducts}
+          onClose={() => setCompareOpen(false)}
+          onRemove={(id) => setCompareList(prev => { const n = new Set(prev); n.delete(id); return n; })}
+          onViewPrices={(p) => { setCompareOpen(false); navigate(`/compare/${encodeURIComponent(p.name)}`); }}
+          onAddToCart={(p) => {
+            const pool = p.stores.some(s => s.inStock) ? p.stores.filter(s => s.inStock) : p.stores;
+            const best = [...pool].sort((a, b) => a.price - b.price)[0];
+            if (best) addToCart({ productId: p._id, storeName: best.name, priceSnapshot: best.price, name: p.name, image: p.image });
+          }}
+        />
       )}
 
       {/* ── Quick View Modal ── */}

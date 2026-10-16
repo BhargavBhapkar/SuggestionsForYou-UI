@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router";
+import { Link, useLocation, useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
-import { Bell, Moon, Sun, Menu, X, UserRound, LogOut, ShoppingCart, Heart } from "lucide-react";
+import { Moon, Sun, Menu, X, UserRound, LogOut, ShoppingCart, Heart } from "lucide-react";
 import { inter, poppins } from "../lib/fonts";
 import type { AuthUser } from "../lib/api";
 import LanguageSwitcher from "./LanguageSwitcher";
@@ -30,11 +30,22 @@ export default function Navbar({
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
+  const { pathname } = useLocation();
+
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  useEffect(() => { setMobileOpen(false); }, [pathname]);
+
+  useEffect(() => {
+    if (!mobileOpen) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") setMobileOpen(false); };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [mobileOpen]);
 
   const navLinks: { key: string; label: string }[] = [
     { key: "home", label: t("nav.home") },
@@ -58,58 +69,56 @@ export default function Navbar({
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
           {/* Logo */}
-          <a
-            href="#"
-            onClick={(e) => { e.preventDefault(); navigate("/"); window.scrollTo(0, 0); }}
+          <Link
+            to="/"
+            aria-label="SuggestionsForYou"
+            onClick={() => window.scrollTo(0, 0)}
             className="flex items-center gap-2.5 flex-shrink-0"
           >
-            <img src="/logo.svg" alt="SuggestionsForYou" className="w-8 h-8 rounded-xl object-cover shadow-sm" />
+            <img src="/logo-80.png" alt="SuggestionsForYou" className="w-8 h-8 rounded-xl object-cover shadow-sm" />
             <span
               className="font-bold text-[#111827] dark:text-white text-base hidden sm:block"
               style={poppins}
             >
               SuggestionsForYou
             </span>
-          </a>
+          </Link>
 
           {/* Desktop links */}
           <div className="hidden lg:flex items-center gap-6 flex-shrink-0">
             {navLinks.map((l) => (
-              <button
+              <Link
                 key={l.key}
-                onClick={() => {
-                  navigate(NAV_PATHS[l.key]); window.scrollTo(0, 0);
-                }}
+                to={NAV_PATHS[l.key]}
+                onClick={() => window.scrollTo(0, 0)}
                 className="text-sm font-medium text-[#6B7280] hover:text-[#F97316] dark:text-gray-400 dark:hover:text-[#F97316] transition-colors duration-150 relative whitespace-nowrap after:absolute after:bottom-[-2px] after:left-0 after:right-0 after:h-0.5 after:bg-[#F97316] after:scale-x-0 hover:after:scale-x-100 after:transition-transform after:duration-200 after:origin-left"
               >
                 {l.label}
-              </button>
+              </Link>
             ))}
           </div>
 
           {/* Actions */}
           <div className="hidden lg:flex items-center gap-2">
-            <button onClick={() => navigate("/wishlist")} className="relative p-2 text-[#6B7280] hover:text-[#F97316] dark:text-gray-400 transition-colors">
+            <Link to="/wishlist" aria-label={t("common.wishlist")} className="relative p-2 text-[#6B7280] hover:text-[#F97316] dark:text-gray-400 transition-colors">
               <Heart className="w-5 h-5" />
               {wishlistCount > 0 && (
                 <span className="absolute -top-0.5 -right-0.5 min-w-[16px] h-4 px-1 bg-[#F97316] text-white text-[10px] font-bold rounded-full flex items-center justify-center leading-none">
                   {wishlistCount > 99 ? "99+" : wishlistCount}
                 </span>
               )}
-            </button>
-            <button onClick={() => navigate("/cart")} className="relative p-2 text-[#6B7280] hover:text-[#F97316] dark:text-gray-400 transition-colors">
+            </Link>
+            <Link to="/cart" aria-label={t("common.cart")} className="relative p-2 text-[#6B7280] hover:text-[#F97316] dark:text-gray-400 transition-colors">
               <ShoppingCart className="w-5 h-5" />
               {cartCount > 0 && (
                 <span className="absolute -top-0.5 -right-0.5 min-w-[16px] h-4 px-1 bg-[#F97316] text-white text-[10px] font-bold rounded-full flex items-center justify-center leading-none">
                   {cartCount > 99 ? "99+" : cartCount}
                 </span>
               )}
-            </button>
-            <button className="p-2 text-[#6B7280] hover:text-[#F97316] dark:text-gray-400 transition-colors">
-              <Bell className="w-5 h-5" />
-            </button>
+            </Link>
             <button
               onClick={() => setDark(!dark)}
+              aria-label={dark ? t("common.lightMode") : t("common.darkMode")}
               className="p-2 text-[#6B7280] hover:text-[#F97316] dark:text-gray-400 transition-colors"
             >
               {dark ? (
@@ -145,24 +154,25 @@ export default function Navbar({
 
           {/* Mobile toggle */}
           <div className="lg:hidden flex items-center gap-2">
-            <button onClick={() => navigate("/wishlist")} className="relative p-2 text-[#6B7280] dark:text-gray-400">
+            <Link to="/wishlist" aria-label={t("common.wishlist")} className="relative p-2 text-[#6B7280] dark:text-gray-400">
               <Heart className="w-5 h-5" />
               {wishlistCount > 0 && (
                 <span className="absolute -top-0.5 -right-0.5 min-w-[16px] h-4 px-1 bg-[#F97316] text-white text-[10px] font-bold rounded-full flex items-center justify-center leading-none">
                   {wishlistCount > 99 ? "99+" : wishlistCount}
                 </span>
               )}
-            </button>
-            <button onClick={() => navigate("/cart")} className="relative p-2 text-[#6B7280] dark:text-gray-400">
+            </Link>
+            <Link to="/cart" aria-label={t("common.cart")} className="relative p-2 text-[#6B7280] dark:text-gray-400">
               <ShoppingCart className="w-5 h-5" />
               {cartCount > 0 && (
                 <span className="absolute -top-0.5 -right-0.5 min-w-[16px] h-4 px-1 bg-[#F97316] text-white text-[10px] font-bold rounded-full flex items-center justify-center leading-none">
                   {cartCount > 99 ? "99+" : cartCount}
                 </span>
               )}
-            </button>
+            </Link>
             <button
               onClick={() => setDark(!dark)}
+              aria-label={dark ? t("common.lightMode") : t("common.darkMode")}
               className="p-2 text-[#6B7280] dark:text-gray-400"
             >
               {dark ? (
@@ -174,6 +184,9 @@ export default function Navbar({
             <LanguageSwitcher compact />
             <button
               onClick={() => setMobileOpen(!mobileOpen)}
+              aria-label={mobileOpen ? t("common.closeMenu") : t("common.openMenu")}
+              aria-expanded={mobileOpen}
+              aria-controls="mobile-menu"
               className="p-2 text-[#374151] dark:text-gray-300"
             >
               {mobileOpen ? (
@@ -187,19 +200,17 @@ export default function Navbar({
 
         {/* Mobile menu */}
         {mobileOpen && (
-          <div className="lg:hidden border-t border-[#E5E7EB] dark:border-white/10 bg-white dark:bg-[#0a0e1f] px-4 py-4">
-            {navLinks.map((l) => {
-              return (
-                <a
-                  key={l.key}
-                  href="#"
-                  onClick={(e) => { e.preventDefault(); navigate(NAV_PATHS[l.key]); setMobileOpen(false); window.scrollTo(0, 0); }}
-                  className="block py-3 text-sm font-medium text-[#374151] dark:text-gray-300 border-b border-[#E5E7EB] dark:border-white/10 last:border-0"
-                >
-                  {l.label}
-                </a>
-              );
-            })}
+          <div id="mobile-menu" aria-label={t("common.mainMenu")} className="lg:hidden border-t border-[#E5E7EB] dark:border-white/10 bg-white dark:bg-[#0a0e1f] px-4 py-4 max-h-[calc(100dvh-4rem)] overflow-y-auto">
+            {navLinks.map((l) => (
+              <Link
+                key={l.key}
+                to={NAV_PATHS[l.key]}
+                onClick={() => window.scrollTo(0, 0)}
+                className="block py-3 text-sm font-medium text-[#374151] dark:text-gray-300 border-b border-[#E5E7EB] dark:border-white/10 last:border-0"
+              >
+                {l.label}
+              </Link>
+            ))}
             {user ? (
               <>
                 <button

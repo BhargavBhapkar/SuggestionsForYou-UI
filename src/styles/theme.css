@@ -215,3 +215,10 @@
 .animate-marquee:hover {
   animation-play-state: paused;
 }
+
+/* Guardrail: a stray wide element must never create a sideways scrollbar.
+   `clip` (unlike `hidden`) keeps position: sticky working. */
+html,
+body {
+  overflow-x: clip;
+}

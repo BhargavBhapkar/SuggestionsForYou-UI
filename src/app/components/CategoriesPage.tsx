@@ -38,9 +38,8 @@ export default function CategoriesPage() {
           </p>
         </div>
       </Reveal>
-      <div className="space-y-4">
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
-          {categories.slice(0, 5).map((cat, i) => {
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+          {categories.map((cat, i) => {
             const Icon = CATEGORY_ICONS[cat.iconName];
             return (
               <Reveal key={cat._id} delay={i * 50}>
@@ -58,27 +57,6 @@ export default function CategoriesPage() {
               </Reveal>
             );
           })}
-        </div>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 lg:ml-[calc(20%+0.25rem)]">
-          {categories.slice(5).map((cat, i) => {
-            const Icon = CATEGORY_ICONS[cat.iconName];
-            return (
-              <Reveal key={cat._id} delay={i * 50}>
-                <button onClick={() => onNavigateToCategory(cat.name)} className="group relative flex flex-col items-center gap-4 p-7 w-full bg-white dark:bg-[#131B2E] border border-[#E5E7EB] dark:border-white/10 rounded-3xl hover:shadow-xl hover:shadow-orange-100 dark:hover:shadow-orange-950/30 hover:-translate-y-2 hover:border-transparent transition-all duration-300 overflow-hidden">
-                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-3xl" style={{ background: `radial-gradient(ellipse at 30% 30%, ${cat.color}30 0%, transparent 70%)` }} />
-                  <div className="relative w-[4.5rem] h-[4.5rem] rounded-2xl flex items-center justify-center transition-all duration-300 group-hover:scale-110 group-hover:shadow-lg" style={{ backgroundColor: dark ? cat.darkBg : cat.bg }}>
-                    <Icon className="w-9 h-9" style={{ color: cat.color }} />
-                  </div>
-                  <div className="relative text-center">
-                    <p className="text-sm font-semibold text-[#111827] dark:text-white" style={poppins}>{t(`categoryLabels.${cat.name}`, cat.name)}</p>
-                    <p className="text-xs text-[#9CA3AF] mt-0.5" style={inter}>{t("categoriesPage.productsCount", { count: cat.count })}</p>
-                  </div>
-                  <div className="absolute bottom-0 left-0 right-0 h-0.5 scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" style={{ backgroundColor: cat.color }} />
-                </button>
-              </Reveal>
-            );
-          })}
-        </div>
       </div>
 
       {/* Category highlights */}

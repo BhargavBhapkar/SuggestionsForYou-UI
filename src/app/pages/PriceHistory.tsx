@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
 import {
   ChevronRight, Search, TrendingUp, TrendingDown, ArrowRight,
@@ -9,7 +9,7 @@ import {
   AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid,
 } from "recharts";
 import { inter, poppins } from "../lib/fonts";
-import { DEFAULT_PRODUCT } from "../data/products";
+import { DEFAULT_PRODUCT, imgFit, imgBox } from "../data/products";
 import { useProducts, useProduct } from "../hooks/useApi";
 import PHTooltip from "../components/PHTooltip";
 import Reveal from "../components/Reveal";
@@ -58,10 +58,10 @@ export default function PriceHistoryPage() {
           <button onClick={() => navigate("/")} className="p-2 rounded-xl text-[#6B7280] hover:text-[#F97316] hover:bg-orange-50 dark:hover:bg-orange-950/30 transition-all">
             <ChevronRight className="w-4 h-4 rotate-180" />
           </button>
-          <div className="flex items-center gap-2 flex-shrink-0">
-            <img src="/logo.svg" alt="SuggestionsForYou" className="w-7 h-7 rounded-lg object-cover shadow-sm" />
+          <Link to="/" aria-label="SuggestionsForYou" className="flex items-center gap-2 flex-shrink-0 hover:opacity-80 transition-opacity">
+            <img src="/logo-80.png" alt="SuggestionsForYou" className="w-7 h-7 rounded-lg object-cover shadow-sm" />
             <span className="font-bold text-[#111827] dark:text-white text-sm hidden sm:block" style={poppins}>SuggestionsForYou</span>
-          </div>
+          </Link>
           <span className="text-[#D1D5DB] dark:text-white/20 hidden sm:block">/</span>
           <span className="text-sm text-[#6B7280] dark:text-gray-400 hidden sm:block" style={inter}>{t("priceHistoryPage.title")}</span>
         </div>
@@ -211,8 +211,8 @@ export default function PriceHistoryPage() {
                   onClick={() => goToProduct(p.name)}
                   className="group text-left w-full bg-white dark:bg-[#131B2E] border border-[#E5E7EB] dark:border-white/10 rounded-2xl overflow-hidden hover:shadow-lg hover:shadow-orange-100 dark:hover:shadow-orange-950/30 hover:-translate-y-1.5 transition-all duration-300"
                 >
-                  <div className="relative bg-[#F8FAFC] dark:bg-white/5 h-32 overflow-hidden">
-                    <img src={p.image} alt={p.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  <div className={`relative ${imgBox(p.image)} h-32 overflow-hidden`}>
+                    <img src={p.image} alt={p.name} className={`w-full h-full ${imgFit(p.image, "p-2")} group-hover:scale-105 transition-transform duration-500`} />
                     <span className="absolute top-2 left-2 px-2 py-0.5 bg-[#10B981] text-white text-[10px] font-bold rounded-md flex items-center gap-0.5">
                       <TrendingDown className="w-2.5 h-2.5" /> {p.discount}%
                     </span>

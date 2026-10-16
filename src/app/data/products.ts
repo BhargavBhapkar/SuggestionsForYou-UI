@@ -19,6 +19,11 @@ const CATEGORY_IMAGES: [RegExp, string][] = [
   [/\bac\b|air condition|wind-free/i, "1667983453881-4992fe86ab1b"],
 ];
 
+// Real product shots (our own photos, Amazon) are shown whole on white; stock photos and icon tiles fill the box.
+export const isProductShot = (src?: string) => !!src && (src.startsWith("/product-images/") || src.includes("media-amazon"));
+export const imgFit = (src?: string, pad = "p-3") => (isProductShot(src) ? `object-contain ${pad}` : "object-cover");
+export const imgBox = (src?: string) => (isProductShot(src) ? "bg-white" : "bg-[#F8FAFC] dark:bg-white/5");
+
 export function getProductImage(productName: string, size = 400): string {
   const match = CATEGORY_IMAGES.find(([pattern]) => pattern.test(productName));
   const id = match ? match[1] : "1610945264803-c22b62d2a7b3";

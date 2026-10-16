@@ -23,7 +23,13 @@
     "browseAll": "Browse All",
     "filter": "Filter",
     "sort": "Sort",
-    "compareShort": "+ Compare"
+    "compareShort": "+ Compare",
+    "lightMode": "Switch to light mode",
+    "darkMode": "Switch to dark mode",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
+    "mainMenu": "Main menu",
+    "voiceListening": "Listening…"
   },
   "nav": {
     "home": "Home",
@@ -44,7 +50,8 @@
     "Gaming": "Gaming",
     "Televisions": "Televisions",
     "Cameras": "Cameras",
-    "Home Appliances": "Home Appliances"
+    "Home Appliances": "Home Appliances",
+    "Monitors": "Monitors"
   },
   "home": {
     "heroBadge": "AI-Powered Price Intelligence · 5 Retailers",
@@ -137,7 +144,7 @@
   "footer": {
     "tagline": "AI-powered price comparison across 5 top Indian retailers. Track prices, get alerts, and always buy at the perfect moment.",
     "getDealAlerts": "Get Deal Alerts",
-    "emailPlaceholder": "your@email.com",
+    "emailPlaceholder": "Enter your email",
     "columns": [
       { "title": "Company", "links": ["About Us", "Careers", "Blog", "Press Kit", "Partner With Us"] },
       { "title": "Features", "links": ["Price Comparison", "Price Alerts", "Price History", "AI Advisor", "Coupons & Offers"] },
@@ -145,7 +152,7 @@
       { "title": "Legal", "links": ["Privacy Policy", "Terms of Service", "Cookie Policy", "Disclaimer", "GDPR"] }
     ],
     "address": "Bengaluru, Karnataka, India",
-    "copyright": "© 2025 SuggestionsForYou. All rights reserved. Made with ♥ in India 🇮🇳",
+    "copyright": "© {{year}} SuggestionsForYou. All rights reserved. Made with ♥ in India 🇮🇳",
     "bottomLinks": ["Privacy", "Terms", "Cookies", "Sitemap"]
   },
   "cart": {
@@ -263,7 +270,7 @@
   "categoriesPage": {
     "eyebrow": "Shop by Type",
     "title": "All Categories",
-    "subtitle": "Browse 2,300+ products across every category. Prices updated every 15 minutes.",
+    "subtitle": "Browse 1,500+ products across every category. Prices updated every 15 minutes.",
     "productsCount": "{{count}} products",
     "highlights": [
       { "title": "Today's Top Deals", "desc": "Flash sales ending soon — up to 40% off" },
@@ -288,6 +295,7 @@
     "retailersCount": "{{count}} Retailers",
     "belowMrp": "{{discount}}% below MRP",
     "reviewsCount": "({{count}} reviews)",
+    "noReviews": "No reviews yet",
     "verifiedOn": "Verified on {{store}}",
     "bestPriceToday": "Best price today",
     "youSave": "You save",
@@ -370,6 +378,7 @@
     "searchPlaceholder": "Search products, brands or model numbers...",
     "searchButton": "Search",
     "recent": "Recent:",
+    "allProducts": "All products",
     "resultsCount": "{{count}} results",
     "forQuery": "for \"{{query}}\"",
     "inCategory": "in {{category}}",
@@ -400,6 +409,66 @@
     "comparePrices": "Compare Prices",
     "addToCart": "Add to cart",
     "addToCompare": "Add to compare",
+    "cmp": {
+      "title": "Compare products",
+      "subtitle": "{{count}} products side by side",
+      "close": "Close",
+      "remove": "Remove",
+      "maxItems": "You can compare up to {{max}} products at a time.",
+      "sameCategory": "You can only compare products from the same category. Clear your selection to compare {{category}}.",
+      "needMore": "Select at least 2 products to compare.",
+      "slots": "{{count}} of {{max}} selected",
+      "glance": "At a glance",
+      "lowestPrice": "Lowest price",
+      "topRated": "Top rated",
+      "bestDiscount": "Biggest discount",
+      "topSpecs": "Highest spec score",
+      "quickTake": "Quick take",
+      "tCheapest": "{{name}} is the cheapest at ₹{{price}}, ₹{{diff}} less than {{other}}.",
+      "tRated": "{{name}} has the best rating: {{rating}} stars from {{reviews}} reviews.",
+      "tNoRatings": "None of these products has customer reviews yet, so ratings can't be compared.",
+      "tSpec": "{{name}} has the highest spec score ({{score}}/100).",
+      "tStock": "Out of stock: {{names}}.",
+      "tDiscount": "{{name}} has the biggest discount ({{percent}}% off MRP).",
+      "tNoSpecs": "No detailed specifications are available for these products, so the comparison is based on price, ratings and offers.",
+      "sections": {
+        "overview": "Overview",
+        "price": "Price",
+        "stores": "Price by store",
+        "specs": "Specifications",
+        "before": "Before you buy"
+      },
+      "rows": {
+        "brand": "Brand",
+        "category": "Category",
+        "availability": "Availability",
+        "rating": "Rating",
+        "bestPrice": "Best price",
+        "mrp": "MRP",
+        "discount": "Discount",
+        "bestStore": "Best price at",
+        "spread": "Price across stores",
+        "delivery": "Delivery",
+        "offers": "Offers",
+        "storesInStock": "Stores with stock"
+      },
+      "inStock": "In stock",
+      "outOfStock": "Out of stock",
+      "noReviews": "No reviews yet",
+      "reviewsCount": "{{count}} reviews",
+      "notAvailable": "Not available",
+      "cheapest": "Cheapest",
+      "best": "Best",
+      "differencesOnly": "Differences only",
+      "allDetails": "All details",
+      "hiddenIdentical": "{{count}} identical details hidden",
+      "identical": "These products have identical specifications.",
+      "viewPrices": "View prices",
+      "addToCart": "Add to cart",
+      "added": "Added",
+      "ofStores": "{{inStock}} of {{total}}",
+      "noOffers": "No offers listed"
+    },
     "pricesFromStores": "Prices from {{count}} stores",
     "storesCount": "{{count}} stores",
     "bestPrice": "Best Price",
@@ -469,7 +538,7 @@
     "subtitle": "We're on a mission to make every Indian purchase smarter. Compare prices across 5 retailers in real time.",
     "ourStoryTitle": "Our Story",
     "storyP1": "SuggestionsForYou started with a simple frustration: the same product could cost thousands of rupees more or less depending on which retailer's app you happened to open first — and there was no easy way to know which one was actually the best deal, or whether today's \"sale\" price was real.",
-    "storyP2": "So we built a single place that watches 5 Indian retailers around the clock, tracks every price change, and uses that history to tell shoppers not just where to buy, but when. What began as a way to avoid overpaying on one laptop has grown into a platform tracking 2,300+ products for shoppers across the country.",
+    "storyP2": "So we built a single place that watches 5 Indian retailers around the clock, tracks every price change, and uses that history to tell shoppers not just where to buy, but when. What began as a way to avoid overpaying on one laptop has grown into a platform tracking products for shoppers across the country, with our catalog expanding every week.",
     "storyP3": "We're not a retailer, and we never take a cut that costs you money — we earn a small commission from retailers when you buy, at no extra cost to you. Our only incentive is finding you the genuine best price.",
     "whatWeValueTitle": "What We Value",
     "values": [
@@ -501,5 +570,121 @@
     "notConfigured": "The AI assistant isn't set up yet — please try again later.",
     "rateLimited": "You've sent a lot of messages — please wait a few minutes and try again.",
     "newChat": "New chat"
+  },
+  "meta": {
+    "home": {
+      "title": "SuggestionsForYou — AI Price Comparison for India",
+      "description": "Compare prices across 5 top Indian retailers, track price history and let our AI tell you the best time to buy."
+    },
+    "categories": {
+      "title": "Browse Categories",
+      "description": "Browse mobiles, laptops, headphones, smart watches, TVs and more, and compare prices across top Indian retailers."
+    },
+    "compare": {
+      "title": "{{name}} — Price Comparison",
+      "description": "Compare the price of {{name}} across 5 top Indian retailers, with delivery, offers and cashback side by side."
+    },
+    "search": {
+      "title": "Search results for “{{query}}”",
+      "description": "Compare prices for “{{query}}” across top Indian retailers."
+    },
+    "searchCategory": {
+      "title": "{{category}} — Compare Prices",
+      "description": "Compare {{category}} prices across top Indian retailers."
+    },
+    "searchAll": {
+      "title": "Search & Compare Products",
+      "description": "Search and compare products across top Indian retailers."
+    },
+    "priceHistory": {
+      "title": "Price History",
+      "description": "See how product prices have changed over 30 days, 90 days and a year, and spot the best time to buy."
+    },
+    "aiAdvisor": {
+      "title": "AI Shopping Advisor",
+      "description": "Tell our AI what you need and your budget, and get personalised product suggestions with the best prices."
+    },
+    "deals": {
+      "title": "Today's Best Deals",
+      "description": "The biggest price drops and limited-time deals across top Indian retailers."
+    },
+    "about": {
+      "title": "About Us",
+      "description": "Learn how SuggestionsForYou compares prices and helps shoppers across India buy smarter."
+    },
+    "cart": {
+      "title": "Your Cart",
+      "description": "Review the items in your cart."
+    },
+    "wishlist": {
+      "title": "Your Wishlist",
+      "description": "Products you've saved for later."
+    },
+    "account": {
+      "title": "My Account",
+      "description": "Manage your profile, addresses and orders."
+    },
+    "checkout": {
+      "title": "Checkout",
+      "description": "Choose a delivery address and place your order."
+    },
+    "orderConfirmation": {
+      "title": "Order Confirmed",
+      "description": "Your order has been placed."
+    },
+    "orderDetail": {
+      "title": "Order Details",
+      "description": "View the details and status of your order."
+    },
+    "privacy": {
+      "title": "Privacy Policy",
+      "description": "How SuggestionsForYou collects, uses and protects your personal information."
+    },
+    "terms": {
+      "title": "Terms of Service",
+      "description": "The terms that apply when you use SuggestionsForYou."
+    },
+    "notFound": {
+      "title": "Page Not Found",
+      "description": "The page you are looking for doesn't exist."
+    }
+  },
+  "notFound": {
+    "heading": "Page not found",
+    "body": "The page you're looking for doesn't exist or may have moved. Let's get you back to comparing prices.",
+    "home": "Back to Home",
+    "search": "Search products",
+    "categories": "Browse categories"
+  },
+  "toast": {
+    "dismiss": "Dismiss",
+    "addedToCart": "Added to cart",
+    "removedFromCart": "Removed from cart",
+    "cartFailed": "Couldn't update your cart. Please try again.",
+    "addedToWishlist": "Added to wishlist",
+    "removedFromWishlist": "Removed from wishlist",
+    "wishlistFailed": "Couldn't update your wishlist. Please try again.",
+    "welcomeBack": "Welcome back, {{name}}!",
+    "accountCreated": "Welcome to SuggestionsForYou, {{name}}! Your account is ready.",
+    "signedOut": "You've been signed out.",
+    "addressSaved": "Address saved",
+    "addressDeleted": "Address deleted",
+    "orderCancelled": "Order cancelled",
+    "voiceUnsupported": "Voice search isn't supported in this browser.",
+    "voiceError": "Couldn't catch that. Please try again.",
+    "voiceDenied": "Microphone access is blocked. Allow it in your browser to use voice search.",
+    "loadFailed": "Couldn't load the latest data. Check your connection and try again."
+  },
+  "newsletter": {
+    "label": "Email address",
+    "button": "Subscribe",
+    "success": "Thanks for subscribing! We'll send you the best deals.",
+    "invalid": "Please enter a valid email address.",
+    "failed": "We couldn't subscribe you right now. Please try again."
+  },
+  "legal": {
+    "draftBanner": "Draft: this page has not yet been reviewed by a lawyer and may change before launch.",
+    "lastUpdated": "Last updated: {{date}}",
+    "englishOnly": "Available in English only"
   }
 }

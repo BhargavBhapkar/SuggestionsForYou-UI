@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { inter, poppins } from "../lib/fonts";
 import { api, type Address } from "../lib/api";
+import { useToast } from "./ToastProvider";
 
 const emptyForm = { label: "", line1: "", line2: "", city: "", state: "", pincode: "", phone: "" };
 
@@ -13,6 +14,7 @@ export default function AddressForm({
   onSaved: () => void;
 }) {
   const { t } = useTranslation();
+  const toast = useToast();
   const [form, setForm] = useState(
     initial
       ? { label: initial.label, line1: initial.line1, line2: initial.line2 ?? "", city: initial.city, state: initial.state, pincode: initial.pincode, phone: initial.phone }
@@ -30,6 +32,7 @@ export default function AddressForm({
     try {
       if (initial) await api.updateAddress(initial._id, form);
       else await api.addAddress({ ...form, isDefault: false });
+      toast.success(t("toast.addressSaved"));
       onSaved();
     } catch (err) {
       setError(err instanceof Error ? err.message : t("addressForm.errorSaveFailed"));

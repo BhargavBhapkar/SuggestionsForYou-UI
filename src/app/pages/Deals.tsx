@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import { useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
 import {
   ChevronRight, Flame, Timer, Percent, BarChart2, Check,
@@ -7,6 +7,7 @@ import {
 import { inter, poppins } from "../lib/fonts";
 import { useProducts } from "../hooks/useApi";
 import Reveal from "../components/Reveal";
+import { imgFit, imgBox } from "../data/products";
 
 const SORT_KEYS = ["discount", "price-low", "price-high"] as const;
 
@@ -54,10 +55,10 @@ export default function DealsPage() {
           <button onClick={() => navigate("/")} className="p-2 rounded-xl text-[#6B7280] hover:text-[#F97316] hover:bg-orange-50 dark:hover:bg-orange-950/30 transition-all">
             <ChevronRight className="w-4 h-4 rotate-180" />
           </button>
-          <div className="flex items-center gap-2 flex-shrink-0">
-            <img src="/logo.svg" alt="SuggestionsForYou" className="w-7 h-7 rounded-lg object-cover shadow-sm" />
+          <Link to="/" aria-label="SuggestionsForYou" className="flex items-center gap-2 flex-shrink-0 hover:opacity-80 transition-opacity">
+            <img src="/logo-80.png" alt="SuggestionsForYou" className="w-7 h-7 rounded-lg object-cover shadow-sm" />
             <span className="font-bold text-[#111827] dark:text-white text-sm hidden sm:block" style={poppins}>SuggestionsForYou</span>
-          </div>
+          </Link>
           <span className="text-[#D1D5DB] dark:text-white/20 hidden sm:block">/</span>
           <span className="text-sm text-[#6B7280] dark:text-gray-400 hidden sm:block" style={inter}>{t("dealsPage.title")}</span>
         </div>
@@ -135,8 +136,8 @@ export default function DealsPage() {
             return (
               <Reveal key={deal._id} delay={Math.min(i, 7) * 50}>
                 <div className="group bg-white dark:bg-[#131B2E] border border-[#E5E7EB] dark:border-white/10 rounded-2xl overflow-hidden hover:shadow-xl hover:shadow-orange-100 dark:hover:shadow-orange-950/30 hover:-translate-y-1.5 transition-all duration-300 flex flex-col">
-                  <div className="relative h-40 bg-[#F8FAFC] dark:bg-white/5 overflow-hidden flex-shrink-0">
-                    <img src={deal.image} alt={deal.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  <div className={`relative h-40 ${imgBox(deal.image)} overflow-hidden flex-shrink-0`}>
+                    <img src={deal.image} alt={deal.name} className={`w-full h-full ${imgFit(deal.image)} group-hover:scale-105 transition-transform duration-500`} />
                     <span className="absolute top-2.5 left-2.5 inline-flex items-center gap-0.5 px-2 py-1 bg-[#F97316] text-white text-xs font-bold rounded-lg shadow">
                       <Percent className="w-2.5 h-2.5" />−{deal.discount}%
                     </span>

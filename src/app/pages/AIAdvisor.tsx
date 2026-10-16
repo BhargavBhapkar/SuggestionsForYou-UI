@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
 import {
   ChevronRight, Bot, BarChart2, Clock, Users, Zap, ShieldCheck,
@@ -30,10 +30,10 @@ export default function AIAdvisorPage() {
           <button onClick={() => navigate("/")} className="p-2 rounded-xl text-[#6B7280] hover:text-[#F97316] hover:bg-orange-50 dark:hover:bg-orange-950/30 transition-all">
             <ChevronRight className="w-4 h-4 rotate-180" />
           </button>
-          <div className="flex items-center gap-2 flex-shrink-0">
-            <img src="/logo.svg" alt="SuggestionsForYou" className="w-7 h-7 rounded-lg object-cover shadow-sm" />
+          <Link to="/" aria-label="SuggestionsForYou" className="flex items-center gap-2 flex-shrink-0 hover:opacity-80 transition-opacity">
+            <img src="/logo-80.png" alt="SuggestionsForYou" className="w-7 h-7 rounded-lg object-cover shadow-sm" />
             <span className="font-bold text-[#111827] dark:text-white text-sm hidden sm:block" style={poppins}>SuggestionsForYou</span>
-          </div>
+          </Link>
           <span className="text-[#D1D5DB] dark:text-white/20 hidden sm:block">/</span>
           <span className="text-sm text-[#6B7280] dark:text-gray-400 hidden sm:block" style={inter}>{t("nav.aiAdvisor")}</span>
         </div>

@@ -8,6 +8,7 @@ import Reveal from "../components/Reveal";
 import AddressForm from "../components/AddressForm";
 import { useAddresses } from "../hooks/useApi";
 import { api } from "../lib/api";
+import { imgFit, imgBox } from "../data/products";
 import type { AppContext } from "../Layout";
 
 export default function CheckoutPage() {
@@ -116,7 +117,7 @@ export default function CheckoutPage() {
             <div className="space-y-3 mb-4">
               {cart.map((line) => (
                 <div key={`${line.productId}-${line.storeName}`} className="flex items-center gap-3">
-                  <img src={line.image} alt={line.name} className="w-12 h-12 rounded-lg object-cover flex-shrink-0 bg-[#F8FAFC] dark:bg-white/5" />
+                  <img src={line.image} alt={line.name} className={`w-12 h-12 rounded-lg ${imgFit(line.image, "p-1")} flex-shrink-0 ${imgBox(line.image)}`} />
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-[#111827] dark:text-white truncate" style={inter}>{line.name}</p>
                     <p className="text-xs text-[#9CA3AF]" style={inter}>{line.storeName} · {t("checkout.qtyLabel", { count: line.qty })}</p>

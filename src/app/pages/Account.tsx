@@ -8,6 +8,7 @@ import Reveal from "../components/Reveal";
 import AddressForm from "../components/AddressForm";
 import { useAddresses, useOrders } from "../hooks/useApi";
 import { api } from "../lib/api";
+import { useToast } from "../components/ToastProvider";
 import type { AppContext } from "../Layout";
 
 const STATUS_STYLES: Record<string, string> = {
@@ -21,7 +22,17 @@ const STATUS_STYLES: Record<string, string> = {
 export default function AccountPage() {
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const toast = useToast();
   const { user, authLoading, logout, onLoginRequired } = useOutletContext<AppContext>();
+  const run = async (action: () => Promise<unknown>, successKey: string) => {
+    try {
+      await action();
+      toast.success(t(successKey));
+      refetchAddresses();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : t("toast.cartFailed"));
+    }
+  };
   const { data: addresses, refetch: refetchAddresses } = useAddresses();
   const { data: orders } = useOrders();
   const [formMode, setFormMode] = useState<"none" | "add" | string>("none");
@@ -102,14 +113,14 @@ export default function AccountPage() {
                     </div>
                     <div className="flex items-center gap-1 flex-shrink-0">
                       {!addr.isDefault && (
-                        <button onClick={async () => { await api.updateAddress(addr._id, { isDefault: true }); refetchAddresses(); }} title={t("account.setAsDefault")} className="p-2 text-[#9CA3AF] hover:text-emerald-500 transition-colors">
+                        <button onClick={() => run(() => api.updateAddress(addr._id, { isDefault: true }), "toast.addressSaved")} title={t("account.setAsDefault")} className="p-2 text-[#9CA3AF] hover:text-emerald-500 transition-colors">
                           <Check className="w-4 h-4" />
                         </button>
                       )}
                       <button onClick={() => setFormMode(addr._id)} title={t("common.edit")} className="p-2 text-[#9CA3AF] hover:text-[#F97316] transition-colors">
                         <Pencil className="w-4 h-4" />
                       </button>
-                      <button onClick={async () => { await api.deleteAddress(addr._id); refetchAddresses(); }} title={t("common.delete")} className="p-2 text-[#9CA3AF] hover:text-red-500 transition-colors">
+                      <button onClick={() => run(() => api.deleteAddress(addr._id), "toast.addressDeleted")} title={t("common.delete")} className="p-2 text-[#9CA3AF] hover:text-red-500 transition-colors">
                         <Trash2 className="w-4 h-4" />
                       </button>
                     </div>

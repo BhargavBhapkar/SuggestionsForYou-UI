@@ -3,6 +3,7 @@ import { useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
 import { Flame, Timer, ChevronRight, Percent, Check, BarChart2 } from "lucide-react";
 import type { Product } from "../lib/api";
+import { isProductShot, imgFit } from "../data/products";
 
 export default function DealsCarousel({
   deals,
@@ -143,11 +144,11 @@ export default function DealsCarousel({
                 }}
               >
                 {/* Image */}
-                <div className="relative h-44 overflow-hidden bg-white/5 flex-shrink-0">
+                <div className={`relative h-44 overflow-hidden ${isProductShot(deal.image) ? "bg-white" : "bg-white/5"} flex-shrink-0`}>
                   <img
                     src={deal.image}
                     alt={deal.name}
-                    className={`w-full h-full object-cover transition-transform duration-700 ${isCenter ? "hover:scale-105" : ""}`}
+                    className={`w-full h-full ${imgFit(deal.image)} transition-transform duration-700 ${isCenter ? "hover:scale-105" : ""}`}
                   />
                   <div className="absolute top-3 left-3">
                     <span className="inline-flex items-center gap-0.5 px-2.5 py-1 bg-[#F97316] text-white text-xs font-bold rounded-lg shadow-lg shadow-orange-900/40">

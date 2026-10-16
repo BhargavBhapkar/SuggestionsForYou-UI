@@ -7,6 +7,8 @@ import PageShell from "../components/PageShell";
 import Reveal from "../components/Reveal";
 import { useOrder } from "../hooks/useApi";
 import { api } from "../lib/api";
+import { imgFit, imgBox } from "../data/products";
+import { useToast } from "../components/ToastProvider";
 
 const STEPS = [
   { key: "placed", icon: Package },
@@ -18,6 +20,7 @@ const STEPS = [
 export default function OrderDetailPage() {
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const toast = useToast();
   const { orderId } = useParams<{ orderId: string }>();
   const { data: order, loading, refetch } = useOrder(orderId);
   const [cancelling, setCancelling] = useState(false);
@@ -45,6 +48,7 @@ export default function OrderDetailPage() {
     setError("");
     try {
       await api.cancelOrder(order._id);
+      toast.success(t("toast.orderCancelled"));
       refetch();
     } catch (err) {
       setError(err instanceof Error ? err.message : t("orderDetail.errorCancelFailed"));
@@ -110,7 +114,7 @@ export default function OrderDetailPage() {
             <div className="space-y-3">
               {order.items.map((item, i) => (
                 <div key={i} className="flex items-center gap-3">
-                  <img src={item.image} alt={item.name} className="w-12 h-12 rounded-lg object-cover flex-shrink-0 bg-[#F8FAFC] dark:bg-white/5" />
+                  <img src={item.image} alt={item.name} className={`w-12 h-12 rounded-lg ${imgFit(item.image, "p-1")} flex-shrink-0 ${imgBox(item.image)}`} />
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-[#111827] dark:text-white truncate" style={inter}>{item.name}</p>
                     <p className="text-xs text-[#9CA3AF]" style={inter}>{item.storeName} · {t("checkout.qtyLabel", { count: item.qty })}</p>

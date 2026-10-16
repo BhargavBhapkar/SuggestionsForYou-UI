@@ -4,6 +4,7 @@ import { ShoppingCart, Minus, Plus, Trash2, ArrowRight } from "lucide-react";
 import { inter, poppins } from "../lib/fonts";
 import PageShell from "../components/PageShell";
 import Reveal from "../components/Reveal";
+import { imgFit, imgBox } from "../data/products";
 import type { AppContext } from "../Layout";
 
 export default function CartPage() {
@@ -35,7 +36,7 @@ export default function CartPage() {
               {cart.map((line) => (
                 <div key={`${line.productId}-${line.storeName}`} className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 bg-white dark:bg-[#131B2E] border border-[#E5E7EB] dark:border-white/10 rounded-2xl p-4">
                   <div className="flex items-center gap-4 flex-1 min-w-0">
-                    <img src={line.image} alt={line.name} className="w-16 h-16 rounded-xl object-cover flex-shrink-0 bg-[#F8FAFC] dark:bg-white/5" />
+                    <img src={line.image} alt={line.name} className={`w-16 h-16 rounded-xl ${imgFit(line.image, "p-1")} flex-shrink-0 ${imgBox(line.image)}`} />
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-semibold text-[#111827] dark:text-white truncate" style={poppins}>{line.name}</p>
                       <p className="text-xs text-[#9CA3AF] mt-0.5" style={inter}>{t("cart.fromStore", { store: line.storeName })}</p>

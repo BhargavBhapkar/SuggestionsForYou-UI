@@ -1,13 +1,14 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
+import useVoiceSearch, { escapeRegExp } from "../lib/useVoiceSearch";
 import { useTranslation } from "react-i18next";
 import {
-  Sparkles, ArrowRight, ChevronRight, SlidersHorizontal, ChevronDown,
+  Sparkles, ArrowRight, ChevronRight, SlidersHorizontal,
   Search, Mic, Star, Users, BadgeCheck, Plus, Minus,
   Bot, ShieldCheck, Award, Zap,
 } from "lucide-react";
 import { inter, poppins } from "../lib/fonts";
-import { TRENDING, WHY_FEATURES } from "../data/products";
+import { TRENDING, WHY_FEATURES, imgFit, imgBox } from "../data/products";
 import DealsCarousel from "../components/DealsCarousel";
 import TrendingCard from "../components/TrendingCard";
 import Navbar from "../components/Navbar";
@@ -45,6 +46,10 @@ export default function Home() {
 
   const [query, setQuery] = useState("");
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const { listening, toggle: toggleVoice } = useVoiceSearch((text) => {
+    setQuery(text);
+    navigate(`/search?q=${encodeURIComponent(text)}`);
+  });
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [countdown, setCountdown] = useState({ h: 4, m: 23, s: 47 });
 
@@ -153,13 +158,21 @@ export default function Home() {
               />
               {/* Voice button */}
               <button
-                className="p-2 mr-1 text-[#9CA3AF] hover:text-[#F97316] transition-colors flex-shrink-0 rounded-lg hover:bg-orange-50 dark:hover:bg-orange-950/40"
+                type="button"
+                onClick={toggleVoice}
+                aria-label={t("home.voiceSearch")}
+                aria-pressed={listening}
                 title={t("home.voiceSearch")}
+                className={`p-2 mr-1 transition-colors flex-shrink-0 rounded-lg ${listening ? "text-[#F97316] bg-orange-50 dark:bg-orange-950/40 animate-pulse" : "text-[#9CA3AF] hover:text-[#F97316] hover:bg-orange-50 dark:hover:bg-orange-950/40"}`}
               >
                 <Mic className="w-4 h-4" />
               </button>
-              <button onClick={() => navigate(`/search?q=${encodeURIComponent(query)}`)} className="m-2 px-5 py-3 bg-[#F97316] hover:bg-orange-600 text-white rounded-xl text-sm font-semibold flex items-center gap-2 transition-all duration-200 shadow-sm hover:shadow-orange-200 flex-shrink-0">
-                {t("common.compare")} <ArrowRight className="w-4 h-4" />
+              <button
+                onClick={() => navigate(`/search?q=${encodeURIComponent(query)}`)}
+                aria-label={t("common.compare")}
+                className="m-1.5 sm:m-2 px-3 sm:px-5 py-3 bg-[#F97316] hover:bg-orange-600 text-white rounded-xl text-sm font-semibold flex items-center gap-2 transition-all duration-200 shadow-sm hover:shadow-orange-200 flex-shrink-0"
+              >
+                <span className="hidden min-[400px]:inline">{t("common.compare")}</span> <ArrowRight className="w-4 h-4" />
               </button>
             </div>
 
@@ -196,7 +209,7 @@ export default function Home() {
                           >
                             {s.label
                               .split(
-                                new RegExp(`(${query})`, "gi"),
+                                new RegExp(`(${escapeRegExp(query)})`, "gi"),
                               )
                               .map((part, j) =>
                                 part.toLowerCase() ===
@@ -341,7 +354,7 @@ export default function Home() {
                     <span className="text-[9px] font-semibold text-white bg-[#111827] dark:bg-white/10 px-1.5 py-0.5 rounded">{t("home.limitedTime")}</span>
                   </div>
                   <div className="flex items-center gap-3 mb-3">
-                    <img src={deal.image.replace(/w=\d+&h=\d+/, "w=64&h=64")} alt="" className="w-14 h-14 rounded-xl object-cover flex-shrink-0" />
+                    <img src={deal.image.replace(/w=\d+&h=\d+/, "w=64&h=64")} alt="" className={`w-14 h-14 rounded-xl ${imgFit(deal.image, "p-1")} ${imgBox(deal.image)} flex-shrink-0`} />
                     <div className="min-w-0">
                       <p className="text-xs font-semibold text-[#111827] dark:text-white truncate" style={poppins}>{deal.name}</p>
                       <div className="flex items-baseline gap-1.5 mt-0.5">
@@ -484,8 +497,8 @@ export default function Home() {
               <Reveal key={p._id} delay={i * 60}>
                 <div className="group bg-white dark:bg-[#131b2e] border border-[#E5E7EB] dark:border-white/10 rounded-2xl overflow-hidden hover:shadow-xl hover:shadow-orange-100 dark:hover:shadow-orange-950/40 hover:-translate-y-1.5 hover:scale-[1.02] hover:border-orange-200 dark:hover:border-orange-800/50 transition-all duration-300 flex flex-col cursor-pointer"
                   onClick={() => navigate(`/compare/${encodeURIComponent(p.name)}`)}>
-                  <div className="relative bg-[#F8FAFC] dark:bg-white/5 h-36 overflow-hidden">
-                    <img src={p.image} alt={p.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                  <div className={`relative ${imgBox(p.image)} h-36 overflow-hidden`}>
+                    <img src={p.image} alt={p.name} className={`w-full h-full ${imgFit(p.image, "p-2")} group-hover:scale-110 transition-transform duration-500`} />
                     <div className="absolute top-2 left-2"><span className="px-2 py-0.5 bg-[#F97316] text-white text-[10px] font-bold rounded-md">{p.badge}</span></div>
                     <div className="absolute top-2 right-2"><span className="px-2 py-0.5 bg-[#10B981] text-white text-[10px] font-bold rounded-md">{p.discount}%</span></div>
                   </div>
@@ -504,8 +517,8 @@ export default function Home() {
               <Reveal key={p._id} delay={i * 60}>
                 <div className="group bg-white dark:bg-[#131b2e] border border-[#E5E7EB] dark:border-white/10 rounded-2xl overflow-hidden hover:shadow-xl hover:shadow-orange-100 dark:hover:shadow-orange-950/40 hover:-translate-y-1.5 hover:scale-[1.02] hover:border-orange-200 dark:hover:border-orange-800/50 transition-all duration-300 flex flex-col cursor-pointer"
                   onClick={() => navigate(`/compare/${encodeURIComponent(p.name)}`)}>
-                  <div className="relative bg-[#F8FAFC] dark:bg-white/5 h-36 overflow-hidden">
-                    <img src={p.image} alt={p.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                  <div className={`relative ${imgBox(p.image)} h-36 overflow-hidden`}>
+                    <img src={p.image} alt={p.name} className={`w-full h-full ${imgFit(p.image, "p-2")} group-hover:scale-110 transition-transform duration-500`} />
                     <div className="absolute top-2 left-2"><span className="px-2 py-0.5 bg-[#F97316] text-white text-[10px] font-bold rounded-md">{p.badge}</span></div>
                     <div className="absolute top-2 right-2"><span className="px-2 py-0.5 bg-[#10B981] text-white text-[10px] font-bold rounded-md">{p.discount}%</span></div>
                   </div>
@@ -536,12 +549,9 @@ export default function Home() {
                 <p className="text-sm text-[#6B7280] dark:text-gray-400 mt-1" style={inter}>{t("home.realTimeLowest")}</p>
               </div>
               <div className="hidden sm:flex items-center gap-2">
-                <button className="flex items-center gap-2 px-4 py-2 border border-[#E5E7EB] dark:border-white/10 rounded-xl text-sm font-medium text-[#374151] dark:text-gray-300 hover:border-orange-300 hover:text-[#F97316] hover:-translate-y-0.5 transition-all" style={inter}>
-                  <SlidersHorizontal className="w-3.5 h-3.5" /> {t("common.filter")}
-                </button>
-                <button className="flex items-center gap-2 px-4 py-2 border border-[#E5E7EB] dark:border-white/10 rounded-xl text-sm font-medium text-[#374151] dark:text-gray-300 hover:border-orange-300 hover:text-[#F97316] hover:-translate-y-0.5 transition-all" style={inter}>
-                  {t("common.sort")} <ChevronDown className="w-3.5 h-3.5" />
-                </button>
+                <Link to="/search" className="flex items-center gap-2 px-4 py-2 border border-[#E5E7EB] dark:border-white/10 rounded-xl text-sm font-medium text-[#374151] dark:text-gray-300 hover:border-orange-300 hover:text-[#F97316] hover:-translate-y-0.5 transition-all" style={inter}>
+                  <SlidersHorizontal className="w-3.5 h-3.5" /> {t("common.filter")} &amp; {t("common.sort")}
+                </Link>
               </div>
             </div>
           </Reveal>
@@ -685,7 +695,7 @@ export default function Home() {
             <div className="mt-12 grid grid-cols-2 sm:grid-cols-4 gap-px bg-[#E5E7EB] dark:bg-white/10 rounded-2xl overflow-hidden">
               {[
                 { value: "< 15 min", label: t("home.metrics.priceRefresh")    },
-                { value: "2,300+",   label: t("home.metrics.productsIndexed") },
+                { value: "1,500+",     label: t("home.metrics.productsIndexed") },
                 { value: "99.9%",    label: t("home.metrics.uptimeSla")       },
                 { value: "₹180Cr+",  label: t("home.metrics.savingsUnlocked") },
               ].map(m => (

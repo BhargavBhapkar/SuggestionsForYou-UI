@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Star, Heart, ExternalLink, ShoppingCart, Check } from "lucide-react";
 import { inter, poppins } from "../lib/fonts";
 import type { Product } from "../lib/api";
+import { imgFit, imgBox } from "../data/products";
 
 export default function TrendingCard({
   product, wishlisted, onToggleWishlist, onCompare, onAddToCart,
@@ -18,8 +19,8 @@ export default function TrendingCard({
   const [added, setAdded] = useState(false);
   return (
     <div className="group bg-white dark:bg-[#131B2E] border border-[#E5E7EB] dark:border-white/10 rounded-2xl overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col">
-      <div className="relative bg-[#F8FAFC] dark:bg-white/5 h-48 overflow-hidden">
-        <img src={product.image} alt={product.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+      <div className={`relative ${imgBox(product.image)} h-48 overflow-hidden`}>
+        <img src={product.image} alt={product.name} className={`w-full h-full ${imgFit(product.image)} group-hover:scale-105 transition-transform duration-500`} />
         <div className="absolute top-3 left-3">
           <span className="px-2.5 py-1 bg-[#F97316] text-white text-xs font-semibold rounded-lg">{product.badge}</span>
         </div>

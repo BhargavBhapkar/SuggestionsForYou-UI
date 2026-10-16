@@ -5,6 +5,7 @@ import { inter, poppins } from "../lib/fonts";
 import PageShell from "../components/PageShell";
 import Reveal from "../components/Reveal";
 import { useOrder } from "../hooks/useApi";
+import { imgFit, imgBox } from "../data/products";
 
 export default function OrderConfirmationPage() {
   const navigate = useNavigate();
@@ -54,7 +55,7 @@ export default function OrderConfirmationPage() {
             <div className="space-y-2 mb-4">
               {order.items.map((item, i) => (
                 <div key={i} className="flex items-center gap-3">
-                  <img src={item.image} alt={item.name} className="w-10 h-10 rounded-lg object-cover flex-shrink-0 bg-[#F8FAFC] dark:bg-white/5" />
+                  <img src={item.image} alt={item.name} className={`w-10 h-10 rounded-lg ${imgFit(item.image, "p-0.5")} flex-shrink-0 ${imgBox(item.image)}`} />
                   <p className="text-sm text-[#374151] dark:text-gray-300 flex-1 min-w-0 truncate" style={inter}>{item.name}</p>
                   <p className="text-xs text-[#9CA3AF] flex-shrink-0" style={inter}>{t("checkout.qtyLabel", { count: item.qty })}</p>
                 </div>

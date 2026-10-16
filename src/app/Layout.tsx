@@ -1,9 +1,12 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { Outlet } from "react-router";
+import { useTranslation } from "react-i18next";
 import LoginModal from "./components/LoginModal";
 import InstallPrompt from "./components/InstallPrompt";
 import ChatWidget from "./components/ChatWidget";
 import { api, getToken, setToken, type AuthUser } from "./lib/api";
+import usePageMeta from "./lib/usePageMeta";
+import { useToast } from "./components/ToastProvider";
 
 function getSystemTheme(): boolean {
   return window.matchMedia("(prefers-color-scheme: dark)").matches;
@@ -62,6 +65,9 @@ export type AppContext = {
 };
 
 export default function Layout() {
+  usePageMeta();
+  const toast = useToast();
+  const { t } = useTranslation();
   const [dark, setDarkState] = useState(getSystemTheme);
   const manualThemeOverride = useRef(false);
   const [wishlisted, setWishlisted] = useState<Set<string>>(new Set(readGuestWishlist()));
@@ -140,20 +146,23 @@ export default function Layout() {
   }, [refreshCartFromServer, refreshWishlistFromServer]);
 
   const toggleWish = (id: string) => {
+    const has = wishlisted.has(id);
     if (user) {
-      const has = wishlisted.has(id);
       setWishlisted((prev) => {
         const n = new Set(prev);
         has ? n.delete(id) : n.add(id);
         return n;
       });
-      (has ? api.removeFromWishlist(id) : api.addToWishlist(id)).catch(() => {
-        setWishlisted((prev) => {
-          const n = new Set(prev);
-          has ? n.add(id) : n.delete(id);
-          return n;
+      (has ? api.removeFromWishlist(id) : api.addToWishlist(id))
+        .then(() => toast.success(t(has ? "toast.removedFromWishlist" : "toast.addedToWishlist")))
+        .catch(() => {
+          setWishlisted((prev) => {
+            const n = new Set(prev);
+            has ? n.add(id) : n.delete(id);
+            return n;
+          });
+          toast.error(t("toast.wishlistFailed"));
         });
-      });
       return;
     }
     setWishlisted((prev) => {
@@ -162,23 +171,27 @@ export default function Layout() {
       writeGuestWishlist([...n]);
       return n;
     });
+    toast.success(t(has ? "toast.removedFromWishlist" : "toast.addedToWishlist"));
   };
 
   const addToCart = (line: Omit<CartLine, "qty"> & { qty?: number }) => {
     const qty = line.qty ?? 1;
     if (user) {
-      api.addToCart({ productId: line.productId, storeName: line.storeName, qty }).then((res) => {
-        setCart(
-          res.items.map((it) => ({
-            productId: it.product._id,
-            storeName: it.storeName,
-            qty: it.qty,
-            priceSnapshot: it.priceSnapshot,
-            name: it.product.name,
-            image: it.product.image,
-          })),
-        );
-      });
+      api.addToCart({ productId: line.productId, storeName: line.storeName, qty })
+        .then((res) => {
+          setCart(
+            res.items.map((it) => ({
+              productId: it.product._id,
+              storeName: it.storeName,
+              qty: it.qty,
+              priceSnapshot: it.priceSnapshot,
+              name: it.product.name,
+              image: it.product.image,
+            })),
+          );
+          toast.success(t("toast.addedToCart"));
+        })
+        .catch(() => toast.error(t("toast.cartFailed")));
       return;
     }
     setCart((prev) => {
@@ -189,6 +202,7 @@ export default function Layout() {
       writeGuestCart(next);
       return next;
     });
+    toast.success(t("toast.addedToCart"));
   };
 
   const updateCartQty = (productId: string, storeName: string, qty: number) => {
@@ -204,7 +218,7 @@ export default function Layout() {
             image: it.product.image,
           })),
         );
-      });
+      }).catch(() => toast.error(t("toast.cartFailed")));
       return;
     }
     setCart((prev) => {
@@ -227,7 +241,8 @@ export default function Layout() {
             image: it.product.image,
           })),
         );
-      });
+        toast.success(t("toast.removedFromCart"));
+      }).catch(() => toast.error(t("toast.cartFailed")));
       return;
     }
     setCart((prev) => {
@@ -235,6 +250,7 @@ export default function Layout() {
       writeGuestCart(next);
       return next;
     });
+    toast.success(t("toast.removedFromCart"));
   };
 
   const login = useCallback(async (email: string, password: string) => {
@@ -242,21 +258,24 @@ export default function Layout() {
     setToken(res.token);
     setUser(res.user);
     await mergeGuestDataIntoServer();
-  }, [mergeGuestDataIntoServer]);
+    toast.success(t("toast.welcomeBack", { name: res.user.name.split(" ")[0] }));
+  }, [mergeGuestDataIntoServer, toast, t]);
 
   const signup = useCallback(async (name: string, email: string, password: string) => {
     const res = await api.signup({ name, email, password });
     setToken(res.token);
     setUser(res.user);
     await mergeGuestDataIntoServer();
-  }, [mergeGuestDataIntoServer]);
+    toast.success(t("toast.accountCreated", { name: res.user.name.split(" ")[0] }));
+  }, [mergeGuestDataIntoServer, toast, t]);
 
   const logout = useCallback(() => {
     setToken(null);
     setUser(null);
     setCart(readGuestCart());
     setWishlisted(new Set(readGuestWishlist()));
-  }, []);
+    toast.info(t("toast.signedOut"));
+  }, [toast, t]);
 
   const cartCount = cart.reduce((sum, l) => sum + l.qty, 0);
   const cartSubtotal = cart.reduce((sum, l) => sum + l.qty * l.priceSnapshot, 0);

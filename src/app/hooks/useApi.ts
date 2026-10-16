@@ -1,4 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
+import { useTranslation } from "react-i18next";
+import { useToast } from "../components/ToastProvider";
 import {
   api, getToken, type Product, type Category, type Retailer, type Testimonial, type Faq, type ProductQuery,
   type Address, type Order,
@@ -11,7 +13,9 @@ function useFetch<T>(fetcher: () => Promise<T>, deps: unknown[], initial: T) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [refetchTick, setRefetchTick] = useState(0);
-  const refetch = useCallback(() => setRefetchTick((t) => t + 1), []);
+  const refetch = useCallback(() => setRefetchTick((n) => n + 1), []);
+  const { t } = useTranslation();
+  const toast = useToast();
 
   useEffect(() => {
     let cancelled = false;
@@ -19,7 +23,12 @@ function useFetch<T>(fetcher: () => Promise<T>, deps: unknown[], initial: T) {
     setError(null);
     fetcher()
       .then((d) => { if (!cancelled) setData(d); })
-      .catch((e) => { if (!cancelled) setError(e instanceof Error ? e.message : String(e)); })
+      .catch((e) => {
+        if (cancelled) return;
+        setError(e instanceof Error ? e.message : String(e));
+        // A TypeError here means the request never reached the API (offline / server down).
+        if (e instanceof TypeError) toast.error(t("toast.loadFailed"));
+      })
       .finally(() => { if (!cancelled) setLoading(false); });
     return () => { cancelled = true; };
     // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -5,6 +5,7 @@ import { inter, poppins } from "../lib/fonts";
 import PageShell from "../components/PageShell";
 import Reveal from "../components/Reveal";
 import { useWishlist } from "../hooks/useApi";
+import { imgFit, imgBox } from "../data/products";
 import type { AppContext } from "../Layout";
 
 export default function WishlistPage() {
@@ -61,14 +62,16 @@ export default function WishlistPage() {
                     onClick={() => navigate(`/compare/${encodeURIComponent(product.name)}`)}
                     className="flex items-center gap-4 flex-1 min-w-0 text-left"
                   >
-                    <img src={product.image} alt={product.name} className="w-16 h-16 rounded-xl object-cover flex-shrink-0 bg-[#F8FAFC] dark:bg-white/5" />
+                    <img src={product.image} alt={product.name} className={`w-16 h-16 rounded-xl ${imgFit(product.image, "p-1")} flex-shrink-0 ${imgBox(product.image)}`} />
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-semibold text-[#111827] dark:text-white truncate" style={poppins}>{product.name}</p>
                       <p className="text-xs text-[#9CA3AF] mt-0.5" style={inter}>{product.brand} · {t(`categoryLabels.${product.category}`, product.category)}</p>
                       <div className="flex items-center gap-2 mt-1">
-                        <span className="flex items-center gap-0.5 text-xs text-[#6B7280] dark:text-gray-400" style={inter}>
-                          <Star className="w-3 h-3 fill-amber-400 text-amber-400" /> {product.rating}
-                        </span>
+                        {product.reviews > 0 && (
+                          <span className="flex items-center gap-0.5 text-xs text-[#6B7280] dark:text-gray-400" style={inter}>
+                            <Star className="w-3 h-3 fill-amber-400 text-amber-400" /> {product.rating}
+                          </span>
+                        )}
                         <span className="text-sm font-bold text-[#F97316]" style={poppins}>₹{product.lowestPrice.toLocaleString("en-IN")}</span>
                       </div>
                     </div>

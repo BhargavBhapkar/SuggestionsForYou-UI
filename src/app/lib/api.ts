@@ -159,6 +159,8 @@ export interface ChatMessage {
 export const api = {
   sendChatMessage: (messages: ChatMessage[]) =>
     request<{ reply: string }>("/chat", { method: "POST", body: JSON.stringify({ messages }) }),
+  subscribeNewsletter: (email: string) =>
+    request<{ ok: true }>("/newsletter", { method: "POST", body: JSON.stringify({ email }) }),
   getProducts: (params?: ProductQuery) => request<Product[]>(`/products${toQuery(params as Record<string, string | number | undefined>)}`),
   getProduct: (name: string) => request<Product>(`/products/${encodeURIComponent(name)}`),
   getCategories: () => request<Category[]>("/categories"),
