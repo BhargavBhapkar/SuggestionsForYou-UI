@@ -151,7 +151,7 @@
       { "title": "Resources", "links": ["Help Center", "API Docs", "Browser Extension", "Mobile App", "Sitemap"] },
       { "title": "Legal", "links": ["Privacy Policy", "Terms of Service", "Cookie Policy", "Disclaimer", "GDPR"] }
     ],
-    "address": "Bengaluru, Karnataka, India",
+    "address": "Vadodara, Gujarat, India",
     "copyright": "© {{year}} SuggestionsForYou. All rights reserved. Made with ♥ in India 🇮🇳",
     "bottomLinks": ["Privacy", "Terms", "Cookies", "Sitemap"]
   },
@@ -190,7 +190,17 @@
     "totalLabel": "Total",
     "placingOrder": "Placing Order…",
     "placeOrderCod": "Place Order · Cash on Delivery",
-    "payInCashNote": "Pay in cash when your order arrives"
+    "payInCashNote": "Pay in cash when your order arrives",
+    "paymentMethod": "Payment method",
+    "payOnline": "Pay online",
+    "payOnlineDesc": "UPI, cards, netbanking and wallets",
+    "payCod": "Cash on delivery",
+    "payCodDesc": "Pay in cash when your order arrives",
+    "payNowButton": "Pay ₹{{amount}} securely",
+    "securedByRazorpay": "Secure payment by Razorpay. We never see your card or UPI details.",
+    "addAddressFirst": "Add a delivery address above to continue.",
+    "processingPayment": "Processing payment…",
+    "paymentDescription": "Order {{id}}"
   },
   "addressForm": {
     "errorSaveFailed": "Failed to save address",
@@ -233,7 +243,11 @@
     "orderIdLabel": "Order ID",
     "deliveringTo": "Delivering to",
     "trackOrder": "Track Order",
-    "continueShopping": "Continue Shopping"
+    "continueShopping": "Continue Shopping",
+    "paidHeading": "Payment received!",
+    "paidMessage": "Thanks for your order. Your payment was verified and we'll deliver it to your address.",
+    "unpaidHeading": "Order saved",
+    "unpaidMessage": "Your order is saved but payment isn't complete yet. Finish paying from your order page to confirm it."
   },
   "orderDetail": {
     "title": "Order Details",
@@ -245,6 +259,11 @@
     "itemsHeading": "Items",
     "shippingAddressHeading": "Shipping Address",
     "paymentMethodLabel": "Payment Method",
+    "onlinePayment": "Online payment (Razorpay)",
+    "payNow": "Pay ₹{{amount}} now",
+    "openingPayment": "Opening payment…",
+    "paymentPendingNote": "Payment isn't complete yet. Pay now to confirm your order.",
+    "refundNote": "This order was paid online. To cancel it, email {{email}} and we'll arrange a refund.",
     "cashOnDelivery": "Cash on Delivery",
     "cancelling": "Cancelling…",
     "cancelOrder": "Cancel Order",
@@ -258,7 +277,7 @@
   "auth": {
     "errorGeneric": "Something went wrong",
     "createFreeAccount": "Create Free Account",
-    "subtitle": "Browsing and comparing prices is always free. Sign in to save your wishlist and set price alerts.",
+    "subtitle": "Browsing and comparing prices is always free. Sign in to save your wishlist and check out.",
     "fullNamePlaceholder": "Full name",
     "emailPlaceholder": "Email address",
     "passwordPlaceholder": "Password (min. 6 characters)",
@@ -673,7 +692,11 @@
     "voiceUnsupported": "Voice search isn't supported in this browser.",
     "voiceError": "Couldn't catch that. Please try again.",
     "voiceDenied": "Microphone access is blocked. Allow it in your browser to use voice search.",
-    "loadFailed": "Couldn't load the latest data. Check your connection and try again."
+    "loadFailed": "Couldn't load the latest data. Check your connection and try again.",
+    "paymentSuccess": "Payment successful",
+    "paymentCancelled": "Payment cancelled. Your order is saved and you can pay from the order page.",
+    "paymentFailed": "Payment failed. Please try again or choose another method.",
+    "paymentUnavailable": "Couldn't open the payment window. Check your connection and try again."
   },
   "newsletter": {
     "label": "Email address",

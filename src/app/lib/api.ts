@@ -146,9 +146,20 @@ export interface Order {
   couponCode?: string;
   paymentMethod: "cod" | "razorpay";
   paymentStatus: "pending" | "paid" | "failed";
+  razorpayOrderId?: string;
+  razorpayPaymentId?: string;
+  paidAt?: string;
   orderStatus: "placed" | "confirmed" | "shipped" | "delivered" | "cancelled";
   createdAt: string;
   updatedAt: string;
+}
+
+export interface PaymentParams {
+  keyId: string; razorpayOrderId: string; amount: number; currency: string;
+}
+
+export interface RazorpaySuccess {
+  razorpay_order_id: string; razorpay_payment_id: string; razorpay_signature: string;
 }
 
 export interface ChatMessage {
@@ -195,8 +206,13 @@ export const api = {
     request<Address[]>(`/addresses/${id}`, { method: "PATCH", body: JSON.stringify(body) }),
   deleteAddress: (id: string) => request<Address[]>(`/addresses/${id}`, { method: "DELETE" }),
 
-  createOrder: (addressId: string) =>
-    request<Order>("/orders", { method: "POST", body: JSON.stringify({ addressId }) }),
+  getPaymentConfig: () => request<{ online: boolean }>("/payments/config"),
+  createOrder: (addressId: string, paymentMethod: "cod" | "razorpay" = "cod") =>
+    request<{ order: Order; payment: PaymentParams | null }>("/orders", { method: "POST", body: JSON.stringify({ addressId, paymentMethod }) }),
+  startPayment: (orderId: string) =>
+    request<{ order: Order; payment: PaymentParams }>(`/orders/${orderId}/pay`, { method: "POST" }),
+  verifyPayment: (orderId: string, body: RazorpaySuccess) =>
+    request<Order>(`/orders/${orderId}/verify-payment`, { method: "POST", body: JSON.stringify(body) }),
   getOrders: () => request<Order[]>("/orders"),
   getOrder: (id: string) => request<Order>(`/orders/${id}`),
   cancelOrder: (id: string) => request<Order>(`/orders/${id}/cancel`, { method: "POST" }),

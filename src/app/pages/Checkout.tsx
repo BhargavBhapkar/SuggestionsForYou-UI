@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useOutletContext } from "react-router";
 import { useTranslation } from "react-i18next";
-import { ShoppingBag, Plus, Truck, ShieldCheck } from "lucide-react";
+import { ShoppingBag, Plus, Truck, ShieldCheck, CreditCard, Banknote } from "lucide-react";
 import { inter, poppins } from "../lib/fonts";
 import PageShell from "../components/PageShell";
 import Reveal from "../components/Reveal";
@@ -9,17 +9,32 @@ import AddressForm from "../components/AddressForm";
 import { useAddresses } from "../hooks/useApi";
 import { api } from "../lib/api";
 import { imgFit, imgBox } from "../data/products";
+import useOnlinePayment from "../lib/useOnlinePayment";
 import type { AppContext } from "../Layout";
 
 export default function CheckoutPage() {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const { cart, cartSubtotal, user, authLoading, onLoginRequired } = useOutletContext<AppContext>();
-  const { data: addresses, refetch: refetchAddresses } = useAddresses();
+  const { cart, cartSubtotal, user, authLoading, onLoginRequired, refreshCart } = useOutletContext<AppContext>();
+  const payForOrder = useOnlinePayment(user);
+  const { data: addresses, loading: addressesLoading, refetch: refetchAddresses } = useAddresses();
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
   const [placing, setPlacing] = useState(false);
   const [error, setError] = useState("");
+  const [onlineAvailable, setOnlineAvailable] = useState(false);
+  const [method, setMethod] = useState<"cod" | "razorpay">("cod");
+
+  useEffect(() => {
+    api.getPaymentConfig()
+      .then((c) => { setOnlineAvailable(c.online); if (c.online) setMethod("razorpay"); })
+      .catch(() => setOnlineAvailable(false));
+  }, []);
+
+  // A first-time customer has no address, so open the form for them instead of leaving a dead button.
+  useEffect(() => {
+    if (!addressesLoading && addresses.length === 0) setShowAddForm(true);
+  }, [addressesLoading, addresses.length]);
 
   useEffect(() => {
     if (!selectedId && addresses.length > 0) {
@@ -58,8 +73,21 @@ export default function CheckoutPage() {
     setPlacing(true);
     setError("");
     try {
-      const order = await api.createOrder(selectedId);
-      navigate(`/order-confirmation/${order._id}`);
+      const { order, payment } = await api.createOrder(selectedId, method);
+      if (method === "cod" || !payment) {
+        await refreshCart();
+        navigate(`/order-confirmation/${order._id}`);
+        return;
+      }
+      const contact = addresses.find((a) => a._id === selectedId)?.phone;
+      const outcome = await payForOrder(order, payment, contact);
+      if (outcome === "paid") {
+        await refreshCart();
+        navigate(`/order-confirmation/${order._id}`);
+      } else {
+        // The order is saved but unpaid; its page offers "Pay now" to try again.
+        navigate(`/account/orders/${order._id}`);
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : t("checkout.errorPlaceOrderFailed"));
     } finally {
@@ -110,6 +138,33 @@ export default function CheckoutPage() {
           </div>
         </Reveal>
 
+        {/* Payment method */}
+        <Reveal delay={30}>
+          <div className="mb-8">
+            <h2 className="font-bold text-[#111827] dark:text-white mb-4" style={poppins}>{t("checkout.paymentMethod")}</h2>
+            <div className="space-y-3" role="radiogroup" aria-label={t("checkout.paymentMethod")}>
+              {onlineAvailable && (
+                <label className={`flex items-start gap-3 p-4 rounded-2xl border cursor-pointer transition-all ${method === "razorpay" ? "border-[#F97316] bg-orange-50/50 dark:bg-orange-950/20" : "border-[#E5E7EB] dark:border-white/10 bg-white dark:bg-[#131B2E]"}`}>
+                  <input type="radio" name="payment" checked={method === "razorpay"} onChange={() => setMethod("razorpay")} className="mt-1 accent-[#F97316]" />
+                  <CreditCard className="w-5 h-5 text-[#F97316] mt-0.5 flex-shrink-0" />
+                  <div>
+                    <p className="font-semibold text-[#111827] dark:text-white text-sm" style={poppins}>{t("checkout.payOnline")}</p>
+                    <p className="text-xs text-[#6B7280] dark:text-gray-400 mt-0.5" style={inter}>{t("checkout.payOnlineDesc")}</p>
+                  </div>
+                </label>
+              )}
+              <label className={`flex items-start gap-3 p-4 rounded-2xl border cursor-pointer transition-all ${method === "cod" ? "border-[#F97316] bg-orange-50/50 dark:bg-orange-950/20" : "border-[#E5E7EB] dark:border-white/10 bg-white dark:bg-[#131B2E]"}`}>
+                <input type="radio" name="payment" checked={method === "cod"} onChange={() => setMethod("cod")} className="mt-1 accent-[#F97316]" />
+                <Banknote className="w-5 h-5 text-[#F97316] mt-0.5 flex-shrink-0" />
+                <div>
+                  <p className="font-semibold text-[#111827] dark:text-white text-sm" style={poppins}>{t("checkout.payCod")}</p>
+                  <p className="text-xs text-[#6B7280] dark:text-gray-400 mt-0.5" style={inter}>{t("checkout.payCodDesc")}</p>
+                </div>
+              </label>
+            </div>
+          </div>
+        </Reveal>
+
         {/* Order summary */}
         <Reveal delay={60}>
           <div className="bg-white dark:bg-[#131B2E] border border-[#E5E7EB] dark:border-white/10 rounded-2xl p-5 mb-6">
@@ -141,6 +196,9 @@ export default function CheckoutPage() {
         </Reveal>
 
         {error && <p className="text-sm text-red-500 mb-4" style={inter}>{error}</p>}
+        {!selectedId && !placing && (
+          <p role="status" className="text-sm text-amber-600 dark:text-amber-400 text-center mb-3" style={inter}>{t("checkout.addAddressFirst")}</p>
+        )}
 
         <button
           onClick={placeOrder}
@@ -148,10 +206,10 @@ export default function CheckoutPage() {
           className="w-full py-3.5 bg-[#F97316] hover:bg-orange-600 text-white rounded-xl text-sm font-bold flex items-center justify-center gap-2 transition-all hover:-translate-y-0.5 hover:shadow-lg hover:shadow-orange-200 disabled:opacity-60 disabled:hover:translate-y-0"
           style={poppins}
         >
-          {placing ? t("checkout.placingOrder") : t("checkout.placeOrderCod")}
+          {placing ? (method === "razorpay" ? t("checkout.processingPayment") : t("checkout.placingOrder")) : method === "razorpay" ? t("checkout.payNowButton", { amount: cartSubtotal.toLocaleString("en-IN") }) : t("checkout.placeOrderCod")}
         </button>
         <p className="flex items-center justify-center gap-1.5 text-xs text-[#9CA3AF] mt-3" style={inter}>
-          <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" /> {t("checkout.payInCashNote")}
+          <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" /> {method === "razorpay" ? t("checkout.securedByRazorpay") : t("checkout.payInCashNote")}
         </p>
       </div>
     </PageShell>

@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { useParams, useNavigate } from "react-router";
+import { useParams, useNavigate, useOutletContext } from "react-router";
 import { useTranslation } from "react-i18next";
-import { Package, Check, Truck, Home, XCircle, MapPin } from "lucide-react";
+import { Package, Check, Truck, Home, XCircle, MapPin, CreditCard } from "lucide-react";
 import { inter, poppins } from "../lib/fonts";
 import PageShell from "../components/PageShell";
 import Reveal from "../components/Reveal";
@@ -9,6 +9,15 @@ import { useOrder } from "../hooks/useApi";
 import { api } from "../lib/api";
 import { imgFit, imgBox } from "../data/products";
 import { useToast } from "../components/ToastProvider";
+import useOnlinePayment from "../lib/useOnlinePayment";
+import type { AppContext } from "../Layout";
+
+const SUPPORT_EMAIL = "hello@suggestionsforyou.com";
+const PAYMENT_BADGE: Record<string, string> = {
+  paid: "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400",
+  pending: "bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400",
+  failed: "bg-red-50 dark:bg-red-950/40 text-red-500",
+};
 
 const STEPS = [
   { key: "placed", icon: Package },
@@ -22,6 +31,9 @@ export default function OrderDetailPage() {
   const { t } = useTranslation();
   const toast = useToast();
   const { orderId } = useParams<{ orderId: string }>();
+  const { user, refreshCart } = useOutletContext<AppContext>();
+  const payForOrder = useOnlinePayment(user);
+  const [paying, setPaying] = useState(false);
   const { data: order, loading, refetch } = useOrder(orderId);
   const [cancelling, setCancelling] = useState(false);
   const [error, setError] = useState("");
@@ -41,7 +53,25 @@ export default function OrderDetailPage() {
   }
 
   const stepIndex = STEPS.findIndex((s) => s.key === order.orderStatus);
-  const canCancel = order.orderStatus === "placed" || order.orderStatus === "confirmed";
+  const isOnline = order.paymentMethod === "razorpay";
+  const paidOnline = isOnline && order.paymentStatus === "paid";
+  const needsPayment = isOnline && order.paymentStatus !== "paid" && order.orderStatus !== "cancelled";
+  const canCancel = (order.orderStatus === "placed" || order.orderStatus === "confirmed") && !paidOnline;
+
+  const payNow = async () => {
+    setPaying(true);
+    setError("");
+    try {
+      const { payment } = await api.startPayment(order._id);
+      const outcome = await payForOrder(order, payment, order.shippingAddress.phone);
+      if (outcome === "paid") await refreshCart();
+      refetch();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : t("toast.paymentFailed"));
+    } finally {
+      setPaying(false);
+    }
+  };
 
   const cancelOrder = async () => {
     setCancelling(true);
@@ -141,16 +171,35 @@ export default function OrderDetailPage() {
 
         {/* Payment */}
         <Reveal delay={160}>
-          <div className="bg-white dark:bg-[#131B2E] border border-[#E5E7EB] dark:border-white/10 rounded-2xl p-5 mb-5 flex items-center justify-between">
-            <div>
-              <p className="text-xs text-[#9CA3AF] uppercase tracking-wide" style={inter}>{t("orderDetail.paymentMethodLabel")}</p>
-              <p className="text-sm font-medium text-[#111827] dark:text-white" style={inter}>{t("orderDetail.cashOnDelivery")}</p>
+          <div className="bg-white dark:bg-[#131B2E] border border-[#E5E7EB] dark:border-white/10 rounded-2xl p-5 mb-5">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-xs text-[#9CA3AF] uppercase tracking-wide" style={inter}>{t("orderDetail.paymentMethodLabel")}</p>
+                <p className="text-sm font-medium text-[#111827] dark:text-white" style={inter}>{isOnline ? t("orderDetail.onlinePayment") : t("orderDetail.cashOnDelivery")}</p>
+              </div>
+              <span className={`px-2.5 py-1 text-[10px] font-bold uppercase rounded-lg ${PAYMENT_BADGE[order.paymentStatus] ?? PAYMENT_BADGE.pending}`}>{t(`paymentStatus.${order.paymentStatus}`, order.paymentStatus)}</span>
             </div>
-            <span className="px-2.5 py-1 bg-[#F3F4F6] dark:bg-white/10 text-[#6B7280] dark:text-gray-300 text-[10px] font-bold uppercase rounded-lg">{t(`paymentStatus.${order.paymentStatus}`, order.paymentStatus)}</span>
+            {needsPayment && (
+              <div className="mt-4 pt-4 border-t border-[#F3F4F6] dark:border-white/10">
+                <p className="text-sm text-[#6B7280] dark:text-gray-400 mb-3" style={inter}>{t("orderDetail.paymentPendingNote")}</p>
+                <button
+                  onClick={payNow}
+                  disabled={paying}
+                  className="w-full py-3 bg-[#F97316] hover:bg-orange-600 text-white rounded-xl text-sm font-bold flex items-center justify-center gap-2 transition-all disabled:opacity-60"
+                  style={poppins}
+                >
+                  <CreditCard className="w-4 h-4" /> {paying ? t("orderDetail.openingPayment") : t("orderDetail.payNow", { amount: order.total.toLocaleString("en-IN") })}
+                </button>
+              </div>
+            )}
           </div>
         </Reveal>
 
         {error && <p className="text-sm text-red-500 mb-4" style={inter}>{error}</p>}
+
+        {paidOnline && order.orderStatus !== "cancelled" && (
+          <p className="text-xs text-[#9CA3AF] text-center mb-4" style={inter}>{t("orderDetail.refundNote", { email: SUPPORT_EMAIL })}</p>
+        )}
 
         {canCancel && (
           <button

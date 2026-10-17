@@ -56,6 +56,7 @@ export type AppContext = {
   addToCart: (line: Omit<CartLine, "qty"> & { qty?: number }) => void;
   updateCartQty: (productId: string, storeName: string, qty: number) => void;
   removeFromCart: (productId: string, storeName: string) => void;
+  refreshCart: () => Promise<void>;
   onLoginRequired: () => void;
   user: AuthUser | null;
   authLoading: boolean;
@@ -291,6 +292,7 @@ export default function Layout() {
     addToCart,
     updateCartQty,
     removeFromCart,
+    refreshCart: async () => { if (user) await refreshCartFromServer().catch(() => {}); },
     onLoginRequired: () => setShowLoginModal(true),
     user,
     authLoading,

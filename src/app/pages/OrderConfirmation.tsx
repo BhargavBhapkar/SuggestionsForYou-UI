@@ -34,9 +34,11 @@ export default function OrderConfirmationPage() {
           <div className="w-20 h-20 bg-emerald-50 dark:bg-emerald-950/40 rounded-3xl flex items-center justify-center mx-auto mb-6">
             <CheckCircle2 className="w-10 h-10 text-emerald-500" />
           </div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-[#111827] dark:text-white mb-2" style={poppins}>{t("orderConfirmation.orderPlaced")}</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold text-[#111827] dark:text-white mb-2" style={poppins}>
+            {order.paymentMethod === "razorpay" ? t(order.paymentStatus === "paid" ? "orderConfirmation.paidHeading" : "orderConfirmation.unpaidHeading") : t("orderConfirmation.orderPlaced")}
+          </h1>
           <p className="text-[#6B7280] dark:text-gray-400 mb-8" style={inter}>
-            {t("orderConfirmation.thanksMessage")}
+            {order.paymentMethod === "razorpay" ? t(order.paymentStatus === "paid" ? "orderConfirmation.paidMessage" : "orderConfirmation.unpaidMessage") : t("orderConfirmation.thanksMessage")}
           </p>
         </Reveal>
 

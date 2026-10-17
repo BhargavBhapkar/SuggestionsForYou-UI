@@ -18,6 +18,7 @@ export const PRIVACY: LegalDoc = {
         "Account details: your name, email address and a password. Passwords are stored only as a one-way hash, never in readable form.",
         "Delivery addresses you save: label, address lines, city, state, PIN code and phone number.",
         "Orders you place: the items, prices, delivery address, payment method, and the order status.",
+        "Payment confirmations: when you pay online, we receive Razorpay's payment ID and confirmation. We never see or store your card, UPI or bank details.",
         "Your cart and wishlist. While you are signed out these stay in your own browser; when you sign in they are added to your account.",
         "Your email address, if you subscribe to deal alerts in the website footer.",
         "Messages you type into the AI shopping assistant.",
@@ -56,6 +57,7 @@ export const PRIVACY: LegalDoc = {
       paragraphs: ["We do not sell your personal information. We use these providers to run the service:"],
       bullets: [
         "Database hosting (MongoDB Atlas): stores accounts, addresses, orders and subscriber emails.",
+        "Razorpay: processes online payments. Its payment window loads from Razorpay's servers, and the details you enter there go to Razorpay under its own privacy policy.",
         "Anthropic: the AI assistant sends the messages you type, together with product search results, to Anthropic to generate replies. Please do not type sensitive personal information into the assistant.",
         "Google Fonts: the site's fonts are loaded from Google, which therefore receives your IP address.",
         "Unsplash and Simple Icons: some images and brand logos load from their servers, which therefore receive your IP address.",
@@ -106,7 +108,7 @@ export const TERMS: LegalDoc = {
       heading: "What the service is",
       paragraphs: [
         "SuggestionsForYou helps you compare product prices and details across retailers in India, keep a wishlist and cart, and get suggestions from an AI assistant. Product details, prices and offers come from retailers and third-party data sources.",
-        "When you place an order through the site, we record it against your account with the delivery address and payment method you choose (currently cash on delivery), and you can follow its status in your account.",
+        "When you place an order through the site, we record it against your account with the delivery address and payment method you choose (cash on delivery, or online payment through Razorpay), and you can follow its status in your account.",
       ],
     },
     {
@@ -115,6 +117,14 @@ export const TERMS: LegalDoc = {
       paragraphs: [
         "Prices, stock, delivery times, discounts and offers shown on the site are indicative only. They can be out of date, and some are estimates based on third-party data rather than the retailer's live price. Where a \"price as of\" date is shown, it is the date of the underlying data.",
         "Always check the price and availability on the retailer's own page before you buy. We do not guarantee that any price, offer or specification is accurate, complete or current.",
+      ],
+    },
+    {
+      id: "payments",
+      heading: "Online payments and refunds",
+      paragraphs: [
+        "Online payments are processed by Razorpay. We treat an order as paid only after Razorpay's confirmation has been verified by our servers. If money is deducted but your order still shows as unpaid, email us with your order number and we will look into it.",
+        "To cancel an order you have already paid for online, email us and we will arrange a refund to the original payment method. The time it takes for a refund to appear depends on your bank or payment provider.",
       ],
     },
     {
