@@ -20,7 +20,7 @@ export const PRIVACY: LegalDoc = {
         "Orders you place: the items, prices, delivery address, payment method, and the order status.",
         "Payment confirmations: when you pay online, we receive Razorpay's payment ID and confirmation. We never see or store your card, UPI or bank details.",
         "Your cart and wishlist. While you are signed out these stay in your own browser; when you sign in they are added to your account.",
-        "Your email address, if you subscribe to deal alerts in the website footer.",
+        "Your email address, if you subscribe to deal updates in the website footer.",
         "Messages you type into the AI shopping assistant.",
         "Technical information such as your IP address and request details, which our servers and hosting providers process to run the site and to limit abuse.",
       ],
@@ -31,7 +31,7 @@ export const PRIVACY: LegalDoc = {
       bullets: [
         "To create and run your account, cart, wishlist and orders.",
         "To show you product comparisons and answer your questions in the AI assistant.",
-        "To send the deal-alert emails you asked for.",
+        "To send the deal updates you asked for.",
         "To keep the site secure and prevent abuse, for example by limiting how fast requests can be made.",
         "To reply when you write to us.",
       ],
@@ -78,7 +78,7 @@ export const PRIVACY: LegalDoc = {
       bullets: [
         "You can edit or delete your saved addresses in your account at any time.",
         "You can clear the items listed above by signing out and clearing your browser's site data.",
-        "To see, correct or delete the personal information we hold, or to unsubscribe from deal alerts, email us at " + CONTACT_EMAIL + " from the address you registered with.",
+        "To see, correct or delete the personal information we hold, or to unsubscribe from deal updates, email us at " + CONTACT_EMAIL + " from the address you registered with.",
       ],
     },
     {

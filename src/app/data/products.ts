@@ -1,4 +1,4 @@
-import { Bot, BarChart2, Bell, Tag, TrendingUp, Shield } from "lucide-react";
+import { Bot, BarChart2, Scale, Tag, TrendingUp, Shield } from "lucide-react";
 
 export const DEFAULT_PRODUCT = "Samsung Galaxy S25 Ultra";
 
@@ -43,7 +43,7 @@ export const TRENDING = [
 export const WHY_FEATURES = [
   { icon: Bot,       title: "AI Recommendations",         desc: "Our AI analyzes millions of price points to recommend the right product at the right time, tailored specifically to you."       },
   { icon: BarChart2, title: "Real-Time Price Comparison",  desc: "Prices updated every 15 minutes across 5 verified retailers. Always see where your money goes furthest."                      },
-  { icon: Bell,      title: "Price Drop Alerts",           desc: "Set a target price and get instant alerts — email, SMS, or push — the moment any retailer drops below your threshold."           },
+  { icon: Scale,     title: "Side-by-Side Comparison",    desc: "Pick up to four products from the same category and compare price, specs, delivery and offers in one table, with the differences highlighted." },
   { icon: Tag,       title: "Exclusive Coupons",           desc: "We surface hidden coupon codes and cashback offers most shoppers miss, saving you an extra 5–15% at checkout automatically."    },
   { icon: TrendingUp,title: "Price History Charts",        desc: "24-month price history tells you whether today's 'sale' is real or manufactured. Know when to wait and when to strike."          },
   { icon: Shield,    title: "Secure & Verified Shopping",  desc: "Only verified, trusted retailers. Every price is validated. No fake listings, no malicious redirects, no compromised data."      },

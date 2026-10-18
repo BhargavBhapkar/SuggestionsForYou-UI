@@ -133,7 +133,7 @@
     "whyFeatures": [
       { "title": "AI Recommendations", "desc": "Our AI analyzes price trends and patterns to recommend the right product at the right time, tailored specifically to you." },
       { "title": "Real-Time Price Comparison", "desc": "Prices updated every 15 minutes across 5 verified retailers. Always see where your money goes furthest." },
-      { "title": "Price Drop Alerts", "desc": "Set a target price and get instant alerts — email, SMS, or push — the moment any retailer drops below your threshold." },
+      { "title": "Side-by-Side Comparison", "desc": "Pick up to four products from the same category and compare price, specs, delivery and offers in one table, with the differences highlighted." },
       { "title": "Exclusive Coupons", "desc": "We surface hidden coupon codes and cashback offers most shoppers miss, saving you an extra 5–15% at checkout automatically." },
       { "title": "Price History Charts", "desc": "24-month price history tells you whether today's 'sale' is real or manufactured. Know when to wait and when to strike." },
       { "title": "Secure & Verified Shopping", "desc": "Only verified, trusted retailers. Every price is validated. No fake listings, no malicious redirects, no compromised data." }
@@ -142,8 +142,8 @@
     "endsIn": "Ends in"
   },
   "footer": {
-    "tagline": "AI-powered price comparison across 5 top Indian retailers. Track prices, get alerts, and always buy at the perfect moment.",
-    "getDealAlerts": "Get Deal Alerts",
+    "tagline": "AI-powered price comparison across 5 top Indian retailers. Compare prices, check price history, and always buy at the perfect moment.",
+    "getDealAlerts": "Get Deal Updates",
     "emailPlaceholder": "Enter your email",
     "columns": [
       { "title": "Company", "links": ["About Us", "Careers", "Blog", "Press Kit", "Partner With Us"] },
@@ -373,7 +373,7 @@
     "clickToCollapse": "Click to collapse",
     "clickToExpand": "Click to expand full spec sheet",
     "aiPriceIntelligence": "AI Price Intelligence",
-    "aiDefaultBanner": "This product is at a recent price low on {{store}}. Our model gives {{score}}% confidence that price won't drop meaningfully further soon. Recommendation: buy now or set an alert to be notified if it does drop.",
+    "aiDefaultBanner": "This product is at a recent price low on {{store}}. Our model gives {{score}}% confidence that price won't drop meaningfully further soon. Recommendation: buy now.",
     "accuracyPercent": "{{score}}% accuracy",
     "updatedHourly": "Updated hourly",
     "shoppersCount": "2.4M shoppers",
@@ -521,7 +521,7 @@
     "howItWorks": [
       { "title": "We track every 15 minutes", "desc": "Prices are pulled from 5 retailers around the clock, so every chart reflects what's live right now." },
       { "title": "You see the real pattern", "desc": "24 months of history reveals whether a 'sale' is genuine or just a manufactured markdown." },
-      { "title": "Get alerted at the right time", "desc": "Set a target price on any product's comparison page and we'll notify you the moment it's hit." }
+      { "title": "Pick the right moment to buy", "desc": "Use the price history and our buy-or-wait guidance on a product's comparison page to decide whether to buy now or wait." }
     ]
   },
   "aiAdvisorPage": {
