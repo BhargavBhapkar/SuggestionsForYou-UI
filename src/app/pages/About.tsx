@@ -6,6 +6,7 @@ import {
 } from "lucide-react";
 import { inter, poppins } from "../lib/fonts";
 import Reveal from "../components/Reveal";
+import { CONTACT_EMAIL } from "../data/legal";
 
 const STATS_VALUES = ["< 15 min", "1,500+", "99.9%", "₹180Cr+"];
 const STATS_LABEL_KEYS = ["priceRefresh", "productsIndexed", "uptimeSla", "savingsUnlocked"];
@@ -104,9 +105,13 @@ export default function AboutPage() {
               <h2 className="text-xl font-bold text-white mb-2" style={poppins}>{t("aboutPage.getInTouch")}</h2>
               <p className="text-sm text-gray-400 mb-5" style={inter}>{t("aboutPage.contactSubtitle")}</p>
               <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-6">
-                <a href="mailto:hello@suggestionsforyou.com" className="inline-flex items-center gap-2 text-sm text-gray-300 hover:text-[#F97316] transition-colors" style={inter}>
-                  <Mail className="w-4 h-4" /> hello@suggestionsforyou.com
+                <a href={`mailto:${CONTACT_EMAIL}`} className="inline-flex items-center gap-2 text-sm text-gray-300 hover:text-[#F97316] transition-colors" style={inter}>
+                  <Mail className="w-4 h-4" /> {CONTACT_EMAIL}
                 </a>
+                <span className="hidden sm:inline text-gray-600">·</span>
+                <Link to="/contact" onClick={() => window.scrollTo(0, 0)} className="inline-flex items-center gap-2 text-sm text-gray-300 hover:text-[#F97316] transition-colors" style={inter}>
+                  {t("contact.title")}
+                </Link>
                 <span className="hidden sm:inline text-gray-600">·</span>
                 <span className="inline-flex items-center gap-2 text-sm text-gray-300" style={inter}>
                   <MapPin className="w-4 h-4" /> {t("footer.address")}

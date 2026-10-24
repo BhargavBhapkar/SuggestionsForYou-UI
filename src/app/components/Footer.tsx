@@ -6,16 +6,15 @@ import { inter, poppins } from "../lib/fonts";
 import { api } from "../lib/api";
 import { DEFAULT_PRODUCT } from "../data/products";
 import { useToast } from "./ToastProvider";
-
-const CONTACT_EMAIL = "hello@suggestionsforyou.com";
+import { CONTACT_EMAIL } from "../data/legal";
 
 // Destination for each link in the translated footer.columns lists, by column then
 // position. null = no page exists yet, so the link is not rendered.
 const LINK_ROUTES: (string | null)[][] = [
-  ["/about", null, null, null, null],
+  ["/about", "/contact", null, null, null],
   [`/compare/${encodeURIComponent(DEFAULT_PRODUCT)}`, null, "/price-history", "/ai-advisor", "/deals"],
   [null, null, null, null, null],
-  ["/privacy", "/terms", "/privacy#storage", "/terms#prices", null],
+  ["/privacy", "/terms", "/refunds", "/shipping", "/privacy#storage"],
 ];
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

@@ -12,7 +12,7 @@ import { useToast } from "../components/ToastProvider";
 import useOnlinePayment from "../lib/useOnlinePayment";
 import type { AppContext } from "../Layout";
 
-const SUPPORT_EMAIL = "hello@suggestionsforyou.com";
+const SUPPORT_EMAIL = "support@suggestionsforyou.com";
 const PAYMENT_BADGE: Record<string, string> = {
   paid: "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400",
   pending: "bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400",

@@ -1,12 +1,12 @@
 import { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
-import { ShieldCheck, FileText, TriangleAlert } from "lucide-react";
+import { ShieldCheck, FileText, TriangleAlert, Truck, RotateCcw } from "lucide-react";
 import { inter, poppins } from "../lib/fonts";
 import PageShell from "../components/PageShell";
-import { LEGAL_DRAFT, LEGAL_UPDATED, PRIVACY, TERMS, type LegalDoc } from "../data/legal";
+import { LEGAL_DRAFT, LEGAL_UPDATED, PRIVACY, TERMS, SHIPPING, REFUNDS, type LegalDoc } from "../data/legal";
 
-function LegalPage({ doc, metaKey, icon }: { doc: LegalDoc; metaKey: "privacy" | "terms"; icon: React.ReactNode }) {
+function LegalPage({ doc, metaKey, icon }: { doc: LegalDoc; metaKey: "privacy" | "terms" | "shipping" | "refunds"; icon: React.ReactNode }) {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { hash } = useLocation();
@@ -65,4 +65,12 @@ export function PrivacyPage() {
 
 export function TermsPage() {
   return <LegalPage doc={TERMS} metaKey="terms" icon={<FileText className="w-6 h-6 text-[#F97316]" />} />;
+}
+
+export function ShippingPage() {
+  return <LegalPage doc={SHIPPING} metaKey="shipping" icon={<Truck className="w-6 h-6 text-[#F97316]" />} />;
+}
+
+export function RefundsPage() {
+  return <LegalPage doc={REFUNDS} metaKey="refunds" icon={<RotateCcw className="w-6 h-6 text-[#F97316]" />} />;
 }

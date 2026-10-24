@@ -23,11 +23,12 @@ export default function CheckoutPage() {
   const [placing, setPlacing] = useState(false);
   const [error, setError] = useState("");
   const [onlineAvailable, setOnlineAvailable] = useState(false);
+  const [testMode, setTestMode] = useState(false);
   const [method, setMethod] = useState<"cod" | "razorpay">("cod");
 
   useEffect(() => {
     api.getPaymentConfig()
-      .then((c) => { setOnlineAvailable(c.online); if (c.online) setMethod("razorpay"); })
+      .then((c) => { setOnlineAvailable(c.online); setTestMode(c.online && c.mode !== "live"); if (c.online) setMethod("razorpay"); })
       .catch(() => setOnlineAvailable(false));
   }, []);
 
@@ -142,6 +143,11 @@ export default function CheckoutPage() {
         <Reveal delay={30}>
           <div className="mb-8">
             <h2 className="font-bold text-[#111827] dark:text-white mb-4" style={poppins}>{t("checkout.paymentMethod")}</h2>
+            {testMode && (
+              <p role="note" className="mb-3 px-3.5 py-2.5 rounded-xl border border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-950/50 text-xs text-amber-900 dark:text-amber-100" style={inter}>
+                {t("checkout.testModeNote")}
+              </p>
+            )}
             <div className="space-y-3" role="radiogroup" aria-label={t("checkout.paymentMethod")}>
               {onlineAvailable && (
                 <label className={`flex items-start gap-3 p-4 rounded-2xl border cursor-pointer transition-all ${method === "razorpay" ? "border-[#F97316] bg-orange-50/50 dark:bg-orange-950/20" : "border-[#E5E7EB] dark:border-white/10 bg-white dark:bg-[#131B2E]"}`}>

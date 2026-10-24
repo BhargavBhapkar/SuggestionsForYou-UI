@@ -15,7 +15,8 @@ import CheckoutPage from "./pages/Checkout";
 import OrderConfirmationPage from "./pages/OrderConfirmation";
 import OrderDetailPage from "./pages/OrderDetail";
 import NotFoundPage from "./pages/NotFound";
-import { PrivacyPage, TermsPage } from "./pages/Legal";
+import ContactPage from "./pages/Contact";
+import { PrivacyPage, TermsPage, ShippingPage, RefundsPage } from "./pages/Legal";
 
 export default function App() {
   return (
@@ -35,8 +36,11 @@ export default function App() {
         <Route path="checkout" element={<CheckoutPage />} />
         <Route path="order-confirmation/:orderId" element={<OrderConfirmationPage />} />
         <Route path="account/orders/:orderId" element={<OrderDetailPage />} />
+        <Route path="contact" element={<ContactPage />} />
         <Route path="privacy" element={<PrivacyPage />} />
         <Route path="terms" element={<TermsPage />} />
+        <Route path="shipping" element={<ShippingPage />} />
+        <Route path="refunds" element={<RefundsPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Route>
     </Routes>

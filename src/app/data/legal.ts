@@ -1,8 +1,16 @@
 // DRAFT legal text. It describes what the site does today (see the code), but it has
 // not been reviewed by a lawyer. Set LEGAL_DRAFT to false only after that review.
+import { BUSINESS, POLICY } from "./business";
+
 export const LEGAL_DRAFT = true;
-export const LEGAL_UPDATED = "16 October 2026";
-export const CONTACT_EMAIL = "hello@suggestionsforyou.com";
+export const LEGAL_UPDATED = "24 October 2026";
+export const CONTACT_EMAIL = "support@suggestionsforyou.com";
+
+// Phone line for the policy pages, only when a number has been filled in (see business.ts).
+// Who runs the site, for the contact sections of the legal pages.
+const OPERATOR = BUSINESS.legalName ? "SuggestionsForYou is operated by " + BUSINESS.legalName + (BUSINESS.address ? ", " + BUSINESS.address : "") + ". " : "";
+
+const CALL_US = BUSINESS.phone ? ` or call ${BUSINESS.phone}` : "";
 
 export type LegalSection = { id: string; heading: string; paragraphs?: string[]; bullets?: string[]; after?: string[] };
 export type LegalDoc = { intro: string; sections: LegalSection[] };
@@ -21,6 +29,7 @@ export const PRIVACY: LegalDoc = {
         "Payment confirmations: when you pay online, we receive Razorpay's payment ID and confirmation. We never see or store your card, UPI or bank details.",
         "Your cart and wishlist. While you are signed out these stay in your own browser; when you sign in they are added to your account.",
         "Your email address, if you subscribe to deal updates in the website footer.",
+        "Messages you send through the Contact page: your name, email address and what you write.",
         "Messages you type into the AI shopping assistant.",
         "Technical information such as your IP address and request details, which our servers and hosting providers process to run the site and to limit abuse.",
       ],
@@ -32,6 +41,7 @@ export const PRIVACY: LegalDoc = {
         "To create and run your account, cart, wishlist and orders.",
         "To show you product comparisons and answer your questions in the AI assistant.",
         "To send the deal updates you asked for.",
+        "To read and reply to messages you send us through the Contact page.",
         "To keep the site secure and prevent abuse, for example by limiting how fast requests can be made.",
         "To reply when you write to us.",
       ],
@@ -93,7 +103,7 @@ export const PRIVACY: LegalDoc = {
       id: "changes",
       heading: "Changes and contact",
       paragraphs: [
-        "If we change this policy we will update the date at the top of this page. Questions or requests: " + CONTACT_EMAIL + ".",
+        "If we change this policy we will update the date at the top of this page. " + OPERATOR + "Questions or requests: " + CONTACT_EMAIL + ".",
       ],
     },
   ],
@@ -185,7 +195,116 @@ export const TERMS: LegalDoc = {
     {
       id: "contact",
       heading: "Contact",
-      paragraphs: ["Questions about these terms: " + CONTACT_EMAIL + "."],
+      paragraphs: [OPERATOR + "Questions about these terms: " + CONTACT_EMAIL + "."],
+    },
+  ],
+};
+
+export const SHIPPING: LegalDoc = {
+  intro:
+    "This page explains how orders placed on SuggestionsForYou are delivered: where we deliver, what it costs, how long it takes and what to do if something goes wrong.",
+  sections: [
+    {
+      id: "areas",
+      heading: "Where we deliver",
+      paragraphs: [
+        "We deliver within India only. If we cannot deliver to the address or PIN code on your order, we will tell you, cancel the order, and refund anything you have paid.",
+      ],
+    },
+    {
+      id: "charges",
+      heading: "Delivery charges and prices",
+      bullets: [
+        "Delivery is free on every order. The total you see at checkout is the total you pay.",
+        "There is no extra charge for cash on delivery.",
+        "All prices are in Indian rupees (₹)" + (POLICY.pricesIncludeTax ? " and include applicable taxes." : ". Applicable taxes are added at checkout."),
+      ],
+    },
+    {
+      id: "timelines",
+      heading: "How long delivery takes",
+      paragraphs: [
+        "We pack and dispatch your order within " + POLICY.processingTime + " of it being confirmed. After dispatch, delivery usually takes " + POLICY.deliveryTime + ", depending on your location.",
+        "These are estimates, not guarantees. Remote areas, public holidays, weather and courier delays can add time.",
+      ],
+    },
+    {
+      id: "tracking",
+      heading: "Following your order",
+      paragraphs: [
+        "Sign in and open your account to see where an order stands: placed, confirmed, shipped or delivered. You can also email us with your order number" + CALL_US + ".",
+      ],
+    },
+    {
+      id: "receiving",
+      heading: "When your order arrives",
+      bullets: [
+        "Check the package before you accept it. If it is visibly damaged or tampered with, refuse it or tell the courier, and contact us the same day.",
+        "For cash on delivery, please keep the exact amount ready.",
+        "If an item is damaged, defective or not what you ordered, report it within " + POLICY.returnWindowDays + " days of delivery. See the Cancellation & Refunds page.",
+      ],
+    },
+    {
+      id: "contact",
+      heading: "Contact",
+      paragraphs: ["Delivery questions: " + CONTACT_EMAIL + CALL_US + "."],
+    },
+  ],
+};
+
+export const REFUNDS: LegalDoc = {
+  intro:
+    "This page explains how to cancel an order, what to do if an item arrives damaged, defective or wrong, and how and when you get your money back.",
+  sections: [
+    {
+      id: "cancel",
+      heading: "Cancelling an order",
+      bullets: [
+        "You can cancel an order yourself from your account while its status is \"placed\" or \"confirmed\". Once an order has shipped it can no longer be cancelled.",
+        "Cash on delivery orders cost nothing to cancel, because nothing has been paid.",
+        "If you have already paid online, email " + CONTACT_EMAIL + CALL_US + " with your order number and we will cancel it and refund you.",
+      ],
+    },
+    {
+      id: "returns",
+      heading: "Damaged, defective or wrong items",
+      paragraphs: [
+        "If your item arrives damaged, does not work, is missing parts, or is not what you ordered, contact us within " + POLICY.returnWindowDays + " days of delivery. Send your order number and a few clear photos of the item and its packaging.",
+        "After we have checked the problem we will, as you prefer and where possible, replace the item or refund you.",
+      ],
+      after: [
+        "We cannot accept returns for damage caused after delivery, for items that have been used beyond checking that they work, or for items returned without their original packaging and accessories.",
+      ],
+    },
+    {
+      id: "refunds",
+      heading: "How refunds are paid",
+      bullets: [
+        "Paid online: the refund goes back to the payment method you used, within " + POLICY.refundTime + " of us approving it. Your bank or card issuer may take a little longer to show it.",
+        "Paid by cash on delivery: we will ask for your UPI ID or bank details and send the refund there, within " + POLICY.refundTime + " of approval.",
+        "We refund the amount you paid for the item. Delivery is free, so there are no delivery charges to return.",
+      ],
+    },
+    {
+      id: "failed",
+      heading: "If a payment fails or money is deducted",
+      paragraphs: [
+        "If your payment fails but money leaves your account, it is normally returned to you by your bank within " + POLICY.refundTime + ". If your order still shows as unpaid after that, or you were charged twice, email us with your order number and the payment reference and we will sort it out.",
+      ],
+    },
+    {
+      id: "warranty",
+      heading: "Warranty",
+      paragraphs: [
+        "Products may carry the manufacturer's own warranty. For a warranty claim, contact the manufacturer or its service centre. If you need help, email us.",
+      ],
+    },
+    {
+      id: "contact",
+      heading: "Contact and complaints",
+      paragraphs: [
+        "Refund and cancellation requests: " + CONTACT_EMAIL + CALL_US + "." + (BUSINESS.grievanceOfficer ? " Complaints can be addressed to our grievance officer, " + BUSINESS.grievanceOfficer + ", at the same address." : ""),
+      ],
     },
   ],
 };

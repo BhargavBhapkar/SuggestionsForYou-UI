@@ -94,6 +94,14 @@ export interface AuthUser {
   id: string; name: string; email: string; role: "user" | "admin"; createdAt: string;
 }
 
+export type ContactTopic = "question" | "suggestion" | "order" | "other";
+
+export interface ContactMessageInput {
+  name: string; email: string; topic: ContactTopic; message: string;
+  /** honeypot field, always empty for real visitors */
+  website?: string;
+}
+
 export interface ProductQuery {
   tag?: string;
   category?: string;
@@ -172,6 +180,8 @@ export const api = {
     request<{ reply: string }>("/chat", { method: "POST", body: JSON.stringify({ messages }) }),
   subscribeNewsletter: (email: string) =>
     request<{ ok: true }>("/newsletter", { method: "POST", body: JSON.stringify({ email }) }),
+  sendContactMessage: (body: ContactMessageInput) =>
+    request<{ ok: true }>("/contact", { method: "POST", body: JSON.stringify(body) }),
   getProducts: (params?: ProductQuery) => request<Product[]>(`/products${toQuery(params as Record<string, string | number | undefined>)}`),
   getProduct: (name: string) => request<Product>(`/products/${encodeURIComponent(name)}`),
   getCategories: () => request<Category[]>("/categories"),
@@ -206,7 +216,7 @@ export const api = {
     request<Address[]>(`/addresses/${id}`, { method: "PATCH", body: JSON.stringify(body) }),
   deleteAddress: (id: string) => request<Address[]>(`/addresses/${id}`, { method: "DELETE" }),
 
-  getPaymentConfig: () => request<{ online: boolean }>("/payments/config"),
+  getPaymentConfig: () => request<{ online: boolean; mode?: "live" | "test" }>("/payments/config"),
   createOrder: (addressId: string, paymentMethod: "cod" | "razorpay" = "cod") =>
     request<{ order: Order; payment: PaymentParams | null }>("/orders", { method: "POST", body: JSON.stringify({ addressId, paymentMethod }) }),
   startPayment: (orderId: string) =>

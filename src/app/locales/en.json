@@ -146,10 +146,10 @@
     "getDealAlerts": "Get Deal Updates",
     "emailPlaceholder": "Enter your email",
     "columns": [
-      { "title": "Company", "links": ["About Us", "Careers", "Blog", "Press Kit", "Partner With Us"] },
+      { "title": "Company", "links": ["About Us", "Contact Us", "Blog", "Press Kit", "Partner With Us"] },
       { "title": "Features", "links": ["Price Comparison", "Price Alerts", "Price History", "AI Advisor", "Coupons & Offers"] },
       { "title": "Resources", "links": ["Help Center", "API Docs", "Browser Extension", "Mobile App", "Sitemap"] },
-      { "title": "Legal", "links": ["Privacy Policy", "Terms of Service", "Cookie Policy", "Disclaimer", "GDPR"] }
+      { "title": "Legal", "links": ["Privacy Policy","Terms of Service","Cancellation & Refunds","Shipping & Delivery","Cookie Policy"] }
     ],
     "address": "Vadodara, Gujarat, India",
     "copyright": "© {{year}} SuggestionsForYou. All rights reserved. Made with ♥ in India 🇮🇳",
@@ -194,6 +194,8 @@
     "paymentMethod": "Payment method",
     "payOnline": "Pay online",
     "payOnlineDesc": "UPI, cards, netbanking and wallets",
+
+    "testModeNote": "Test mode: online payments are for testing and no real money is charged.",
     "payCod": "Cash on delivery",
     "payCodDesc": "Pay in cash when your order arrives",
     "payNowButton": "Pay ₹{{amount}} securely",
@@ -655,6 +657,18 @@
       "title": "Order Details",
       "description": "View the details and status of your order."
     },
+    "shipping": {
+      "title": "Shipping & Delivery",
+      "description": "How SuggestionsForYou delivers orders: delivery area, charges and timelines."
+    },
+    "refunds": {
+      "title": "Cancellation & Refunds",
+      "description": "How to cancel an order, report a damaged or wrong item, and get a refund."
+    },
+    "contact": {
+      "title": "Contact Us",
+      "description": "Send a question, suggestion or order query to the SuggestionsForYou team."
+    },
     "privacy": {
       "title": "Privacy Policy",
       "description": "How SuggestionsForYou collects, uses and protects your personal information."
@@ -697,6 +711,46 @@
     "paymentCancelled": "Payment cancelled. Your order is saved and you can pay from the order page.",
     "paymentFailed": "Payment failed. Please try again or choose another method.",
     "paymentUnavailable": "Couldn't open the payment window. Check your connection and try again."
+  },
+  "contact": {
+    "title": "Contact Us",
+    "subtitle": "Questions, suggestions or help with an order — send us a message and we'll reply by email.",
+    "name": "Your name",
+    "email": "Your email",
+    "topic": "What is it about?",
+    "topics": {
+      "question": "A question",
+      "suggestion": "A suggestion",
+      "order": "Help with an order",
+      "other": "Something else"
+    },
+    "message": "Message",
+    "messagePlaceholder": "Tell us how we can help. For an order, include the order number.",
+    "send": "Send message",
+    "sending": "Sending…",
+    "sentTitle": "Message sent",
+    "sentBody": "Thanks for writing to us. We'll reply to the email address you gave.",
+    "sendAnother": "Send another message",
+    "errName": "Please enter your name.",
+    "errEmail": "Please enter a valid email address.",
+    "errMessage": "Please write a few more words (at least 10 characters).",
+    "failed": "We couldn't send your message right now. Please try again, or email {{email}}.",
+
+    "detailsHeading": "Business details",
+
+    "legalName": "Registered name",
+
+    "address": "Address",
+
+    "phone": "Phone",
+
+    "emailLabel": "Email",
+
+    "hours": "Support hours",
+
+    "gstin": "GSTIN",
+
+    "grievanceOfficer": "Grievance officer"
   },
   "newsletter": {
     "label": "Email address",
