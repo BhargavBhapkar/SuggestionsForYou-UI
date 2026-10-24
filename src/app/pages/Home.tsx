@@ -20,23 +20,27 @@ import { useProducts, useCategories, useRetailers, useTestimonials, useFaqs } fr
 import { CATEGORY_ICONS } from "../lib/icons";
 import { localizedTestimonial, localizedFaq } from "../lib/i18nContent";
 
+// `color` tints the logo and the tile's accent line. Brands whose own colour is black get the
+// site's orange accent instead so they don't look flat next to the rest.
+const INK = "1F2937";
+const ORANGE = "F97316";
 const BRAND_LOGOS = [
-  { name: "Apple", slug: "apple" },
-  { name: "Samsung", slug: "samsung" },
-  { name: "Sony", slug: "sony" },
-  { name: "OnePlus", slug: "oneplus" },
-  { name: "Dell", slug: "dell" },
-  { name: "LG", slug: "lg" },
-  { name: "boAt", slug: "boat" },
-  { name: "Xiaomi", slug: "xiaomi" },
-  { name: "Lenovo", slug: "lenovo" },
-  { name: "Asus", slug: "asus" },
-  { name: "HP", slug: "hp" },
-  { name: "Bose", slug: "bose" },
-  { name: "JBL", slug: "jbl" },
-  { name: "Garmin", slug: "garmin" },
-  { name: "NVIDIA", slug: "nvidia" },
-  { name: "PlayStation", slug: "playstation" },
+  { name: "Apple", slug: "apple", color: INK, accent: ORANGE },
+  { name: "Samsung", slug: "samsung", color: "1428A0", accent: "1428A0" },
+  { name: "Sony", slug: "sony", color: INK, accent: "2563EB" },
+  { name: "OnePlus", slug: "oneplus", color: "F5010C", accent: "F5010C" },
+  { name: "Dell", slug: "dell", color: "007DB8", accent: "007DB8" },
+  { name: "LG", slug: "lg", color: "A50034", accent: "A50034" },
+  { name: "boAt", slug: "boat", color: "E31E24", accent: "E31E24" },
+  { name: "Xiaomi", slug: "xiaomi", color: "FF6900", accent: "FF6900" },
+  { name: "Lenovo", slug: "lenovo", color: "E2231A", accent: "E2231A" },
+  { name: "Asus", slug: "asus", color: "00539B", accent: "00539B" },
+  { name: "HP", slug: "hp", color: "0096D6", accent: "0096D6" },
+  { name: "Bose", slug: "bose", color: INK, accent: ORANGE },
+  { name: "JBL", slug: "jbl", color: "FF3300", accent: "FF3300" },
+  { name: "Garmin", slug: "garmin", color: "007CC3", accent: "007CC3" },
+  { name: "NVIDIA", slug: "nvidia", color: "76B900", accent: "76B900" },
+  { name: "PlayStation", slug: "playstation", color: "003791", accent: "003791" },
 ];
 
 export default function Home() {
@@ -373,16 +377,24 @@ export default function Home() {
           </div>
 
           {/* Brand strip — auto-scrolling logo marquee */}
-          <div className="mt-16 lg:mt-10 pt-8 overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]">
+          <div className="mt-16 lg:mt-10 pt-8 pb-3 overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_8%,black_92%,transparent)]">
             <div className="flex w-max animate-marquee">
               {[...BRAND_LOGOS, ...BRAND_LOGOS].map((b, i) => (
-                <img
+                <div
                   key={`${b.slug}-${i}`}
-                  src={`https://cdn.simpleicons.org/${b.slug}/9CA3AF`}
-                  alt={b.name}
+                  aria-hidden={i >= BRAND_LOGOS.length || undefined}
                   title={b.name}
-                  className="h-8 w-auto mx-8 flex-shrink-0 opacity-70 dark:opacity-50 hover:opacity-100 transition-opacity duration-200"
-                />
+                  style={{ "--accent": `#${b.accent}` } as React.CSSProperties}
+                  className="group flex-shrink-0 w-36 h-[88px] mx-2.5 flex flex-col items-center justify-center gap-1.5 rounded-2xl bg-white border border-[#E5E7EB] dark:border-white/10 border-b-[3px] border-b-[var(--accent)] shadow-md shadow-black/10 dark:shadow-black/40 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[0_14px_28px_-12px_var(--accent)]"
+                >
+                  <img
+                    src={`https://cdn.simpleicons.org/${b.slug}/${b.color}`}
+                    alt={b.name}
+                    onError={(e) => { e.currentTarget.style.display = "none"; }}
+                    className="h-8 w-auto max-w-[6.75rem] object-contain transition-transform duration-300 group-hover:scale-110"
+                  />
+                  <span className="text-[11px] font-semibold tracking-wide text-[#6B7280] group-hover:text-[var(--accent)] transition-colors" style={poppins}>{b.name}</span>
+                </div>
               ))}
             </div>
           </div>

@@ -218,25 +218,9 @@ export default function DealsCarousel({
         })}
       </div>
 
-      {/* Dots + mobile countdown */}
-      <div className="mt-8 flex flex-col items-center gap-5 px-4">
-        <div className="flex items-center gap-2">
-          {deals.map((_, i) => (
-            <button
-              key={i}
-              onClick={() => setActiveIdx(i)}
-              style={{
-                width: i === activeIdx ? 28 : 8,
-                height: 8,
-                borderRadius: 99,
-                backgroundColor: i === activeIdx ? "#F97316" : "rgba(255,255,255,0.15)",
-                transition: "width 300ms ease, background-color 300ms ease",
-              }}
-            />
-          ))}
-        </div>
-
-        <div className="sm:hidden flex items-center gap-2 px-3.5 py-2 bg-white/5 border border-white/10 rounded-xl">
+      {/* Mobile countdown */}
+      <div className="sm:hidden mt-8 flex flex-col items-center px-4">
+        <div className="flex items-center gap-2 px-3.5 py-2 bg-white/5 border border-white/10 rounded-xl">
           <Timer className="w-3.5 h-3.5 text-[#F97316]" />
           <span className="text-xs text-gray-400" style={inter}>{t("home.endsIn")}</span>
           <div className="flex items-center gap-0.5 tabular-nums" style={poppins}>
