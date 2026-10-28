@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams, useOutletContext } from "react-router";
 import { useTranslation } from "react-i18next";
 import {
   Search, Mic, ArrowRight, Star, Heart, ExternalLink, Bot, Check,
-  Menu, Moon, Sun, ChevronDown, ChevronRight, ChevronLeft,
+  Menu, ChevronDown, ChevronRight, ChevronLeft,
   X, Eye, Plus, Minus, SlidersHorizontal, RefreshCw, Tag, Truck,
   LayoutGrid, List, Filter, Home, ShoppingCart, UserRound, LogOut,
 } from "lucide-react";
@@ -222,6 +222,7 @@ function GridCard({
   const [added, setAdded] = useState(false);
   return (
     <div
+      data-tilt="6"
       className="group relative bg-white dark:bg-[#131B2E] border border-[#E5E7EB] dark:border-white/10 rounded-2xl overflow-hidden hover:shadow-xl hover:shadow-orange-100 dark:hover:shadow-orange-950/30 hover:-translate-y-1.5 transition-all duration-300 flex flex-col"
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
@@ -458,7 +459,7 @@ function FilterSection({
 export default function SearchResultsPage() {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const { wishlisted, toggleWish, addToCart, dark, setDark, user, onLoginRequired, logout, cartCount } = useOutletContext<AppContext>();
+  const { wishlisted, toggleWish, addToCart, user, onLoginRequired, logout, cartCount } = useOutletContext<AppContext>();
   const [searchParams] = useSearchParams();
   const initialCategory = searchParams.get("category") || "";
   const initialQuery = searchParams.get("q") || "";
@@ -767,9 +768,6 @@ export default function SearchResultsPage() {
                 </span>
               )}
             </button>
-            <button onClick={() => setDark(!dark)} className="p-2 text-[#6B7280] hover:text-[#F97316] dark:text-gray-400 transition-colors">
-              {dark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-            </button>
             {user ? (
               <>
                 <button
@@ -807,9 +805,6 @@ export default function SearchResultsPage() {
                   {cartCount > 99 ? "99+" : cartCount}
                 </span>
               )}
-            </button>
-            <button onClick={() => setDark(!dark)} className="p-2 text-[#6B7280] dark:text-gray-400">
-              {dark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
             </button>
             <LanguageSwitcher compact />
             <button onClick={() => setMobileMenu(!mobileMenu)} className="p-2 text-[#374151] dark:text-gray-300">
@@ -1230,7 +1225,7 @@ export default function SearchResultsPage() {
           -webkit-appearance: none;
           width: 18px; height: 18px;
           border-radius: 50%;
-          background: #F97316;
+          background: #8C2447;
           border: 2px solid white;
           box-shadow: 0 1px 4px rgba(0,0,0,0.2);
           cursor: pointer;
@@ -1238,7 +1233,7 @@ export default function SearchResultsPage() {
         .range-thumb::-moz-range-thumb {
           width: 18px; height: 18px;
           border-radius: 50%;
-          background: #F97316;
+          background: #8C2447;
           border: 2px solid white;
           box-shadow: 0 1px 4px rgba(0,0,0,0.2);
           cursor: pointer;

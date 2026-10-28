@@ -1,0 +1,213 @@
+/* Bordeaux & Rose Gold: the site's look. A light theme with a blush-ivory page, bordeaux in place of the old
+   orange, rose gold as the metal accent, a serif / Sora / Manrope type set, roomy bento-style cards and soft motion.
+
+   The pages were written with orange utility classes (text-[#F97316], bg-orange-50 ...). Rather than touch every
+   component, this file recolours those classes. It is not inside a CSS layer, so it wins over Tailwind's utilities.
+
+   Three colours define the palette: the jewel (bordeaux), the metal (rose gold) and the paper (blush ivory).
+   Change the variables in the first block to retune the whole site. */
+
+html {
+  color-scheme: light;
+
+  --iv-paper: #fbf6f2;
+  --iv-sand: #f4eae4;
+  --iv-sand-2: #ecdfd8;
+  --iv-ink: #2b1a20;
+  --iv-ink-soft: #46303a;
+  --iv-muted: #6e5a61;
+  --iv-faint: #9b8a90;
+  --iv-ink-rgb: 43 26 32;
+  --iv-em: #8c2447;            /* jewel: buttons, links, badges */
+  --iv-em-light: #d98aa6;
+  --iv-em-deep: #6f1a38;
+  --iv-em-rgb: 140 36 71;
+  --iv-btn-a: #a52c57;
+  --iv-btn-b: #6f1a38;
+  --iv-forest: #2a0f1a;        /* deep band: deals strip, footer */
+  --iv-forest-2: #33131f;
+  --iv-gold: #dba08c;          /* metal: rose gold */
+  --iv-gold-text: #9c5a46;
+  --iv-gold-rgb: 219 160 140;
+  --iv-shadow-rgb: 70 20 40;
+
+  /* the Tailwind "orange" utilities (bg-orange-50, text-orange-600, shadow-orange-200 ...) take the jewel's tints */
+  --color-orange-50: #fbeff3;
+  --color-orange-100: #f5dce5;
+  --color-orange-200: #ebbbcb;
+  --color-orange-300: #de92ab;
+  --color-orange-400: #cb6285;
+  --color-orange-500: #b03c65;
+  --color-orange-600: #8c2447;
+  --color-orange-700: #721c3a;
+  --color-orange-800: #5a162f;
+  --color-orange-900: #440f24;
+  --color-orange-950: #2a0916;
+
+  --background: var(--iv-paper);
+  --foreground: var(--iv-ink);
+  background-color: var(--iv-paper);
+
+  /* roomier, more rounded cards */
+  --radius-lg: 1rem;
+  --radius-xl: 1.375rem;
+  --radius-2xl: 1.75rem;
+  --radius-3xl: 2.25rem;
+}
+
+html body { background-color: transparent; font-family: "Manrope", sans-serif; }
+html ::selection { background: rgb(var(--iv-em-rgb) / 0.22); color: var(--iv-ink); }
+
+/* Soft light behind everything, and a thin reading-progress line along the top */
+html::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(900px 560px at 92% -8%, rgb(var(--iv-em-rgb) / 0.1), transparent 62%),
+    radial-gradient(760px 600px at -10% 30%, rgb(var(--iv-gold-rgb) / 0.16), transparent 62%),
+    radial-gradient(700px 480px at 70% 108%, rgb(var(--iv-em-rgb) / 0.07), transparent 62%);
+}
+html::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  z-index: 9998;
+  pointer-events: none;
+  background: linear-gradient(90deg, var(--iv-em), var(--iv-em-light) 60%, var(--iv-gold));
+  transform-origin: 0 50%;
+  transform: scaleX(0);
+  animation: iv-progress linear both;
+  animation-timeline: scroll(root);
+}
+@keyframes iv-progress { to { transform: scaleX(1); } }
+
+/* Surfaces and text */
+html :is(.min-h-screen.bg-white, .min-h-screen.bg-\[\#F8FAFC\], section.bg-white) { background-color: transparent; }
+html section.bg-\[\#F8FAFC\] { background-color: color-mix(in srgb, var(--iv-sand) 70%, transparent); }
+html .bg-\[\#F8FAFC\] { background-color: var(--iv-sand); }
+html .bg-\[\#F3F4F6\] { background-color: var(--iv-sand-2); }
+html .text-\[\#111827\] { color: var(--iv-ink); }
+html .text-\[\#374151\] { color: var(--iv-ink-soft); }
+html .text-\[\#6B7280\] { color: var(--iv-muted); }
+html .text-\[\#9CA3AF\] { color: var(--iv-faint); }
+html .border-\[\#E5E7EB\] { border-color: rgb(var(--iv-ink-rgb) / 0.1); }
+html .border-\[\#F3F4F6\] { border-color: rgb(var(--iv-ink-rgb) / 0.06); }
+html .bg-white.rounded-2xl,
+html .bg-\[\#F8FAFC\].rounded-2xl {
+  box-shadow: inset 0 1px 0 #fff, 0 22px 44px -28px rgb(var(--iv-shadow-rgb) / 0.32);
+}
+
+/* The dark bands (deals strip, footer, call-to-action boxes) take the deep tone, with a metallic hairline */
+html .bg-\[\#0C1320\] { background-color: var(--iv-forest); border-top: 1px solid rgb(var(--iv-gold-rgb) / 0.3); }
+html .bg-\[\#111827\] { background-color: var(--iv-forest-2); }
+html :is(.from-\[\#111827\], .to-\[\#111827\]) { --tw-gradient-from: var(--iv-forest-2); --tw-gradient-to: var(--iv-forest-2); }
+html .to-white { --tw-gradient-to: var(--iv-paper); }
+
+/* The orange accent becomes the jewel everywhere it is hard-coded */
+html :is(.text-\[\#F97316\], .hover\:text-\[\#F97316\]:hover, .group:hover .group-hover\:text-\[\#F97316\]) { color: var(--iv-em); }
+html :is(.border-\[\#F97316\], .hover\:border-\[\#F97316\]:hover, .focus\:border-\[\#F97316\]:focus, .focus-within\:border-\[\#F97316\]:focus-within, .group:hover .group-hover\:border-\[\#F97316\]) { border-color: var(--iv-em); }
+html :is(.border-\[\#F97316\]\/20, .border-\[\#F97316\]\/30, .hover\:border-\[\#F97316\]\/40:hover, .hover\:border-\[\#F97316\]\/30:hover) { border-color: rgb(var(--iv-em-rgb) / 0.3); }
+html :is(.bg-\[\#F97316\]\/10, .bg-\[\#F97316\]\/15, .bg-\[\#F97316\]\/20, .hover\:bg-\[\#F97316\]\/20:hover) { background-color: rgb(var(--iv-em-rgb) / 0.14); }
+html .accent-\[\#F97316\] { accent-color: var(--iv-em); }
+html :is(.from-\[\#F97316\], .via-\[\#F97316\]) { --tw-gradient-from: var(--iv-em); }
+html .bg-\[\#F97316\] {
+  background-color: var(--iv-em);
+  background-image: linear-gradient(135deg, var(--iv-btn-a), var(--iv-btn-b));
+}
+html :is(button, a).bg-\[\#F97316\]:hover {
+  filter: brightness(1.07);
+  box-shadow: 0 14px 28px -14px rgb(var(--iv-em-rgb) / 0.75);
+}
+
+/* The metal: rose-gold stars and hearts, small uppercase labels, and every accent that sits on a dark band */
+html .fill-\[\#F97316\] { fill: var(--iv-gold); }
+html .text-\[\#F97316\].uppercase { color: var(--iv-gold-text); }
+html :is(.bg-\[\#0C1320\], .bg-\[\#111827\]) :is(.text-\[\#F97316\], .text-\[\#F97316\].uppercase, .hover\:text-\[\#F97316\]:hover) { color: var(--iv-gold); }
+html .bg-\[\#0C1320\] a:hover { color: var(--iv-gold); }
+
+/* Type: serif headlines, Sora for labels and numbers, Manrope for reading (the serif is skipped for
+   Hindi and Gujarati, which it has no letters for) */
+html [style*="Poppins"] { font-family: "Sora", sans-serif !important; }
+html [style*="Inter"] { font-family: "Manrope", sans-serif !important; }
+html:not([lang="hi"]):not([lang="gu"]) :is(h1, h2) {
+  font-family: "DM Serif Display", Georgia, "Times New Roman", serif !important;
+  font-weight: 400;
+  letter-spacing: -0.012em;
+}
+html h1 .text-\[\#F97316\] {
+  font-style: italic;
+  background-image: linear-gradient(110deg, var(--iv-em) 15%, var(--iv-em-light) 38%, var(--iv-gold) 52%, var(--iv-em-light) 64%, var(--iv-em-deep) 85%);
+  background-size: 220% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: iv-sheen 9s ease-in-out infinite;
+}
+@keyframes iv-sheen {
+  0%, 100% { background-position: 0% 0; }
+  50% { background-position: 100% 0; }
+}
+
+/* Soft glow blobs drift gently */
+html .blur-3xl {
+  transform: translate3d(calc(var(--mx, 0) * -22px), calc(var(--my, 0) * -14px), 0);
+  transition: transform 800ms ease-out;
+}
+
+/* Cards: a gentle lean toward the pointer, then a soft lift (see lib/usePointerEffects.ts) */
+html [data-tilt] {
+  transform-style: preserve-3d;
+  transform: perspective(1400px) rotateX(calc(var(--rx, 0deg) * 0.55)) rotateY(calc(var(--ry, 0deg) * 0.55));
+  transition: transform 260ms cubic-bezier(0.2, 0.8, 0.2, 1), translate 320ms ease, scale 320ms ease, box-shadow 320ms ease,
+    border-color 320ms ease, background-color 320ms ease;
+}
+html [data-tilt]:not(.absolute):not(.fixed):not(.sticky) { position: relative; }
+html [data-tilt][data-tilting="true"]:not([data-tilt-stage]) {
+  box-shadow: 0 34px 56px -28px rgb(var(--iv-shadow-rgb) / 0.5);
+  border-color: rgb(var(--iv-gold-rgb) / 0.65);
+}
+html [data-tilt]:not([data-tilt-stage])::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 260ms ease;
+  background: radial-gradient(380px circle at var(--gx, 50%) var(--gy, 50%), rgb(255 255 255 / 0.55), transparent 55%);
+}
+html [data-tilt][data-tilting="true"]:not([data-tilt-stage])::after { opacity: 0.8; }
+
+/* Hero scene: layers float at their own pace and shift with the pointer */
+html [data-layer] {
+  transform: translate3d(calc(var(--mx, 0) * var(--d, 10) * 1px), calc(var(--my, 0) * var(--d, 10) * 1px), var(--z, 0px));
+  transition: transform 420ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  animation: iv-float 7s ease-in-out infinite;
+  animation-delay: calc(var(--d, 10) * -0.35s);
+}
+@keyframes iv-float {
+  0%, 100% { translate: 0 0; }
+  50% { translate: 0 -9px; }
+}
+
+/* Magnetic primary buttons */
+html [data-magnetic] {
+  transform: translate3d(var(--tx, 0px), var(--ty, 0px), 0);
+  transition: transform 240ms cubic-bezier(0.2, 0.8, 0.2, 1), filter 200ms ease, box-shadow 200ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html::before { display: none; }
+  html h1 .text-\[\#F97316\] { animation: none; background-position: 50% 0; }
+  html .blur-3xl,
+  html [data-layer],
+  html [data-tilt],
+  html [data-magnetic] { transform: none; transition: none; animation: none; }
+}

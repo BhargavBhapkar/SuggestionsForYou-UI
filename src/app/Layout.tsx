@@ -1,16 +1,18 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Outlet } from "react-router";
 import { useTranslation } from "react-i18next";
 import LoginModal from "./components/LoginModal";
 import InstallPrompt from "./components/InstallPrompt";
 import ChatWidget from "./components/ChatWidget";
+import usePointerEffects from "./lib/usePointerEffects";
 import { api, getToken, setToken, type AuthUser } from "./lib/api";
 import usePageMeta from "./lib/usePageMeta";
 import { useToast } from "./components/ToastProvider";
 
-function getSystemTheme(): boolean {
-  return window.matchMedia("(prefers-color-scheme: dark)").matches;
-}
+// The site has a single light theme (see styles/bordeaux.css); the context keeps these two
+// fields so existing pages still compile.
+const NO_DARK_MODE = false;
+const noop = () => {};
 
 const GUEST_CART_KEY = "sfy_guest_cart";
 const GUEST_WISHLIST_KEY = "sfy_guest_wishlist";
@@ -67,33 +69,14 @@ export type AppContext = {
 
 export default function Layout() {
   usePageMeta();
+  usePointerEffects();
   const toast = useToast();
   const { t } = useTranslation();
-  const [dark, setDarkState] = useState(getSystemTheme);
-  const manualThemeOverride = useRef(false);
   const [wishlisted, setWishlisted] = useState<Set<string>>(new Set(readGuestWishlist()));
   const [cart, setCart] = useState<CartLine[]>(readGuestCart());
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [user, setUser] = useState<AuthUser | null>(null);
   const [authLoading, setAuthLoading] = useState(true);
-
-  const setDark = useCallback((v: boolean) => {
-    manualThemeOverride.current = true;
-    setDarkState(v);
-  }, []);
-
-  useEffect(() => {
-    const mq = window.matchMedia("(prefers-color-scheme: dark)");
-    const onChange = (e: MediaQueryListEvent) => {
-      if (!manualThemeOverride.current) setDarkState(e.matches);
-    };
-    mq.addEventListener("change", onChange);
-    return () => mq.removeEventListener("change", onChange);
-  }, []);
-
-  useEffect(() => {
-    document.documentElement.classList.toggle("dark", dark);
-  }, [dark]);
 
   useEffect(() => {
     if (!getToken()) {
@@ -282,8 +265,8 @@ export default function Layout() {
   const cartSubtotal = cart.reduce((sum, l) => sum + l.qty * l.priceSnapshot, 0);
 
   const context: AppContext = {
-    dark,
-    setDark,
+    dark: NO_DARK_MODE,
+    setDark: noop,
     wishlisted,
     toggleWish,
     cart,

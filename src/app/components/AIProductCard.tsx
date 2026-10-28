@@ -16,7 +16,7 @@ export default function AIProductCard({
   const scoreColor = score >= 95 ? "text-[#10B981]" : score >= 88 ? "text-[#F97316]" : "text-blue-500";
   const scoreBg = score >= 95 ? "bg-[#10B981]" : score >= 88 ? "bg-[#F97316]" : "bg-blue-500";
   return (
-    <div className="group bg-white dark:bg-[#131B2E] border border-[#E5E7EB] dark:border-white/10 rounded-2xl p-5 hover:shadow-xl hover:shadow-purple-100 dark:hover:shadow-purple-950/30 hover:border-purple-200 dark:hover:border-purple-800/50 hover:-translate-y-1.5 transition-all duration-300">
+    <div data-tilt="5" className="group bg-white dark:bg-[#131B2E] border border-[#E5E7EB] dark:border-white/10 rounded-2xl p-5 hover:shadow-xl hover:shadow-purple-100 dark:hover:shadow-purple-950/30 hover:border-purple-200 dark:hover:border-purple-800/50 hover:-translate-y-1.5 transition-all duration-300">
       <div className="flex items-start gap-4 mb-4">
         <div className={`w-16 h-16 rounded-xl overflow-hidden ${imgBox(product.image)} flex-shrink-0`}>
           <img src={product.image} alt={product.name} className={`w-full h-full ${imgFit(product.image, "p-1")} group-hover:scale-110 transition-transform duration-500`} />

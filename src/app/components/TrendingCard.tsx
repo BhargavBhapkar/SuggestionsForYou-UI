@@ -18,7 +18,7 @@ export default function TrendingCard({
   const [comparing, setComparing] = useState(false);
   const [added, setAdded] = useState(false);
   return (
-    <div className="group bg-white dark:bg-[#131B2E] border border-[#E5E7EB] dark:border-white/10 rounded-2xl overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col">
+    <div data-tilt="6" className="group bg-white dark:bg-[#131B2E] border border-[#E5E7EB] dark:border-white/10 rounded-2xl overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col">
       <div className={`relative ${imgBox(product.image)} h-48 overflow-hidden`}>
         <img src={product.image} alt={product.name} className={`w-full h-full ${imgFit(product.image)} group-hover:scale-105 transition-transform duration-500`} />
         <div className="absolute top-3 left-3">

@@ -135,7 +135,7 @@ export default function DealsPage() {
             const outOfStock = !deal.dealLimited && deal.dealStock === 0;
             return (
               <Reveal key={deal._id} delay={Math.min(i, 7) * 50}>
-                <div className="group bg-white dark:bg-[#131B2E] border border-[#E5E7EB] dark:border-white/10 rounded-2xl overflow-hidden hover:shadow-xl hover:shadow-orange-100 dark:hover:shadow-orange-950/30 hover:-translate-y-1.5 transition-all duration-300 flex flex-col">
+                <div data-tilt="6" className="group bg-white dark:bg-[#131B2E] border border-[#E5E7EB] dark:border-white/10 rounded-2xl overflow-hidden hover:shadow-xl hover:shadow-orange-100 dark:hover:shadow-orange-950/30 hover:-translate-y-1.5 transition-all duration-300 flex flex-col">
                   <div className={`relative h-40 ${imgBox(deal.image)} overflow-hidden flex-shrink-0`}>
                     <img src={deal.image} alt={deal.name} className={`w-full h-full ${imgFit(deal.image)} group-hover:scale-105 transition-transform duration-500`} />
                     <span className="absolute top-2.5 left-2.5 inline-flex items-center gap-0.5 px-2 py-1 bg-[#F97316] text-white text-xs font-bold rounded-lg shadow">

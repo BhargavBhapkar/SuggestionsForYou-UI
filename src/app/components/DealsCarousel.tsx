@@ -20,6 +20,8 @@ export default function DealsCarousel({
 }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  // Depth of the 3D carousel: side cards turn away and recede gently.
+  const depth = { spin: 12, back: 70, view: 1900 };
   const total = deals.length;
   const [activeIdx, setActiveIdx] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
@@ -97,7 +99,7 @@ export default function DealsCarousel({
       </div>
 
       {/* Carousel stage */}
-      <div className="relative flex items-center justify-center" style={{ height: 430 }}>
+      <div className="relative flex items-center justify-center" style={{ height: 430, perspective: depth.view, transformStyle: "preserve-3d" }}>
         {deals.map((deal, i) => {
           const raw = (i - activeIdx) % total;
           const offset = raw > total / 2 ? raw - total : raw < -(total / 2) ? raw + total : raw;
@@ -113,7 +115,7 @@ export default function DealsCarousel({
               style={{
                 position: "absolute",
                 width: 272,
-                transform: `translateX(${offset * 310}px) scale(${scale})`,
+                transform: `translateX(${offset * 300}px) translateZ(${-Math.abs(offset) * depth.back}px) rotateY(${-offset * depth.spin}deg) scale(${scale})`,
                 filter: `blur(${blur}px)`,
                 opacity,
                 zIndex,
@@ -121,14 +123,14 @@ export default function DealsCarousel({
                 cursor: isCenter ? "default" : "pointer",
               }}
             >
-              {/* Orange glow halo */}
+              {/* Rose-gold glow halo */}
               {isCenter && (
                 <div
                   style={{
                     position: "absolute",
                     inset: 0,
                     borderRadius: 16,
-                    boxShadow: "0 0 70px 14px rgba(249,115,22,0.2), 0 32px 64px rgba(0,0,0,0.55)",
+                    boxShadow: "0 0 70px 14px rgba(219,160,140,0.22), 0 32px 64px rgba(0,0,0,0.55)",
                     pointerEvents: "none",
                   }}
                 />
@@ -137,9 +139,9 @@ export default function DealsCarousel({
               <div
                 className="relative bg-[#111827] rounded-2xl overflow-hidden flex flex-col"
                 style={{
-                  border: isCenter ? "1px solid rgba(249,115,22,0.35)" : "1px solid rgba(255,255,255,0.08)",
+                  border: isCenter ? "1px solid rgba(219,160,140,0.4)" : "1px solid rgba(255,255,255,0.08)",
                   boxShadow: isCenter
-                    ? "0 24px 60px rgba(0,0,0,0.6), 0 0 0 1px rgba(249,115,22,0.15)"
+                    ? "0 24px 60px rgba(0,0,0,0.6), 0 0 0 1px rgba(219,160,140,0.18)"
                     : "0 8px 24px rgba(0,0,0,0.3)",
                 }}
               >

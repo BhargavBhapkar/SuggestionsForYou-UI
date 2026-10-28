@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
-import { Moon, Sun, Menu, X, UserRound, LogOut, ShoppingCart, Heart } from "lucide-react";
+import { Menu, X, UserRound, LogOut, ShoppingCart, Heart } from "lucide-react";
 import { inter, poppins } from "../lib/fonts";
 import type { AuthUser } from "../lib/api";
 import LanguageSwitcher from "./LanguageSwitcher";
@@ -15,10 +15,11 @@ const NAV_PATHS: Record<string, string> = {
 };
 
 export default function Navbar({
-  dark, setDark, onLoginRequired, user, onLogout, cartCount = 0, wishlistCount = 0,
+  onLoginRequired, user, onLogout, cartCount = 0, wishlistCount = 0,
 }: {
-  dark: boolean;
-  setDark: (v: boolean) => void;
+  /** Ignored: the site has a single light theme. Kept so existing callers still compile. */
+  dark?: boolean;
+  setDark?: (v: boolean) => void;
   onLoginRequired: () => void;
   user: AuthUser | null;
   onLogout: () => void;
@@ -116,17 +117,6 @@ export default function Navbar({
                 </span>
               )}
             </Link>
-            <button
-              onClick={() => setDark(!dark)}
-              aria-label={dark ? t("common.lightMode") : t("common.darkMode")}
-              className="p-2 text-[#6B7280] hover:text-[#F97316] dark:text-gray-400 transition-colors"
-            >
-              {dark ? (
-                <Sun className="w-5 h-5" />
-              ) : (
-                <Moon className="w-5 h-5" />
-              )}
-            </button>
             <LanguageSwitcher />
             {user ? (
               <>
@@ -170,17 +160,6 @@ export default function Navbar({
                 </span>
               )}
             </Link>
-            <button
-              onClick={() => setDark(!dark)}
-              aria-label={dark ? t("common.lightMode") : t("common.darkMode")}
-              className="p-2 text-[#6B7280] dark:text-gray-400"
-            >
-              {dark ? (
-                <Sun className="w-5 h-5" />
-              ) : (
-                <Moon className="w-5 h-5" />
-              )}
-            </button>
             <LanguageSwitcher compact />
             <button
               onClick={() => setMobileOpen(!mobileOpen)}

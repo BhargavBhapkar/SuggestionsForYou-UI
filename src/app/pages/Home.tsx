@@ -11,6 +11,7 @@ import { inter, poppins } from "../lib/fonts";
 import { TRENDING, WHY_FEATURES, imgFit, imgBox } from "../data/products";
 import DealsCarousel from "../components/DealsCarousel";
 import TrendingCard from "../components/TrendingCard";
+import CountUp from "../components/CountUp";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import Reveal from "../components/Reveal";
@@ -24,6 +25,9 @@ import { localizedTestimonial, localizedFaq } from "../lib/i18nContent";
 // site's orange accent instead so they don't look flat next to the rest.
 const INK = "1F2937";
 const ORANGE = "F97316";
+// Depth (z) and pointer-parallax strength (d) for the hero scene.
+const layer = (z: number, d: number) => ({ "--z": `${z}px`, "--d": d }) as React.CSSProperties;
+
 const BRAND_LOGOS = [
   { name: "Apple", slug: "apple", color: INK, accent: ORANGE },
   { name: "Samsung", slug: "samsung", color: "1428A0", accent: "1428A0" },
@@ -279,10 +283,10 @@ export default function Home() {
             </div>
 
             {/* ── RIGHT: product visual + floating cards ── */}
-            <div className="hidden lg:block relative h-[460px]">
+            <div data-tilt="7" data-tilt-stage className="hidden lg:block relative h-[460px]">
 
               {/* Live Price Comparison card */}
-              <div className="absolute top-0 right-0 w-64 p-4 bg-white dark:bg-[#131b2e] border border-[#E5E7EB] dark:border-white/10 rounded-2xl shadow-xl shadow-black/5 dark:shadow-black/40 z-20">
+              <div data-layer style={layer(70, 16)} className="absolute top-0 right-0 w-64 p-4 bg-white dark:bg-[#131b2e] border border-[#E5E7EB] dark:border-white/10 rounded-2xl shadow-xl shadow-black/5 dark:shadow-black/40 z-20">
                 <div className="flex items-center justify-between mb-3">
                   <span className="text-xs font-semibold text-[#111827] dark:text-white" style={poppins}>{t("home.livePriceComparison")}</span>
                   <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-500">
@@ -309,29 +313,29 @@ export default function Home() {
               </div>
 
               {/* Central device stack */}
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="relative w-64 h-64">
+              <div data-layer style={layer(10, 6)} className="absolute inset-0 flex items-center justify-center">
+                <div className="relative w-64 h-64" style={{ transformStyle: "preserve-3d" }}>
                   <div className="absolute inset-8 rounded-full bg-gradient-to-br from-[#F97316]/20 to-purple-500/20 dark:from-[#F97316]/30 dark:to-purple-600/30 blur-2xl" />
                   <img
                     src="https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=300&h=300&fit=crop&auto=format"
                     alt=""
-                    className="absolute top-2 left-2 w-36 h-36 rounded-2xl object-cover shadow-2xl border-4 border-white dark:border-[#131b2e] -rotate-6"
+                    data-layer style={layer(50, 12)} className="absolute top-2 left-2 w-36 h-36 rounded-2xl object-cover shadow-2xl border-4 border-white dark:border-[#131b2e] -rotate-6"
                   />
                   <img
                     src="https://images.unsplash.com/photo-1610945264803-c22b62d2a7b3?w=200&h=200&fit=crop&auto=format"
                     alt=""
-                    className="absolute bottom-4 right-2 w-28 h-28 rounded-2xl object-cover shadow-2xl border-4 border-white dark:border-[#131b2e] rotate-6"
+                    data-layer style={layer(30, 8)} className="absolute bottom-4 right-2 w-28 h-28 rounded-2xl object-cover shadow-2xl border-4 border-white dark:border-[#131b2e] rotate-6"
                   />
                   <img
                     src="https://images.unsplash.com/photo-1546868871-7041f2a55e12?w=140&h=140&fit=crop&auto=format"
                     alt=""
-                    className="absolute top-24 right-0 w-16 h-16 rounded-xl object-cover shadow-xl border-2 border-white dark:border-[#131b2e] rotate-3"
+                    data-layer style={layer(80, 18)} className="absolute top-24 right-0 w-16 h-16 rounded-xl object-cover shadow-xl border-2 border-white dark:border-[#131b2e] rotate-3"
                   />
                 </div>
               </div>
 
               {/* Why Choose Us card */}
-              <div className="absolute top-[13.5rem] -right-4 w-56 p-4 bg-white dark:bg-[#131b2e] border border-[#E5E7EB] dark:border-white/10 rounded-2xl shadow-xl shadow-black/5 dark:shadow-black/40 z-20">
+              <div data-layer style={layer(95, 22)} className="absolute top-[13.5rem] -right-4 w-56 p-4 bg-white dark:bg-[#131b2e] border border-[#E5E7EB] dark:border-white/10 rounded-2xl shadow-xl shadow-black/5 dark:shadow-black/40 z-20">
                 <span className="text-xs font-semibold text-[#111827] dark:text-white" style={poppins}>{t("home.whyChooseUsCard")}</span>
                 <div className="mt-2.5 space-y-2">
                   {[
@@ -507,7 +511,7 @@ export default function Home() {
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-4">
             {trendingProducts.slice(0, 4).map((p, i) => (
               <Reveal key={p._id} delay={i * 60}>
-                <div className="group bg-white dark:bg-[#131b2e] border border-[#E5E7EB] dark:border-white/10 rounded-2xl overflow-hidden hover:shadow-xl hover:shadow-orange-100 dark:hover:shadow-orange-950/40 hover:-translate-y-1.5 hover:scale-[1.02] hover:border-orange-200 dark:hover:border-orange-800/50 transition-all duration-300 flex flex-col cursor-pointer"
+                <div data-tilt="6" className="group bg-white dark:bg-[#131b2e] border border-[#E5E7EB] dark:border-white/10 rounded-2xl overflow-hidden hover:shadow-xl hover:shadow-orange-100 dark:hover:shadow-orange-950/40 hover:-translate-y-1.5 hover:scale-[1.02] hover:border-orange-200 dark:hover:border-orange-800/50 transition-all duration-300 flex flex-col cursor-pointer"
                   onClick={() => navigate(`/compare/${encodeURIComponent(p.name)}`)}>
                   <div className={`relative ${imgBox(p.image)} h-36 overflow-hidden`}>
                     <img src={p.image} alt={p.name} className={`w-full h-full ${imgFit(p.image, "p-2")} group-hover:scale-110 transition-transform duration-500`} />
@@ -527,7 +531,7 @@ export default function Home() {
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
             {trendingProducts.slice(4, 8).map((p, i) => (
               <Reveal key={p._id} delay={i * 60}>
-                <div className="group bg-white dark:bg-[#131b2e] border border-[#E5E7EB] dark:border-white/10 rounded-2xl overflow-hidden hover:shadow-xl hover:shadow-orange-100 dark:hover:shadow-orange-950/40 hover:-translate-y-1.5 hover:scale-[1.02] hover:border-orange-200 dark:hover:border-orange-800/50 transition-all duration-300 flex flex-col cursor-pointer"
+                <div data-tilt="6" className="group bg-white dark:bg-[#131b2e] border border-[#E5E7EB] dark:border-white/10 rounded-2xl overflow-hidden hover:shadow-xl hover:shadow-orange-100 dark:hover:shadow-orange-950/40 hover:-translate-y-1.5 hover:scale-[1.02] hover:border-orange-200 dark:hover:border-orange-800/50 transition-all duration-300 flex flex-col cursor-pointer"
                   onClick={() => navigate(`/compare/${encodeURIComponent(p.name)}`)}>
                   <div className={`relative ${imgBox(p.image)} h-36 overflow-hidden`}>
                     <img src={p.image} alt={p.name} className={`w-full h-full ${imgFit(p.image, "p-2")} group-hover:scale-110 transition-transform duration-500`} />
@@ -712,7 +716,7 @@ export default function Home() {
                 { value: "₹180Cr+",  label: t("home.metrics.savingsUnlocked") },
               ].map(m => (
                 <div key={m.label} className="group bg-white dark:bg-[#131B2E] p-6 text-center hover:bg-orange-50/50 dark:hover:bg-orange-950/20 transition-colors duration-300">
-                  <div className="text-2xl font-bold text-[#111827] dark:text-white mb-1 group-hover:text-[#F97316] transition-colors" style={poppins}>{m.value}</div>
+                  <div className="text-2xl font-bold text-[#111827] dark:text-white mb-1 group-hover:text-[#F97316] transition-colors" style={poppins}><CountUp value={m.value} /></div>
                   <div className="text-xs text-[#9CA3AF]" style={inter}>{m.label}</div>
                 </div>
               ))}
