@@ -9,7 +9,7 @@ import { api, getToken, setToken, type AuthUser } from "./lib/api";
 import usePageMeta from "./lib/usePageMeta";
 import { useToast } from "./components/ToastProvider";
 
-// The site has a single light theme (see styles/bordeaux.css); the context keeps these two
+// The site has a single light theme (see styles/emerald.css); the context keeps these two
 // fields so existing pages still compile.
 const NO_DARK_MODE = false;
 const noop = () => {};

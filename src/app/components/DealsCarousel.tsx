@@ -123,14 +123,14 @@ export default function DealsCarousel({
                 cursor: isCenter ? "default" : "pointer",
               }}
             >
-              {/* Rose-gold glow halo */}
+              {/* Gold glow halo */}
               {isCenter && (
                 <div
                   style={{
                     position: "absolute",
                     inset: 0,
                     borderRadius: 16,
-                    boxShadow: "0 0 70px 14px rgba(219,160,140,0.22), 0 32px 64px rgba(0,0,0,0.55)",
+                    boxShadow: "0 0 70px 14px rgba(214,178,106,0.22), 0 32px 64px rgba(0,0,0,0.55)",
                     pointerEvents: "none",
                   }}
                 />
@@ -139,9 +139,9 @@ export default function DealsCarousel({
               <div
                 className="relative bg-[#111827] rounded-2xl overflow-hidden flex flex-col"
                 style={{
-                  border: isCenter ? "1px solid rgba(219,160,140,0.4)" : "1px solid rgba(255,255,255,0.08)",
+                  border: isCenter ? "1px solid rgba(214,178,106,0.4)" : "1px solid rgba(255,255,255,0.08)",
                   boxShadow: isCenter
-                    ? "0 24px 60px rgba(0,0,0,0.6), 0 0 0 1px rgba(219,160,140,0.18)"
+                    ? "0 24px 60px rgba(0,0,0,0.6), 0 0 0 1px rgba(214,178,106,0.18)"
                     : "0 8px 24px rgba(0,0,0,0.3)",
                 }}
               >

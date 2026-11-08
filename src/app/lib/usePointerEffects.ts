@@ -16,7 +16,7 @@ function resetMagnet(el: HTMLElement) {
 // One pointer listener for the whole page. It publishes the pointer position as --mx/--my
 // (-1..1) for parallax layers, tilts whichever [data-tilt] element is under the pointer and
 // nudges primary buttons toward the pointer ("magnetic" buttons). The matching styles live in
-// styles/bordeaux.css. Does nothing on touch screens or when reduced motion is requested.
+// styles/emerald.css. Does nothing on touch screens or when reduced motion is requested.
 export default function usePointerEffects() {
   useEffect(() => {
     if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;

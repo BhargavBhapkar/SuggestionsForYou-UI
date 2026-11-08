@@ -1,48 +1,48 @@
-/* Bordeaux & Rose Gold: the site's look. A light theme with a blush-ivory page, bordeaux in place of the old
-   orange, rose gold as the metal accent, a serif / Sora / Manrope type set, roomy bento-style cards and soft motion.
+/* Emerald Royale: the site's look. A light theme with an ivory page, emerald in place of the old
+   orange, antique gold as the metal accent, a serif / Sora / Manrope type set, roomy bento-style cards and soft motion.
 
    The pages were written with orange utility classes (text-[#F97316], bg-orange-50 ...). Rather than touch every
    component, this file recolours those classes. It is not inside a CSS layer, so it wins over Tailwind's utilities.
 
-   Three colours define the palette: the jewel (bordeaux), the metal (rose gold) and the paper (blush ivory).
+   Three colours define the palette: the jewel (emerald), the metal (antique gold) and the paper (ivory).
    Change the variables in the first block to retune the whole site. */
 
 html {
   color-scheme: light;
 
-  --iv-paper: #fbf6f2;
-  --iv-sand: #f4eae4;
-  --iv-sand-2: #ecdfd8;
-  --iv-ink: #2b1a20;
-  --iv-ink-soft: #46303a;
-  --iv-muted: #6e5a61;
-  --iv-faint: #9b8a90;
-  --iv-ink-rgb: 43 26 32;
-  --iv-em: #8c2447;            /* jewel: buttons, links, badges */
-  --iv-em-light: #d98aa6;
-  --iv-em-deep: #6f1a38;
-  --iv-em-rgb: 140 36 71;
-  --iv-btn-a: #a52c57;
-  --iv-btn-b: #6f1a38;
-  --iv-forest: #2a0f1a;        /* deep band: deals strip, footer */
-  --iv-forest-2: #33131f;
-  --iv-gold: #dba08c;          /* metal: rose gold */
-  --iv-gold-text: #9c5a46;
-  --iv-gold-rgb: 219 160 140;
-  --iv-shadow-rgb: 70 20 40;
+  --iv-paper: #faf7f2;
+  --iv-sand: #f3eee4;
+  --iv-sand-2: #ece6da;
+  --iv-ink: #14201b;
+  --iv-ink-soft: #2b3a33;
+  --iv-muted: #5a6a62;
+  --iv-faint: #8a978f;
+  --iv-ink-rgb: 20 40 30;
+  --iv-em: #0e8f6a;  /* jewel: buttons, links, badges */
+  --iv-em-light: #4fc79f;
+  --iv-em-deep: #0a6f52;
+  --iv-em-rgb: 14 143 106;
+  --iv-btn-a: #17a37a;
+  --iv-btn-b: #0b7a5a;
+  --iv-forest: #0e2a23;        /* deep band: deals strip, footer */
+  --iv-forest-2: #12261f;
+  --iv-gold: #d6b26a;          /* metal: antique gold */
+  --iv-gold-text: #8a6a1e;
+  --iv-gold-rgb: 214 178 106;
+  --iv-shadow-rgb: 14 60 45;
 
   /* the Tailwind "orange" utilities (bg-orange-50, text-orange-600, shadow-orange-200 ...) take the jewel's tints */
-  --color-orange-50: #fbeff3;
-  --color-orange-100: #f5dce5;
-  --color-orange-200: #ebbbcb;
-  --color-orange-300: #de92ab;
-  --color-orange-400: #cb6285;
-  --color-orange-500: #b03c65;
-  --color-orange-600: #8c2447;
-  --color-orange-700: #721c3a;
-  --color-orange-800: #5a162f;
-  --color-orange-900: #440f24;
-  --color-orange-950: #2a0916;
+  --color-orange-50: #edf8f3;
+  --color-orange-100: #d8f0e5;
+  --color-orange-200: #b4e2cf;
+  --color-orange-300: #86cfb2;
+  --color-orange-400: #4fb68f;
+  --color-orange-500: #17996f;
+  --color-orange-600: #0e7f5c;
+  --color-orange-700: #0b6648;
+  --color-orange-800: #094f39;
+  --color-orange-900: #073d2d;
+  --color-orange-950: #04271d;
 
   --background: var(--iv-paper);
   --foreground: var(--iv-ink);
@@ -125,7 +125,7 @@ html :is(button, a).bg-\[\#F97316\]:hover {
   box-shadow: 0 14px 28px -14px rgb(var(--iv-em-rgb) / 0.75);
 }
 
-/* The metal: rose-gold stars and hearts, small uppercase labels, and every accent that sits on a dark band */
+/* The metal: gold stars and hearts, small uppercase labels, and every accent that sits on a dark band */
 html .fill-\[\#F97316\] { fill: var(--iv-gold); }
 html .text-\[\#F97316\].uppercase { color: var(--iv-gold-text); }
 html :is(.bg-\[\#0C1320\], .bg-\[\#111827\]) :is(.text-\[\#F97316\], .text-\[\#F97316\].uppercase, .hover\:text-\[\#F97316\]:hover) { color: var(--iv-gold); }

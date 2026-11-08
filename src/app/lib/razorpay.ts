@@ -47,7 +47,7 @@ export function openRazorpay(
       name: "SuggestionsForYou",
       description: opts.description,
       prefill: opts.prefill,
-      theme: { color: "#8C2447" },
+      theme: { color: "#0E8F6A" },
       handler: (response: RazorpaySuccess) => resolve({ status: "paid", response }),
       modal: { ondismiss: () => resolve({ status: "dismissed" }) },
     });

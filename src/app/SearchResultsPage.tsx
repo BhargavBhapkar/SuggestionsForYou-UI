@@ -1225,7 +1225,7 @@ export default function SearchResultsPage() {
           -webkit-appearance: none;
           width: 18px; height: 18px;
           border-radius: 50%;
-          background: #8C2447;
+          background: #0E8F6A;
           border: 2px solid white;
           box-shadow: 0 1px 4px rgba(0,0,0,0.2);
           cursor: pointer;
@@ -1233,7 +1233,7 @@ export default function SearchResultsPage() {
         .range-thumb::-moz-range-thumb {
           width: 18px; height: 18px;
           border-radius: 50%;
-          background: #8C2447;
+          background: #0E8F6A;
           border: 2px solid white;
           box-shadow: 0 1px 4px rgba(0,0,0,0.2);
           cursor: pointer;
